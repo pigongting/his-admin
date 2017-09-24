@@ -1,9 +1,11 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
+import { Link } from 'dva/router';
 import { connect } from 'dva';
+import cs from 'classnames';
 
 // antd 组件
-import { Layout, Menu, Icon, Button } from 'antd';
+import { Layout, Menu, Icon, Button, Input, Select } from 'antd';
 
 // 滚动条
 import * as Ps from 'perfect-scrollbar';
@@ -16,6 +18,8 @@ import styles from './PageFrame.less';
 // antd 组件扩展
 const { Header, Footer, Sider, Content } = Layout;
 const SubMenu = Menu.SubMenu;
+const InputGroup = Input.Group;
+const Option = Select.Option;
 
 let lastHref;
 
@@ -29,114 +33,155 @@ class PageFrame extends React.Component {
 
     this.state = {
       mainMenuHeight: client.height - 142,
+      contentHeight: client.height - 64,
     };
   }
 
   componentDidMount() {
-    const el = findDOMNode(this);
-    const container = document.querySelector('#PS-menu');
+    const menu = document.querySelector('#PS-menu');
+    const submenu = document.querySelector('#PS-submenu');
 
-    Ps.initialize(container, {
+    Ps.initialize(menu, {
       wheelSpeed: 2,
       wheelPropagation: true,
       minScrollbarLength: 20,
     });
+
+    if (submenu) {
+      Ps.initialize(submenu, {
+        wheelSpeed: 2,
+        wheelPropagation: true,
+        minScrollbarLength: 20,
+      });
+    }
   }
 
   componentDidUpdate() {
-    const container = document.querySelector('#PS-menu');
-    Ps.update(container);
+    const menu = document.querySelector('#PS-menu');
+    const submenu = document.querySelector('#PS-submenu');
+
+    Ps.update(menu);
+
+    if (submenu) {
+      try {
+        Ps.update(submenu);
+      } catch (e) {
+        if (submenu) {
+          Ps.initialize(submenu, {
+            wheelSpeed: 2,
+            wheelPropagation: true,
+            minScrollbarLength: 20,
+          });
+        } else {
+          Ps.destroy(submenu);
+        }
+      }
+    }
   }
 
   render() {
     // console.log(this);
-    if (typeof window !== 'undefined') {
-      const href = window.location.href;
+    // if (typeof window !== 'undefined') {
+    //   const href = window.location.href;
 
-      if (lastHref !== href) {
-        NProgress.start();
-        if (!this.props.loading.global) {
-          NProgress.done();
-          lastHref = href;
+    //   if (lastHref !== href) {
+    //     NProgress.start();
+    //     if (!this.props.loading.global) {
+    //       NProgress.done();
+    //       lastHref = href;
+    //     }
+    //   }
+    // }
+
+    const mainMenuComponent = this.props.pagedate.mainmenu.map((item, key) => {
+      return (
+        <Menu.Item key={key}>
+          <i style={{ backgroundImage: `url(${item.icon})` }} />
+          <Link to={`/${this.props.locale}${item.href}`} className={cs(item.submenu ? 'hasSubMenu' : 'notSubMenu')}>{item.name}</Link>
+        </Menu.Item>
+      );
+    });
+
+    let subMenuComponent = null;
+
+    if (this.props.pagedate.submenu) {
+      subMenuComponent = this.props.pagedate.submenu.map((item, key) => {
+        let menulist = null;
+
+        if (item.submenu) {
+          menulist = (
+            <SubMenu key={key} title={<span><span>{item.name}</span></span>}>
+              {item.submenu.map((subitem, subkey) => <Menu.Item key={(key * subkey) + 1}><Link to={`/${this.props.locale}${item.href}`}>{subitem.name}</Link></Menu.Item>)}
+            </SubMenu>
+          );
+        } else {
+          menulist = (
+            <Menu.Item key={key}>
+              <Link to={`/${this.props.locale}${item.href}`}>{item.name}</Link>
+            </Menu.Item>
+          );
         }
-      }
+
+        return menulist;
+      });
     }
+
+    const { userName } = this.state;
+    const suffix = userName ? <Icon type="close-circle" onClick={this.emitEmpty} /> : null;
 
     return (
       <Layout>
-        <Sider className={this.props.pagedate.collapsed ? styles.siderFold : styles.siderUnfold}>
-          <div className={styles.siderLogo}>
-            <img src="../assets/img/brand/logo.png" alt="logo" width="45" height="45" />
+        <Sider className={cs(styles.mainSider, this.props.pagedate.collapsed ? 'fold' : 'unfold')}>
+          <div className="logo"><img src="../assets/img/brand/logo.png" alt="logo" width="50" height="50" /></div>
+          <div id="PS-menu" style={{ position: 'relative', height: this.state.mainMenuHeight }}>
+            <Menu defaultSelectedKeys={['0']} defaultOpenKeys={['0']} mode="inline" inlineCollapsed={this.props.pagedate.collapsed}>
+              {mainMenuComponent}
+            </Menu>
           </div>
-          <div className={styles.siderMenuBox} id="PS-menu" style={{ height: this.state.mainMenuHeight }}>
-            <div>
-              <Sider>
-                <Menu
-                  defaultSelectedKeys={['1']}
-                  defaultOpenKeys={['sub1']}
-                  mode="inline"
-                  inlineCollapsed={this.props.pagedate.collapsed}
-                >
-                  <Menu.Item key="1">
-                    <Icon type="pie-chart" />
-                    <span>Option 1</span>
-                  </Menu.Item>
-                  <Menu.Item key="2">
-                    <Icon type="desktop" />
-                    <span>Option 2</span>
-                  </Menu.Item>
-                  <Menu.Item key="3">
-                    <Icon type="inbox" />
-                    <span>Option 3</span>
-                  </Menu.Item>
-                </Menu>
-              </Sider>
-            </div>
-          </div>
-          <div className={styles.collapse}>
-            <Button type="primary" onClick={this.props.toggleCollapsed} style={{ marginBottom: 16 }}>
-              <Icon type={this.props.pagedate.collapsed ? 'menu-unfold' : 'menu-fold'} />
-            </Button>
-          </div>
+          <div className="collapse" onClick={this.props.toggleCollapsed}><i /><div>收缩</div></div>
         </Sider>
-        <Layout>
-          <Header>Header</Header>
+        <Layout style={{ overflow: 'hidden' }}>
+          <Header className={styles.mainHeader}>
+            <Layout>
+              <Sider className="headerSide">
+                <div className="icon" onClick={this.props.toggleSubCollapsed} />
+                <div className="title">{this.props.pagedate.pageTitle}</div>
+              </Sider>
+              <Content>
+                <div className="search">
+                  <InputGroup compact>
+                    <Select defaultValue="Zhejiang">
+                      <Option value="Zhejiang">设备号</Option>
+                      <Option value="Jiangsu">维护人员</Option>
+                    </Select>
+                    <Input
+                      style={{ width: '240px' }}
+                      placeholder="搜索设备..."
+                      onPressEnter={(e) => {
+                        console.log(e.target.value);
+                        return 1;
+                      }}
+                    />
+                  </InputGroup>
+                </div>
+                <div className="operate">&emsp;&emsp;新增设备&emsp;&ensp;导出Excel</div>
+              </Content>
+            </Layout>
+          </Header>
           <Content>
             <Layout>
-              <Sider breakpoint="md" collapsedWidth="0" onCollapse={(collapsed, type) => { console.log(collapsed, type); }}>
-                <Menu defaultSelectedKeys={['1']} defaultOpenKeys={['sub1']} mode="inline">
-                  <Menu.Item key="1">
-                    <Icon type="pie-chart" />
-                    <span>Option 1</span>
-                  </Menu.Item>
-                  <Menu.Item key="2">
-                    <Icon type="desktop" />
-                    <span>Option 2</span>
-                  </Menu.Item>
-                  <Menu.Item key="3">
-                    <Icon type="inbox" />
-                    <span>Option 3</span>
-                  </Menu.Item>
-                  <SubMenu key="sub1" title={<span><Icon type="mail" /><span>Navigation One</span></span>}>
-                    <Menu.Item key="5">Option 5</Menu.Item>
-                    <Menu.Item key="6">Option 6</Menu.Item>
-                    <Menu.Item key="7">Option 7</Menu.Item>
-                    <Menu.Item key="8">Option 8</Menu.Item>
-                  </SubMenu>
-                  <SubMenu key="sub2" title={<span><Icon type="appstore" /><span>Navigation Two</span></span>}>
-                    <Menu.Item key="9">Option 9</Menu.Item>
-                    <Menu.Item key="10">Option 10</Menu.Item>
-                    <SubMenu key="sub3" title="Submenu">
-                      <Menu.Item key="11">Option 11</Menu.Item>
-                      <Menu.Item key="12">Option 12</Menu.Item>
-                    </SubMenu>
-                  </SubMenu>
-                </Menu>
-              </Sider>
-              <Layout>{this.props.children}</Layout>
+              {(subMenuComponent) ?
+                <Sider className={cs(styles.subSider, this.props.pagedate.subcollapsed ? 'fold' : 'unfold')}>
+                  <div id="PS-submenu" style={{ position: 'relative', height: this.state.contentHeight }}>
+                    <Menu defaultSelectedKeys={['0']} defaultOpenKeys={['0']} mode="inline">
+                      {subMenuComponent}
+                    </Menu>
+                  </div>
+                </Sider>
+              : null}
+              <Content id="PS-content" style={{ position: 'relative', height: this.state.contentHeight }}>{this.props.children}</Content>
             </Layout>
           </Content>
-          <Footer>Footer</Footer>
         </Layout>
       </Layout>
     );
@@ -150,6 +195,11 @@ function mapDispatchToProps(dispatch, ownProps) {
         type: 'pageframe/toggleCollapsed',
       });
     },
+    toggleSubCollapsed: () => {
+      dispatch({
+        type: 'pageframe/toggleSubCollapsed',
+      });
+    },
   };
 }
 
@@ -158,6 +208,7 @@ function mapStateToProps(state, ownProps) {
   return {
     loading: state.loading,
     pagedate: state.pageframe,
+    locale: state.ssr.locale,
   };
 }
 

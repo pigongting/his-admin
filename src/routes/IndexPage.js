@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Link } from 'dva/router';
 
 // antd 组件
-import { DatePicker } from 'antd';
+import { DatePicker, Table } from 'antd';
 
 // 内容国际化支持
 import { FormattedMessage, FormattedNumber } from 'react-intl';
@@ -39,27 +39,24 @@ class IndexPage extends React.Component {
     //   })
     //   .catch(err => console.log('Failed to load moment', err));
     // }
+
+    this.client = document.documentElement.getBoundingClientRect();
   }
 
   render() {
+    const data = [];
+    for (let i = 0; i < 100; i++) {
+      data.push({
+        key: i,
+        name: `Edrward ${i}`,
+        age: 32,
+        address: `London Park no. ${i}`,
+      });
+    }
+
     return (
-      <div className={styles.normal}>
-        <h1 className={styles.title} onClick={() => { this.props.onRetry(); }}>Yay! Welcome to dva!</h1>
-        <p><FormattedMessage id="superHello" defaultMessage="无语言包" values={{ someone: 'pigongting' }} /></p>
-        <FormattedNumber value={1000} />
-        <div className={styles.welcome} />
-        <ul className={styles.list}>
-          <li>To get started, edit <code>src/index.js</code> and save to reload.</li>
-          <li><a href="https://github.com/dvajs/dva-docs/blob/master/v1/en-us/getting-started.md">Getting Started</a></li>
-        </ul>
-        <Link to={`/${this.props.locale}/users/product`}>Users</Link>
-        <div>
-          <DatePicker onChange={onChange} />
-          <br />
-          <MonthPicker onChange={onChange} placeholder="Select month" />
-          <br />
-          <RangePicker onChange={onChange} />
-        </div>
+      <div style={{ height: '100%' }}>
+        <Table columns={this.props.pagedata.columns} dataSource={data} scroll={{ x: 2000, y: (this.client.height - 64 - 50 - 60) }} pagination={{ pageSize: 20 }} />
       </div>
     );
   }
@@ -79,7 +76,7 @@ function mapStateToProps(state, ownProps) {
   // console.log(state);
   return {
     loading: state.loading.effects['index/fetch'],
-    pagedata: 'state.index',
+    pagedata: state.index,
     locale: state.ssr.locale,
   };
 }

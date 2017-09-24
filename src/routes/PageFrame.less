@@ -1,11 +1,46 @@
 @import "../themes/default.less";
 
 :global {
+  body{
+    overflow: hidden;
+  }
+
   #root{
     height: 100%;
   }
+
   [data-reactroot]{
     height: 100%;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track-piece {
+    background: transparent;
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    border-width: 1px;
+    border-style: solid;
+    border-color: transparent;
+    -webkit-border-radius: 0px;
+    border-radius: 0px;
+    background: #c8c9ca;
+  }
+
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
   }
 }
 
@@ -70,6 +105,7 @@
     }
   }
 }
+
 @keyframes nprogress-spinner {
   0% {
     transform: rotate(0deg);
@@ -81,25 +117,6 @@
 }
 
 :global {
-  .ant-layout-header {
-    background: #fff;
-  }
-
-  .ant-layout-sider {
-    background: #f5f7fa;
-  }
-
-  .ant-layout-sider::after {
-    content: '';
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 1px;
-    background: #e6e9f0;
-  }
-  
   .ps > .ps__scrollbar-x-rail {
     z-index: 2;
   }
@@ -107,48 +124,318 @@
   .ps > .ps__scrollbar-y-rail {
     z-index: 2;
   }
+
+  .ant-layout {
+    background-color: #fff;
+  }
 }
 
-.siderFold {
-  width: 64px !important;
-  max-width: 64px !important;
-  min-width: 64px !important;
-  flex: 0 0 64px !important;
+/* 主侧栏 */
+.mainSider {
+  flex: 0 0 160px !important;
+  max-width: 160px !important;
+  min-width: 160px !important;
+  width: 160px !important;
+  background: #f5f7fa;
 }
 
-.siderLogo {
+.mainSider::after {
+  content: '';
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #e6e9f0;
+}
+
+.mainSider:global(.fold) {
+  width: 80px !important;
+  max-width: 80px !important;
+  min-width: 80px !important;
+  flex: 0 0 80px !important;
+}
+
+/* 主侧栏-logo */
+.mainSider :global(.logo) {
   height: 90px;
   text-align: center;
 }
-.siderLogo img {
+
+.mainSider :global(.logo) img {
   box-sizing: content-box;
-  padding: 22px 0;
+  padding: 20px 1px 20px 0;
 }
 
-.siderMenuBox {
-  position: relative;
-}
-
-.collapse {
+/* 主侧栏-折叠按钮 */
+.mainSider :global(.collapse) {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   background: #f5f7fa;
   border-top: 1px solid #e6e9f0;
+  padding: 0 0 0 64px;
+  height: 51px;
+  cursor: pointer;
+  overflow: hidden;
 }
 
+.mainSider :global(.collapse i) {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 50px;
+  overflow: hidden;
+  background: url(../assets/mainCollapseIcon.svg) 50% 50% no-repeat;
+  cursor: pointer;
+  -webkit-transition: .2s linear;
+  transition: .2s linear;
+}
 
+.mainSider :global(.collapse div) {
+  font-size: 14px;
+  font-weight: bold;
+  line-height: 50px;
+}
 
+.mainSider:global(.fold) :global(.collapse i) {
+  transform:rotate(180deg);
+  -ms-transform:rotate(180deg);
+  -moz-transform:rotate(180deg);
+  -webkit-transform:rotate(180deg);
+  -o-transform:rotate(180deg);
+}
 
+.mainSider:global(.fold) :global(.collapse div) {
+  display: none;
+}
 
+/* 主侧栏-主菜单 */
+.mainSider :global(.ant-menu) {
+  background-color: transparent;
+  border-right: none;
+}
 
+.mainSider :global(.ant-menu)::before {
+  content: '';
+  display: block;
+  position: absolute;
+  top: 110px;
+  left: 26px;
+  right: 26px;
+  height: 1px;
+  background: #e6e9f0;
+}
 
+.mainSider:global(.fold .ant-menu) {
+  width: 80px;
+}
 
+.mainSider :global(.ant-menu .ant-menu-item) {
+  padding-left: 0px !important;
+  padding-right: 0 !important;
+  left: 0 !important;
+  margin-left: 0 !important;
+  height: 45px !important;
+  line-height: 45px !important;
+}
 
+.mainSider :global(.ant-menu .ant-menu-item)::after {
+  left: 0;
+  right: auto !important;
+}
 
+.mainSider :global(.ant-menu .ant-menu-item):nth-child(2) {
+  margin-bottom: 41px;
+}
 
+.mainSider:global(.fold .ant-menu .ant-menu-item)::after {
+  content: '';
+  display: block;
+  position: absolute;
+  height: 45px;
+  width: 3px;
+  background: #222a88;
+}
 
+.mainSider :global(.ant-menu .ant-menu-item i) {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 80px;
+  height: 45px;
+  font-size: 18px !important;
+  background: 50% 50% no-repeat;
+}
+
+.mainSider :global(.ant-menu .ant-menu-item a) {
+  display: block;
+  padding-left: 64px;
+  font-size: 14px !important;
+  font-weight: bold;
+  -webkit-transition: .2s linear;
+  transition: .2s linear;
+}
+
+.mainSider:global(.fold .ant-menu .ant-menu-item a) {
+  padding-left: 80px;
+}
+
+.mainSider :global(.ant-menu .ant-menu-item a.hasSubMenu) {
+  background: url(../assets/next.svg) 126px 50% no-repeat;
+}
+
+/* 副侧栏 */
+.subSider {
+  background: #fff;
+}
+
+.subSider::after {
+  content: '';
+  display: block;
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  background: #e6e9f0;
+}
+
+/* 副侧栏-子菜单 */
+.subSider :global(.ant-menu .ant-menu-item) {
+  height: 45px;
+  line-height: 45px;
+  font-size: 14px;
+  background-color: transparent !important;
+}
+
+.subSider :global(.ant-menu .ant-menu-item a) {
+  display: block;
+  cursor: pointer;
+}
+
+.subSider :global(.ant-menu:not(.ant-menu-horizontal) .ant-menu-item-selected::after) {
+  display: none;
+}
+
+.subSider :global(.ant-menu .ant-menu-submenu-title) {
+  height: 45px;
+  line-height: 45px;
+  font-size: 14px;
+}
+
+.subSider:global(.fold) {
+  flex: 0 0 0px !important;
+  max-width: 0px !important;
+  min-width: 0px !important;
+  width: 0px !important;
+  overflow: hidden;
+}
+
+/* 头部 */
+.mainHeader {
+  position: relative;
+  background: #fff;
+  padding: 0;
+}
+
+.mainHeader::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background: #e6e9f0;
+}
+
+.mainHeader :global(.headerSide) {
+  background: #fff;
+}
+
+.mainHeader :global(.ant-layout-content) {
+  position: relative;
+}
+
+.mainHeader :global(.ant-layout-content::after) {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.mainHeader :global(.search) {
+  float: left;
+  height: 44px;
+  line-height: 44px;
+  margin: 10px 0 0 0;
+  background: #f5f5f5;
+  border-radius: 4px;
+  padding: 0 7px;
+}
+
+.mainHeader :global(.ant-select) {
+  font-size: 14px;
+  vertical-align: top;
+  margin-top: 8px;
+}
+
+.mainHeader :global(.ant-select-selection__rendered) {
+  line-height: 28px;
+}
+
+.mainHeader :global(.ant-input) {
+  font-size: 14px;
+  border: none;
+  vertical-align: top;
+  margin-top: 7px;
+  background-color: transparent;
+}
+
+.mainHeader :global(.ant-input:focus) {
+  box-shadow: none;
+}
+
+.mainHeader :global(.ant-select-selection) {
+  border: none;
+  background-color: transparent;
+}
+
+.mainHeader :global(.ant-select-selection:focus) {
+  box-shadow: none;
+}
+
+.mainHeader :global(.operate) {
+  float: left;
+  color: @primary-color;
+  font-size: 15px;
+}
+
+.mainHeader :global(.icon) {
+  float: left;
+  width: 64px;
+  height: 64px;
+  background: url(../assets/subCollapseIcon.png) 50% 50% no-repeat;
+  cursor: pointer;
+  opacity: 0.4;
+  -webkit-transition: .2s linear;
+  transition: .2s linear;
+}
+
+.mainHeader :global(.icon:hover) {
+  opacity: 0.6;
+}
+
+.mainHeader :global(.title) {
+  float: left;
+  font-size: 18px;
+  line-height: 64px;
+  font-weight: bold;
+  color: @primary-color;
+}
 
 
 

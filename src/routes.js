@@ -26,6 +26,24 @@ function Routes(locale, app) {
           cb(null, { component: require('./routes/IndexPage') });
         }
       },
+      childRoutes: [
+        {
+          path: `/${locale}/product`,
+          getComponent(nextState, cb) {
+            if (process.env.NODE_ENV === 'development') {
+              import(/* webpackChunkName: "IndexPage" */ './routes/IndexPage')
+              .then((data) => {
+                registerModel(app, require('./models/index'));
+                cb(null, data);
+              })
+              .catch(err => console.log('Failed to load IndexPage', err));
+            } else {
+              registerModel(app, require('./models/index'));
+              cb(null, require('./routes/IndexPage'));
+            }
+          },
+        },
+      ],
     },
     {
       path: `/${locale}/users`,
