@@ -5,7 +5,7 @@ import { connect } from 'dva';
 import cs from 'classnames';
 
 // antd 组件
-import { Layout, Menu, Icon, Button, Input, Select, Pagination } from 'antd';
+import { Layout, Menu, Icon, Dropdown, Button, Input, Select, Pagination } from 'antd';
 
 // 滚动条
 import * as Ps from 'perfect-scrollbar';
@@ -126,8 +126,13 @@ class PageFrame extends React.Component {
       });
     }
 
-    const { userName } = this.state;
-    const suffix = userName ? <Icon type="close-circle" onClick={this.emitEmpty} /> : null;
+    const menu = (
+      <Menu>
+        <Menu.Item key="1">1st menu item</Menu.Item>
+        <Menu.Item key="2">2nd menu item</Menu.Item>
+        <Menu.Item key="3">3d menu item</Menu.Item>
+      </Menu>
+    );
 
     return (
       <Layout>
@@ -165,7 +170,19 @@ class PageFrame extends React.Component {
                   </InputGroup>
                 </div>
                 <div className="operate">&emsp;&emsp;新增设备&emsp;&ensp;导出Excel</div>
-                <div className="pagination"></div>
+                <div className="pagination">
+                  <Pagination
+                    total={85}
+                    showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
+                    pageSize={20}
+                    defaultCurrent={1}
+                  />
+                  <Dropdown overlay={menu}>
+                    <Button type="primary" style={{ marginLeft: 8 }}>
+                      Button <Icon type="down" />
+                    </Button>
+                  </Dropdown>
+                </div>
               </Content>
             </Layout>
           </Header>

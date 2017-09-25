@@ -1,3 +1,38 @@
 .pageContainer {
-  padding: 16px;
+  padding: 0 10px 0 16px;
+}
+
+.pageContainer :global(.fillter) {
+  padding: 16px 0;
+}
+
+.pageContainer :global(.fillter .fillter-title) {
+  padding: 0 0 10px 0;
+  font-size: 14px;
+  font-weight: bold;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.pageContainer :global(.ant-table) {
+  font-size: 14px;
+}
+
+.pageContainer :global(.ant-table .ant-table-thead > tr > th) {
+  border-bottom: 2px solid #e1e6f0;
+  background-color: transparent;
+  padding-left: 0;
+}
+
+.pageContainer :global(.ant-table .ant-table-tbody > tr > td) {
+  padding-left: 0;
+}
+
+.pageContainer :global(.fullPagination) {
+  padding: 16px 0;
+  text-align: center;
+}
+
+.pageContainer :global(.fullPagination .ant-pagination) {
+  display: inline-block;
+  vertical-align: top;
 }

@@ -48,15 +48,30 @@ class IndexPage extends React.Component {
     for (let i = 0; i < 100; i++) {
       data.push({
         key: i,
-        name: `Edrward ${i}`,
-        age: 32,
-        address: `London Park no. ${i}`,
+        name: 'ZMY002',
+        age: '猫猫奶茶',
+        address: `自主申请 ${i}`,
       });
     }
 
     return (
       <div className={styles.pageContainer}>
+        <div className="fillter">
+          <div className="fillter-title">筛选项</div>
+          <div>
+            <span>申请时间：</span>
+            <RangePicker
+              showTime={{ format: 'HH:mm' }}
+              format="YYYY-MM-DD HH:mm"
+              placeholder={['Start Time', 'End Time']}
+              onChange={onChange}
+            />
+          </div>
+        </div>
         <Table columns={this.props.pagedata.columns} dataSource={data} size="middle" pagination={false} />
+        <div className="fullPagination">
+          <Pagination showSizeChanger showQuickJumper defaultCurrent={3} total={500} showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`} />
+        </div>
       </div>
     );
   }
