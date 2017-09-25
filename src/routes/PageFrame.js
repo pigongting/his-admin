@@ -5,7 +5,7 @@ import { connect } from 'dva';
 import cs from 'classnames';
 
 // antd 组件
-import { Layout, Menu, Icon, Button, Input, Select } from 'antd';
+import { Layout, Menu, Icon, Button, Input, Select, Pagination } from 'antd';
 
 // 滚动条
 import * as Ps from 'perfect-scrollbar';
@@ -165,6 +165,7 @@ class PageFrame extends React.Component {
                   </InputGroup>
                 </div>
                 <div className="operate">&emsp;&emsp;新增设备&emsp;&ensp;导出Excel</div>
+                <div className="pagination"></div>
               </Content>
             </Layout>
           </Header>
@@ -179,7 +180,7 @@ class PageFrame extends React.Component {
                   </div>
                 </Sider>
               : null}
-              <Content id="PS-content" style={{ position: 'relative', height: this.state.contentHeight }}>{this.props.children}</Content>
+              <Content id="PS-content" style={{ position: 'relative', overflow: 'auto', height: this.state.contentHeight }}>{this.props.children}</Content>
             </Layout>
           </Content>
         </Layout>

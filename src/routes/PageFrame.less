@@ -13,35 +13,24 @@
     height: 100%;
   }
 
-  ::-webkit-scrollbar-track {
-    background: transparent;
-    width: 8px;
-    height: 8px;
+  ::-webkit-scrollbar{
+    width: 17px;
+  }
+  
+  ::-webkit-scrollbar-thumb{
+    background-clip:padding-box;
+    background-color:rgba(0,0,0,.3);
+    border:5px solid transparent;
+    -webkit-border-radius:10px;
+    border-radius:10px;
   }
 
-  ::-webkit-scrollbar-track-piece {
-    background: transparent;
-    width: 8px;
-    height: 8px;
+  ::-webkit-scrollbar-track{
+    background-clip:padding-box;
+    border:solid transparent;
+    border-width:0 0 0 4px;
   }
 
-  ::-webkit-scrollbar-thumb {
-    border-width: 1px;
-    border-style: solid;
-    border-color: transparent;
-    -webkit-border-radius: 0px;
-    border-radius: 0px;
-    background: #c8c9ca;
-  }
-
-  ::-webkit-scrollbar-button {
-    display: none;
-  }
-
-  ::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-  }
 }
 
 :global {
@@ -373,7 +362,7 @@
   line-height: 44px;
   margin: 10px 0 0 0;
   background: #f5f5f5;
-  border-radius: 4px;
+  border-radius: 2px;
   padding: 0 7px;
 }
 
@@ -412,6 +401,13 @@
   float: left;
   color: @primary-color;
   font-size: 15px;
+}
+
+.mainHeader :global(.pagination) {
+  float: right;
+  width: 400px;
+  height: 60px;
+  background: url(../assets/pagination.png) 100% 50% no-repeat;
 }
 
 .mainHeader :global(.icon) {

@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Link } from 'dva/router';
 
 // antd 组件
-import { DatePicker, Table } from 'antd';
+import { DatePicker, Table, Pagination } from 'antd';
 
 // 内容国际化支持
 import { FormattedMessage, FormattedNumber } from 'react-intl';
@@ -55,8 +55,8 @@ class IndexPage extends React.Component {
     }
 
     return (
-      <div style={{ height: '100%' }}>
-        <Table columns={this.props.pagedata.columns} dataSource={data} scroll={{ x: 2000, y: (this.client.height - 64 - 50 - 60) }} pagination={{ pageSize: 20 }} />
+      <div className={styles.pageContainer}>
+        <Table columns={this.props.pagedata.columns} dataSource={data} size="middle" pagination={false} />
       </div>
     );
   }
