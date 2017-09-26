@@ -43,6 +43,41 @@ function Routes(locale, app) {
             }
           },
         },
+        {
+          path: `/${locale}/device`,
+          component: Content,
+          getIndexRoute(nextState, cb) {
+            if (process.env.NODE_ENV === 'development') {
+              import(/* webpackChunkName: "Device/List" */ './routes/Device/List')
+              .then((data) => {
+                registerModel(app, require('./models/device/list'));
+                cb(null, { component: data });
+              })
+              .catch(err => console.log('Failed to load Device/List', err));
+            } else {
+              registerModel(app, require('./models/device/list'));
+              cb(null, { component: require('./routes/Device/List') });
+            }
+          },
+          childRoutes: [
+            {
+              path: 'detail',
+              getComponent(nextState, cb) {
+                if (process.env.NODE_ENV === 'development') {
+                  import(/* webpackChunkName: "Device/Detail" */ './routes/Device/Detail')
+                  .then((data) => {
+                    registerModel(app, require('./models/device/detail'));
+                    cb(null, data);
+                  })
+                  .catch(err => console.log('Failed to load Device/Detail', err));
+                } else {
+                  registerModel(app, require('./models/device/detail'));
+                  cb(null, require('./routes/Device/Detail'));
+                }
+              },
+            },
+          ],
+        },
       ],
     },
     {

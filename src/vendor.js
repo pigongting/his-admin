@@ -17,6 +17,7 @@ import DatePicker from 'antd/lib/date-picker';
 import Table from 'antd/lib/table';
 import Pagination from 'antd/lib/pagination';
 
+/*
 import 'antd/lib/layout/style/css';
 import 'antd/lib/menu/style/css';
 import 'antd/lib/icon/style/css';
@@ -27,3 +28,4 @@ import 'antd/lib/select/style/css';
 import 'antd/lib/date-picker/style/css';
 import 'antd/lib/table/style/css';
 import 'antd/lib/pagination/style/css';
+*/

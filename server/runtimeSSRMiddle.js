@@ -18,6 +18,8 @@ function runtimeSSRMiddleWarp(req, res, next) {
   const pruepath = getpruepath(req._parsedUrl.pathname);
   const localename = getlocalname(pruepath);
 
+  console.log(routes(localename));
+
   ssr.runtimeSSRMiddle({
     routes: routes(localename),
     createApp,

@@ -18,6 +18,7 @@ import styles from './PageFrame.less';
 // antd 组件扩展
 const { Header, Footer, Sider, Content } = Layout;
 const SubMenu = Menu.SubMenu;
+const ItemGroup = Menu.ItemGroup;
 const InputGroup = Input.Group;
 const Option = Select.Option;
 
@@ -29,7 +30,7 @@ class PageFrame extends React.Component {
     // console.log(this);
 
     // 获取窗口尺寸
-    const client = document.documentElement.getBoundingClientRect();
+    const client = (typeof window !== 'undefined') ? document.documentElement.getBoundingClientRect() : 10000;
 
     this.state = {
       mainMenuHeight: client.height - 142,
@@ -38,42 +39,46 @@ class PageFrame extends React.Component {
   }
 
   componentDidMount() {
-    const menu = document.querySelector('#PS-menu');
-    const submenu = document.querySelector('#PS-submenu');
+    if (typeof window !== 'undefined') {
+      const menu = document.querySelector('#PS-menu');
+      const submenu = document.querySelector('#PS-submenu');
 
-    Ps.initialize(menu, {
-      wheelSpeed: 2,
-      wheelPropagation: true,
-      minScrollbarLength: 20,
-    });
-
-    if (submenu) {
-      Ps.initialize(submenu, {
+      Ps.initialize(menu, {
         wheelSpeed: 2,
         wheelPropagation: true,
         minScrollbarLength: 20,
       });
+
+      if (submenu) {
+        Ps.initialize(submenu, {
+          wheelSpeed: 2,
+          wheelPropagation: true,
+          minScrollbarLength: 20,
+        });
+      }
     }
   }
 
   componentDidUpdate() {
-    const menu = document.querySelector('#PS-menu');
-    const submenu = document.querySelector('#PS-submenu');
+    if (typeof window !== 'undefined') {
+      const menu = document.querySelector('#PS-menu');
+      const submenu = document.querySelector('#PS-submenu');
 
-    Ps.update(menu);
+      Ps.update(menu);
 
-    if (submenu) {
-      try {
-        Ps.update(submenu);
-      } catch (e) {
-        if (submenu) {
-          Ps.initialize(submenu, {
-            wheelSpeed: 2,
-            wheelPropagation: true,
-            minScrollbarLength: 20,
-          });
-        } else {
-          Ps.destroy(submenu);
+      if (submenu) {
+        try {
+          Ps.update(submenu);
+        } catch (e) {
+          if (submenu) {
+            Ps.initialize(submenu, {
+              wheelSpeed: 2,
+              wheelPropagation: true,
+              minScrollbarLength: 20,
+            });
+          } else {
+            Ps.destroy(submenu);
+          }
         }
       }
     }
@@ -126,14 +131,6 @@ class PageFrame extends React.Component {
       });
     }
 
-    const menu = (
-      <Menu>
-        <Menu.Item key="1">1st menu item</Menu.Item>
-        <Menu.Item key="2">2nd menu item</Menu.Item>
-        <Menu.Item key="3">3d menu item</Menu.Item>
-      </Menu>
-    );
-
     return (
       <Layout>
         <Sider className={cs(styles.mainSider, this.props.pagedate.collapsed ? 'fold' : 'unfold')}>
@@ -152,38 +149,6 @@ class PageFrame extends React.Component {
                 <div className="icon" onClick={this.props.toggleSubCollapsed} />
                 <div className="title">{this.props.pagedate.pageTitle}</div>
               </Sider>
-              <Content>
-                <div className="search">
-                  <InputGroup compact>
-                    <Select defaultValue="Zhejiang">
-                      <Option value="Zhejiang">设备号</Option>
-                      <Option value="Jiangsu">维护人员</Option>
-                    </Select>
-                    <Input
-                      style={{ width: '240px' }}
-                      placeholder="搜索设备..."
-                      onPressEnter={(e) => {
-                        console.log(e.target.value);
-                        return 1;
-                      }}
-                    />
-                  </InputGroup>
-                </div>
-                <div className="operate">&emsp;&emsp;新增设备&emsp;&ensp;导出Excel</div>
-                <div className="pagination">
-                  <Pagination
-                    total={85}
-                    showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
-                    pageSize={20}
-                    defaultCurrent={1}
-                  />
-                  <Dropdown overlay={menu}>
-                    <Button type="primary" style={{ marginLeft: 8 }}>
-                      Button <Icon type="down" />
-                    </Button>
-                  </Dropdown>
-                </div>
-              </Content>
             </Layout>
           </Header>
           <Content>

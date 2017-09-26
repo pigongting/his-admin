@@ -11,17 +11,17 @@ class Content extends React.Component {
     super(props);
     // console.log(this);
 
-    if (typeof window !== 'undefined') {
-      const href = window.location.href;
+    // if (typeof window !== 'undefined') {
+    //   const href = window.location.href;
 
-      if (lastHref !== href) {
-        NProgress.start();
-        if (!this.props.loading.global) {
-          NProgress.done();
-          lastHref = href;
-        }
-      }
-    }
+    //   if (lastHref !== href) {
+    //     NProgress.start();
+    //     if (!this.props.loading.global) {
+    //       NProgress.done();
+    //       lastHref = href;
+    //     }
+    //   }
+    // }
   }
 
   render() {

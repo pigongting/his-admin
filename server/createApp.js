@@ -54,7 +54,7 @@ function createApp({ history, initialState }, id) {
 
   app.model(require('../src/models/pageframe'));
 
-  app.model(require(`../src/models/${modelname}`));
+  app.model(require(`../src/models${modelname}`));
 
   app.use(Loading({
     namespace: 'loading',

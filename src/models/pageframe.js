@@ -1,6 +1,6 @@
 import update from 'immutability-helper';
 // 处理 国际化地址 的函数
-import { removelocal } from '../utils/localpath';
+import { removelocal, removelocalkeepmain } from '../utils/localpath';
 
 const initstate = {
   collapsed: false,
@@ -27,7 +27,7 @@ const initstate = {
         {
           parentid: 11,
           id: 111,
-          href: '/users/product',
+          href: '/device',
           icon: '../assets/img/mainmenu/home.png',
           name: '设备列表',
         },
@@ -50,9 +50,36 @@ const initstate = {
       ],
     },
     {
-      href: '/users/product',
+      parentid: 0,
+      id: 3,
+      href: '/device',
       icon: '../assets/img/mainmenu/machine.png',
       name: '设备',
+      submenu: [
+        {
+          parentid: 11,
+          id: 111,
+          href: '/device/detail',
+          icon: '../assets/img/mainmenu/home.png',
+          name: '新增设备',
+        },
+        {
+          parentid: 1,
+          id: 12,
+          href: '/users/product',
+          icon: '../assets/img/mainmenu/home.png',
+          name: '设备列表',
+          submenu: [
+            {
+              parentid: 12,
+              id: 121,
+              href: '/users/product',
+              icon: '../assets/img/mainmenu/home.png',
+              name: '设备列表',
+            },
+          ],
+        },
+      ],
     },
     {
       href: '/users/product',
@@ -156,7 +183,7 @@ export default {
       dispatch({ type: 'getMainMunu', payload: initstate.menudate });
 
       return history.listen(({ pathname, query }) => {
-        dispatch({ type: 'getSubMunu', payload: removelocal(pathname) });
+        dispatch({ type: 'getSubMunu', payload: removelocalkeepmain(pathname) });
 
         if (removelocal(pathname) === '/index') {
           dispatch({ type: 'toggleCollapsed', payload: false });
