@@ -1,13 +1,16 @@
-// 本文件是对 ant-design:
-// https://github.com/ant-design/ant-design/blob/master/components/style/themes/default.less
-// 相应变量值的覆盖
-// 注意：只需写出要覆盖的变量即可（不需要覆盖的变量不要写）
-// http://www.iconfont.cn/collections/detail?cid=790
 @import '~antd/lib/style/themes/default.less';
+
+// 蓝色
 @blue-6: #3a47d8;
 
-/* 圆角- */
-@border-radius-base     : 2px;
-
-/* 正常按钮-高度- */
+// 按钮
+@btn-border-radius-base : @border-radius-sm;
+@btn-border-radius-sm   : @border-radius-sm;
 @btn-height-base        : 29px;
+
+// 布局
+@layout-body-background      : #ffffff;
+@layout-header-background    : #ffffff;
+@layout-header-height        : 60px;
+@layout-header-padding       : 0;
+@layout-footer-padding       : 0;

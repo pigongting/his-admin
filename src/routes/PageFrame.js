@@ -132,7 +132,7 @@ class PageFrame extends React.Component {
     }
 
     return (
-      <Layout>
+      <Layout className={cs(this.props.pagedate.collapsed ? 'mainmenu-fold' : 'mainmenu-unfold', subMenuComponent ? 'submenu-has' : 'submenu-not')}>
         <Sider className={cs(styles.mainSider, this.props.pagedate.collapsed ? 'fold' : 'unfold')}>
           <div className="logo"><img src="../assets/img/brand/logo.png" alt="logo" width="50" height="50" /></div>
           <div id="PS-menu" style={{ position: 'relative', height: this.state.mainMenuHeight }}>
@@ -142,30 +142,20 @@ class PageFrame extends React.Component {
           </div>
           <div className="collapse" onClick={this.props.toggleCollapsed}><i /><div>收缩</div></div>
         </Sider>
-        <Layout style={{ overflow: 'hidden' }}>
-          <Header className={styles.mainHeader}>
-            <Layout>
-              <Sider className="headerSide">
-                <div className="icon" onClick={this.props.toggleSubCollapsed} />
-                <div className="title">{this.props.pagedate.pageTitle}</div>
-              </Sider>
-            </Layout>
-          </Header>
-          <Content>
-            <Layout>
-              {(subMenuComponent) ?
-                <Sider className={cs(styles.subSider, this.props.pagedate.subcollapsed ? 'fold' : 'unfold')}>
-                  <div id="PS-submenu" style={{ position: 'relative', height: this.state.contentHeight }}>
-                    <Menu defaultSelectedKeys={['0']} defaultOpenKeys={['0']} mode="inline">
-                      {subMenuComponent}
-                    </Menu>
-                  </div>
-                </Sider>
-              : null}
-              <Content id="PS-content" style={{ position: 'relative', overflow: 'auto', height: this.state.contentHeight }}>{this.props.children}</Content>
-            </Layout>
-          </Content>
-        </Layout>
+        {(subMenuComponent) ?
+          <Sider className={cs(styles.subSider, this.props.pagedate.subcollapsed ? 'fold' : 'unfold')}>
+            <div className="headerSide">
+              <div className="icon" onClick={this.props.toggleSubCollapsed} />
+              <div className="title">{this.props.pagedate.pageTitle}</div>
+            </div>
+            <div id="PS-submenu" style={{ position: 'relative', height: this.state.contentHeight }}>
+              <Menu defaultSelectedKeys={['0']} defaultOpenKeys={['0']} mode="inline">
+                {subMenuComponent}
+              </Menu>
+            </div>
+          </Sider>
+        : null}
+        {this.props.children}
       </Layout>
     );
   }

@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Link } from 'dva/router';
 
 // antd 组件
-import { Button, DatePicker, Dropdown, Table, Pagination, Input, Select, Menu, Icon } from 'antd';
+import { Layout, Button, DatePicker, Dropdown, Table, Pagination, Input, Select, Menu, Icon } from 'antd';
 
 // 内容国际化支持
 import { FormattedMessage, FormattedNumber } from 'react-intl';
@@ -15,6 +15,8 @@ import { retry } from '../utils/requesterror';
 // 本页样式
 import styles from './IndexPage.css';
 
+// antd 组件扩展
+const { Header, Footer, Sider, Content } = Layout;
 const { MonthPicker, RangePicker } = DatePicker;
 const InputGroup = Input.Group;
 const ItemGroup = Menu.ItemGroup;
@@ -35,8 +37,6 @@ class IndexPage extends React.Component {
     //   })
     //   .catch(err => console.log('Failed to load moment', err));
     // }
-
-    this.client = (typeof window !== 'undefined') ? document.documentElement.getBoundingClientRect() : 10000;
   }
 
   render() {
@@ -69,8 +69,8 @@ class IndexPage extends React.Component {
     );
 
     return (
-      <div className={styles.pageContainer}>
-        <div className={styles.tableSpecHeader}>
+      <Layout>
+        <Header className={styles.tableSpecHeader}>
           <div className="search">
             <InputGroup compact>
               <Select defaultValue="Zhejiang">
@@ -102,28 +102,30 @@ class IndexPage extends React.Component {
               </Button>
             </Dropdown>
           </div>
-        </div>
-        <div className="fillter">
-          <div className="fillter-title">筛选项</div>
-          <div className="fillter-operate">
-            <Button type="primary">开始筛选</Button>&emsp;
-            <Button>清空</Button>
+        </Header>
+        <Content className={styles.scrollContainer}>
+          <div className="fillter">
+            <div className="fillter-title">筛选项</div>
+            <div className="fillter-operate">
+              <Button type="primary">开始筛选</Button>&emsp;
+              <Button>清空</Button>
+            </div>
+            <div>
+              <span>申请时间：</span>
+              <RangePicker
+                showTime={{ format: 'HH:mm' }}
+                format="YYYY-MM-DD HH:mm"
+                placeholder={['Start Time', 'End Time']}
+                onChange={onChange}
+              />
+            </div>
           </div>
-          <div>
-            <span>申请时间：</span>
-            <RangePicker
-              showTime={{ format: 'HH:mm' }}
-              format="YYYY-MM-DD HH:mm"
-              placeholder={['Start Time', 'End Time']}
-              onChange={onChange}
-            />
+          <Table columns={this.props.pagedata.columns} dataSource={data} size="middle" pagination={false} />
+          <div className="fullPagination">
+            <Pagination showSizeChanger showQuickJumper defaultCurrent={3} total={500} showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`} />
           </div>
-        </div>
-        <Table columns={this.props.pagedata.columns} dataSource={data} size="middle" pagination={false} />
-        <div className="fullPagination">
-          <Pagination showSizeChanger showQuickJumper defaultCurrent={3} total={500} showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`} />
-        </div>
-      </div>
+        </Content>
+      </Layout>
     );
   }
 }
@@ -139,7 +141,7 @@ function mapDispatchToProps(dispatch, ownProps) {
 
 function mapStateToProps(state, ownProps) {
   // console.log('state>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
-  // console.log(state);
+  console.log(state);
   return {
     loading: state.loading.effects['index/fetch'],
     pagedata: state.index,

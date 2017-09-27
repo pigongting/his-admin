@@ -32,8 +32,6 @@ class IndexPage extends React.Component {
     //   })
     //   .catch(err => console.log('Failed to load moment', err));
     // }
-
-    this.client = document.documentElement.getBoundingClientRect();
   }
 
   render() {

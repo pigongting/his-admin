@@ -5,6 +5,17 @@
     overflow: hidden;
   }
 
+  body:after {
+    content: '';
+    display: block;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 60px;
+    height: 1px;
+    background: #e6e9f0;
+  }
+
   #root{
     height: 100%;
   }
@@ -142,6 +153,8 @@
 
 /* 主侧栏 */
 .mainSider {
+  position: relative;
+  z-index: 1;
   flex: 0 0 160px !important;
   max-width: 160px !important;
   min-width: 160px !important;
@@ -286,8 +299,8 @@
   padding-left: 64px;
   font-size: 14px !important;
   font-weight: bold;
-  -webkit-transition: .2s linear;
-  transition: .2s linear;
+  -webkit-transition: .1s linear;
+  transition: .1s linear;
 }
 
 .mainSider:global(.fold .ant-menu .ant-menu-item a) {
@@ -308,7 +321,7 @@
   display: block;
   position: absolute;
   right: 0;
-  top: 0;
+  top: 60px;
   bottom: 0;
   width: 1px;
   background: #e6e9f0;
@@ -345,6 +358,39 @@
   overflow: hidden;
 }
 
+.subSider :global(.headerSide) {
+  background: #fff;
+}
+
+.subSider :global(.headerSide:after) {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+.subSider :global(.icon) {
+  float: left;
+  width: 64px;
+  height: 64px;
+  background: url(../assets/subCollapseIcon.png) 50% 50% no-repeat;
+  cursor: pointer;
+  opacity: 0.4;
+  -webkit-transition: .2s linear;
+  transition: .2s linear;
+}
+
+.subSider :global(.icon:hover) {
+  opacity: 0.6;
+}
+
+.subSider :global(.title) {
+  float: left;
+  font-size: 18px;
+  line-height: 64px;
+  font-weight: bold;
+  color: @primary-color;
+}
+
 /* 头部 */
 .mainHeader {
   position: relative;
@@ -363,9 +409,6 @@
   background: #e6e9f0;
 }
 
-.mainHeader :global(.headerSide) {
-  background: #fff;
-}
 
 .mainHeader :global(.ant-layout-content) {
   position: relative;
@@ -377,28 +420,7 @@
   clear: both;
 }
 
-.mainHeader :global(.icon) {
-  float: left;
-  width: 64px;
-  height: 64px;
-  background: url(../assets/subCollapseIcon.png) 50% 50% no-repeat;
-  cursor: pointer;
-  opacity: 0.4;
-  -webkit-transition: .2s linear;
-  transition: .2s linear;
-}
 
-.mainHeader :global(.icon:hover) {
-  opacity: 0.6;
-}
-
-.mainHeader :global(.title) {
-  float: left;
-  font-size: 18px;
-  line-height: 64px;
-  font-weight: bold;
-  color: @primary-color;
-}
 
 
 

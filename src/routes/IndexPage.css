@@ -1,7 +1,3 @@
-.pageContainer {
-  padding: 0 10px 0 16px;
-}
-
 .pageContainer :global(.fillter) {
   padding: 16px 0;
   position: relative;
@@ -44,13 +40,31 @@
   vertical-align: top;
 }
 
+/* 头部 
 .tableSpecHeader {
-  position: absolute;
-  left: 0;
+  position: fixed;
   right: 0;
-  top: -64px;
+  top: 0;
+  -webkit-transition: .2s linear;
+  transition: .2s linear;
 }
 
+:global(.submenu-has.mainmenu-fold) .tableSpecHeader {
+  left: 280px;
+}
+
+:global(.submenu-has.mainmenu-unfold) .tableSpecHeader {
+  left: 360px;
+}
+
+:global(.submenu-not.mainmenu-fold) .tableSpecHeader {
+  left: 96px;
+}
+
+:global(.submenu-not.mainmenu-unfold) .tableSpecHeader {
+  left: 176px;
+}
+*/
 .tableSpecHeader:after {
   content: '';
   display: block;
@@ -192,5 +206,9 @@
   margin-top: 5px;
 }
 
-
+/* 滚动容器 */
+.scrollContainer {
+  overflow-y: auto;
+  padding: 0 10px 0 16px;
+}
 
