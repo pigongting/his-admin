@@ -1,21 +1,24 @@
-.pageContainer :global(.fillter) {
+/* 筛选项 */
+.scrollContainer :global(.fillter) {
   padding: 16px 0;
   position: relative;
 }
 
-.pageContainer :global(.fillter .fillter-title) {
+.scrollContainer :global(.fillter .fillter-title) {
   padding: 0 0 10px 0;
   font-size: 14px;
   font-weight: bold;
   color: rgba(0, 0, 0, 0.85);
 }
 
-.pageContainer :global(.fillter .fillter-operate) {
+.scrollContainer :global(.fillter .fillter-operate) {
   position: absolute;
   right: 0;
   bottom: 16px;
 }
 
+
+/* 表格 */
 .pageContainer :global(.ant-table) {
   font-size: 14px;
 }

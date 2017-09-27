@@ -3,6 +3,7 @@ import { findDOMNode } from 'react-dom';
 import { Link } from 'dva/router';
 import { connect } from 'dva';
 import cs from 'classnames';
+import update from 'immutability-helper';
 
 // antd 组件
 import { Layout, Menu, Icon, Dropdown, Button, Input, Select, Pagination } from 'antd';
@@ -35,6 +36,7 @@ class PageFrame extends React.Component {
     this.state = {
       mainMenuHeight: client.height - 142,
       contentHeight: client.height - 64,
+      collapsed: false,
     };
   }
 
@@ -84,6 +86,16 @@ class PageFrame extends React.Component {
     }
   }
 
+  onCollapse = (collapsed) => {
+    console.log(collapsed);
+
+    this.setState(update(this.state, {
+      collapsed: {
+        $set: collapsed,
+      },
+    }));
+  }
+
   render() {
     // console.log(this);
     // if (typeof window !== 'undefined') {
@@ -131,19 +143,20 @@ class PageFrame extends React.Component {
       });
     }
 
+    /* <div className="collapse" onClick={this.props.toggleCollapsed}><i /><div>收缩</div></div> */
+
     return (
-      <Layout className={cs(this.props.pagedate.collapsed ? 'mainmenu-fold' : 'mainmenu-unfold', subMenuComponent ? 'submenu-has' : 'submenu-not')}>
-        <Sider className={cs(styles.mainSider, this.props.pagedate.collapsed ? 'fold' : 'unfold')}>
+      <Layout style={{ height: '100%' }}>
+        <Sider className={styles.mainSider} width={160} collapsedWidth={80} collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse}>
           <div className="logo"><img src="../assets/img/brand/logo.png" alt="logo" width="50" height="50" /></div>
           <div id="PS-menu" style={{ position: 'relative', height: this.state.mainMenuHeight }}>
-            <Menu defaultSelectedKeys={['0']} defaultOpenKeys={['0']} mode="inline" inlineCollapsed={this.props.pagedate.collapsed}>
+            <Menu defaultSelectedKeys={['0']} defaultOpenKeys={['0']} mode="inline">
               {mainMenuComponent}
             </Menu>
           </div>
-          <div className="collapse" onClick={this.props.toggleCollapsed}><i /><div>收缩</div></div>
         </Sider>
         {(subMenuComponent) ?
-          <Sider className={cs(styles.subSider, this.props.pagedate.subcollapsed ? 'fold' : 'unfold')}>
+          <Sider className={styles.subSider}>
             <div className="headerSide">
               <div className="icon" onClick={this.props.toggleSubCollapsed} />
               <div className="title">{this.props.pagedate.pageTitle}</div>
@@ -163,11 +176,6 @@ class PageFrame extends React.Component {
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    toggleCollapsed: () => {
-      dispatch({
-        type: 'pageframe/toggleCollapsed',
-      });
-    },
     toggleSubCollapsed: () => {
       dispatch({
         type: 'pageframe/toggleSubCollapsed',
