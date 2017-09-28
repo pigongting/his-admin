@@ -65,56 +65,33 @@ class IndexPage extends React.Component {
     );
 
     return (
-      <Layout>
+      <Layout className={styles.tablePage}>
         <Header className={styles.tableHeader}>
           <div className="search">
-            <InputGroup compact>
+            <InputGroup>
               <Select defaultValue="Zhejiang">
                 <Option value="Zhejiang">设备号</Option>
                 <Option value="Jiangsu">维护人员</Option>
               </Select>
-              <Input
-                style={{ width: '240px' }}
-                placeholder="搜索设备..."
-                onPressEnter={(e) => {
-                  console.log(e.target.value);
-                  return 1;
-                }}
-              />
+              <Input style={{ width: '240px' }} placeholder="搜索设备..." onPressEnter={(e) => { return 1; }} />
             </InputGroup>
           </div>
           <div className="operate">&emsp;&emsp;新增设备&emsp;&ensp;导出Excel</div>
           <div className="pagination">
-            <Pagination
-              total={85}
-              showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`}
-              pageSize={20}
-              defaultCurrent={1}
-            />
+            <Pagination total={85} pageSize={20} defaultCurrent={1} showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`} />
             <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
-              <Button className="tableSet" style={{ marginLeft: 8 }}>
-                <i className="tableSetIcon" />
-                <Icon type="down" />
-              </Button>
+              <Button className="tableSet" style={{ marginLeft: 8 }}><i className="tableSetIcon" /><Icon type="down" /></Button>
             </Dropdown>
           </div>
         </Header>
         <Content style={{ overflowY: 'auto', padding: '0 10px 0 16px' }}>
           <div className={styles.tableFillter}>
-            <div className="fillter-title">筛选项</div>
-            <div className="fillter-operate">
-              <Button type="primary">开始筛选</Button>&emsp;
-              <Button>清空</Button>
-            </div>
-            <div>
+            <div className="fillterTitle">筛选项</div>
+            <div className="fillterItem">
               <span>申请时间：</span>
-              <RangePicker
-                showTime={{ format: 'HH:mm' }}
-                format="YYYY-MM-DD HH:mm"
-                placeholder={['Start Time', 'End Time']}
-                onChange={onChange}
-              />
+              <RangePicker showTime={{ format: 'HH:mm' }} format="YYYY-MM-DD HH:mm" placeholder={['开始时间', '结束时间']} onChange={onChange} style={{ width: 240 }} />
             </div>
+            <div className="fillterOperate"><Button type="primary">开始筛选</Button>&emsp;<Button>清空</Button></div>
           </div>
           <Table columns={this.props.pagedata.columns} dataSource={data} size="middle" pagination={false} />
           <div className={styles.tablePagination}>

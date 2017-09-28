@@ -20,36 +20,22 @@
     clear: both;
   }
   
+  /* 搜索 */
   :global(.search) {
     float: left;
-    height: 44px;
-    line-height: 44px;
-    margin: 10px 0 0 0;
-    background: #f5f5f5;
+    height: 43px;
+    margin: 8px 0 0 0;
+    padding: 0 9px;
+    line-height: 43px;
     border-radius: 2px;
-    padding: 0 7px 0 9px;
+    background: #f5f5f5;
   }
 
   :global(.ant-select) {
-    font-size: 14px;
-    vertical-align: top;
+    float: left;
     margin-top: 8px;
-  }
-
-  :global(.ant-select-selection__rendered) {
-    line-height: 28px;
-  }
-
-  :global(.ant-input) {
     font-size: 14px;
-    border: none;
     vertical-align: top;
-    margin-top: 7px;
-    background-color: transparent;
-  }
-
-  :global(.ant-input:focus) {
-    box-shadow: none;
   }
 
   :global(.ant-select-selection) {
@@ -61,87 +47,105 @@
     box-shadow: none;
   }
 
+  :global(.ant-input) {
+    font-size: 14px;
+    margin-top: 7px;
+    border: none;
+    vertical-align: top;
+  }
+
+  :global(.ant-input:focus) {
+    box-shadow: none;
+  }
+  
+  /* 操作 */
   :global(.operate) {
     float: left;
     color: @primary-color;
     font-size: 15px;
   }
-
+  
+  /* 分页 */
   :global(.pagination) {
     float: right;
     padding: 0 27px 0 0;
   }
 
-  :global(.pagination .ant-pagination ) {
+  :global(.ant-pagination ) {
     float: left;
   }
 
-  :global(.pagination li) {
+  :global(.ant-pagination li) {
     vertical-align: top;
-    margin-top: 17px;
+    margin-top: 15px;
     height: 29px;
   }
 
-  :global(.pagination .ant-pagination .ant-pagination-item) {
+  :global(.ant-pagination-item) {
     display: none;
   }
-
-  :global(.pagination .ant-pagination .ant-pagination-prev) {
+  
+  /* 分页-上一页 */
+  :global(.ant-pagination-prev) {
     margin-right: -1px;
     border-radius: @border-radius-base 0 0 @border-radius-base; 
     min-width: 36px;
-    background-color: transparent;
     background-image: linear-gradient(to bottom,#f5f5f5,#f1f1f1);
   }
 
-  :global(.pagination .ant-pagination .ant-pagination-prev:hover) {
+  :global(.ant-pagination-prev:hover) {
     position: relative;
     z-index: 1;
   }
 
-  :global(.pagination .ant-pagination .ant-pagination-prev a) {
+  :global(.ant-pagination-prev a) {
     display: block;
     height: 27px;
     background: url(../assets/tablePrev.png) 50% 50% no-repeat;
     opacity: .55;
   }
 
-  :global(.pagination .ant-pagination .ant-pagination-disabled a) {
-    opacity: .333;
-  }
-
-  :global(.pagination .ant-pagination .ant-pagination-prev a:after) {
+  :global(.ant-pagination-prev a:after) {
     content: '';
   }
-
-  :global(.pagination .ant-pagination .ant-pagination-next) {
+  
+  /* 分页-下一页 */
+  :global(.ant-pagination-next) {
     border-radius: 0 @border-radius-base @border-radius-base 0; 
     min-width: 36px;
     background-color: transparent;
     background-image: linear-gradient(to bottom,#f5f5f5,#f1f1f1);
   }
 
-  :global(.pagination .ant-pagination .ant-pagination-next a) {
+  :global(.ant-pagination-next a) {
     display: block;
     height: 27px;
     background: url(../assets/tableNext.png) 50% 50% no-repeat;
     opacity: .55;
   }
 
-  :global(.pagination .ant-pagination .ant-pagination-next a:after) {
+  :global(.ant-pagination-next a:after) {
     content: '';
   }
-
-  :global(.pagination .tableSet) {
+  
+  /* 分页-禁用 */
+  :global(.ant-pagination-disabled a) {
+    opacity: .333;
+  }
+  
+  /* 表格设置 */
+  :global(.tableSet) {
     vertical-align: top;
-    height: 29px;
-    margin-top: 17px;
-    min-width: 54px;
-    background-color: transparent;
+    margin-top: 15px;
     background-image: linear-gradient(to bottom,#f5f5f5,#f1f1f1);
   }
 
-  :global(.pagination .tableSetIcon) {
+  :global(.tableSet .anticon) {
+    vertical-align: top;
+    margin-top: 5px;
+  }
+
+  :global(.tableSet .tableSetIcon) {
     display: inline-block;
     vertical-align: top;
     width: 21px;
@@ -149,28 +153,48 @@
     background: url(../assets/tableSet.png) 50% 50% no-repeat;
     opacity: 0.55;
   }
-
-  :global(.pagination .anticon) {
-    vertical-align: top;
-    margin-top: 5px;
-  }
 }
 
 /* 表格页-筛选项 */
 .tableFillter {
-  padding: 16px 0;
   position: relative;
+  line-height: 45px;
+  padding: 8px 0 16px 0;
 
-  :global(.fillter-title) {
-    padding: 0 0 10px 0;
+  :global(.fillterTitle) {
     font-size: 14px;
     font-weight: bold;
     color: rgba(0, 0, 0, 0.85);
   }
 
-  :global(.fillter-operate) {
+  :global(.fillterOperate) {
     position: absolute;
     right: 0;
     bottom: 16px;
   }
+}
+
+/* 表格页-表格 */
+.tablePage {
+  :global(.ant-table) {
+    font-size: @font-size-lg;
+  }
+
+  :global(.ant-table-thead > tr > th) {
+    border-bottom: 2px solid #e6e9f0;
+  }
+
+  :global(.ant-table-thead > tr > th:nth-child(1)) {
+    padding-left: 0;
+  }
+
+  :global(.ant-table-tbody > tr > td:nth-child(1)) {
+    padding-left: 0;
+  }
+}
+
+/* 表格页-主分页 */
+.tablePagination {
+  padding: 16px 0;
+  text-align: center;
 }
