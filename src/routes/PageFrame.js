@@ -23,77 +23,40 @@ const ItemGroup = Menu.ItemGroup;
 const InputGroup = Input.Group;
 const Option = Select.Option;
 
+// 页内变量
 let lastHref;
+let resizeTime = null;
 
 class PageFrame extends React.Component {
   constructor(props) {
     super(props);
     // console.log(this);
-
-    // 获取窗口尺寸
-    const client = (typeof window !== 'undefined') ? document.documentElement.getBoundingClientRect() : 10000;
-
-    this.state = {
-      mainMenuHeight: client.height - 142,
-      contentHeight: client.height - 64,
-      collapsed: false,
-    };
   }
 
   componentDidMount() {
     if (typeof window !== 'undefined') {
-      const menu = document.querySelector('#PS-menu');
-      const submenu = document.querySelector('#PS-submenu');
+      const mainmenu = document.querySelector('#PS-mainmenu');
 
-      Ps.initialize(menu, {
-        wheelSpeed: 2,
-        wheelPropagation: true,
-        minScrollbarLength: 20,
-      });
+      // 初始化完美滚动条（使用的原因是不想背景截断）
+      Ps.initialize(mainmenu, { wheelSpeed: 0.2 });
 
-      if (submenu) {
-        Ps.initialize(submenu, {
-          wheelSpeed: 2,
-          wheelPropagation: true,
-          minScrollbarLength: 20,
-        });
-      }
+      // 监听窗口变化，更新完美滚动条
+      window.onresize = () => {
+        clearTimeout(resizeTime);
+        resizeTime = setTimeout(() => {
+          clearTimeout(resizeTime);
+          Ps.update(mainmenu);
+          resizeTime = null;
+        }, 300);
+      };
     }
   }
 
   componentDidUpdate() {
+    // 更新完美滚动条
     if (typeof window !== 'undefined') {
-      const menu = document.querySelector('#PS-menu');
-      const submenu = document.querySelector('#PS-submenu');
-
-      Ps.update(menu);
-
-      if (submenu) {
-        try {
-          Ps.update(submenu);
-        } catch (e) {
-          if (submenu) {
-            Ps.initialize(submenu, {
-              wheelSpeed: 2,
-              wheelPropagation: true,
-              minScrollbarLength: 20,
-            });
-          } else {
-            Ps.destroy(submenu);
-          }
-        }
-      }
+      Ps.update(document.querySelector('#PS-mainmenu'));
     }
-  }
-
-  onCollapse = (collapsed) => {
-    console.log(collapsed);
-
-    this.setState(update(this.state, {
-      collapsed: {
-        $set: collapsed,
-      },
-    }));
   }
 
   render() {
@@ -110,62 +73,60 @@ class PageFrame extends React.Component {
     //   }
     // }
 
-    const mainMenuComponent = this.props.pagedate.mainmenu.map((item, key) => {
-      return (
-        <Menu.Item key={key}>
-          <i style={{ backgroundImage: `url(${item.icon})` }} />
-          <Link to={`/${this.props.locale}${item.href}`} className={cs(item.submenu ? 'hasSubMenu' : 'notSubMenu')}>{item.name}</Link>
-        </Menu.Item>
-      );
-    });
-
-    let subMenuComponent = null;
-
-    if (this.props.pagedate.submenu) {
-      subMenuComponent = this.props.pagedate.submenu.map((item, key) => {
-        let menulist = null;
-
-        if (item.submenu) {
-          menulist = (
-            <SubMenu key={key} title={<span><span>{item.name}</span></span>}>
-              {item.submenu.map((subitem, subkey) => <Menu.Item key={(key * subkey) + 1}><Link to={`/${this.props.locale}${item.href}`}>{subitem.name}</Link></Menu.Item>)}
-            </SubMenu>
-          );
-        } else {
-          menulist = (
-            <Menu.Item key={key}>
-              <Link to={`/${this.props.locale}${item.href}`}>{item.name}</Link>
-            </Menu.Item>
-          );
-        }
-
-        return menulist;
-      });
-    }
-
-    /* <div className="collapse" onClick={this.props.toggleCollapsed}><i /><div>收缩</div></div> */
-
     return (
-      <Layout style={{ height: '100%' }}>
-        <Sider className={styles.mainSider} width={160} collapsedWidth={80} collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse}>
-          <div className="logo"><img src="../assets/img/brand/logo.png" alt="logo" width="50" height="50" /></div>
-          <div id="PS-menu" style={{ position: 'relative', height: this.state.mainMenuHeight }}>
-            <Menu defaultSelectedKeys={['0']} defaultOpenKeys={['0']} mode="inline">
-              {mainMenuComponent}
-            </Menu>
-          </div>
-        </Sider>
-        {(subMenuComponent) ?
-          <Sider className={styles.subSider}>
-            <div className="headerSide">
-              <div className="icon" onClick={this.props.toggleSubCollapsed} />
-              <div className="title">{this.props.pagedate.pageTitle}</div>
-            </div>
-            <div id="PS-submenu" style={{ position: 'relative', height: this.state.contentHeight }}>
+      <Layout style={{ height: '100%' }} className={cs(this.props.pagedata.mainSiderCollapsed ? 'mainSiderFold' : 'mainSiderOpen', this.props.pagedata.subSiderCollapsed ? 'subSiderFold' : 'subSiderOpen', this.props.pagedata.submenu ? 'subSiderHave' : 'subSiderNone')}>
+        <Sider className={styles.mainSider} width={160} collapsedWidth={80} collapsible collapsed={this.props.pagedata.mainSiderCollapsed} onCollapse={this.props.toggleMainSiderCollapsed}>
+          <Layout style={{ height: '100%' }}>
+            <Header><img className="logo" src="../assets/img/brand/logo.png" alt="logo" width="50" height="50" /></Header>
+            <Content id="PS-mainmenu" style={{ position: 'relative', height: '100%' }}>
               <Menu defaultSelectedKeys={['0']} defaultOpenKeys={['0']} mode="inline">
-                {subMenuComponent}
+                {this.props.pagedata.mainmenu.map((item, key) => {
+                  return (
+                    <Menu.Item key={key}>
+                      <Link to={`/${this.props.locale}${item.href}`} className={cs(item.submenu ? 'hasSubMenu' : 'notSubMenu')}>
+                        <i className="anticon" style={{ backgroundImage: `url(${item.icon})` }} />
+                        <span>{item.name}</span>
+                      </Link>
+                    </Menu.Item>
+                  );
+                })}
               </Menu>
-            </div>
+            </Content>
+            <Footer />
+          </Layout>
+        </Sider>
+        {(this.props.pagedata.submenu) ?
+          <Sider className={styles.subSider} collapsedWidth={0} collapsible collapsed={this.props.pagedata.subSiderCollapsed} onCollapse={this.props.toggleSubSiderCollapsed}>
+            <Layout style={{ height: '100%' }}>
+              <Header><div className="mainMenuTitle">{this.props.pagedata.pageTitle}</div></Header>
+              <Content style={{ height: '100%', overflowY: 'auto' }}>
+                <Menu defaultSelectedKeys={['0']} defaultOpenKeys={['0']} mode="inline">
+                  {this.props.pagedata.submenu.map((item, key) => {
+                    if (item.submenu) {
+                      return (
+                        <SubMenu key={key} title={<span>{item.name}</span>}>
+                          {item.submenu.map((subitem, subkey) => <Menu.Item key={(key * subkey) + 1}>
+                            <Link to={`/${this.props.locale}${item.href}`}>
+                              <i className="anticon" />
+                              <span>{subitem.name}</span>
+                            </Link>
+                          </Menu.Item>)}
+                        </SubMenu>
+                      );
+                    } else {
+                      return (
+                        <Menu.Item key={key}>
+                          <Link to={`/${this.props.locale}${item.href}`}>
+                            <i className="anticon" />
+                            <span>{item.name}</span>
+                          </Link>
+                        </Menu.Item>
+                      );
+                    }
+                  })}
+                </Menu>
+              </Content>
+            </Layout>
           </Sider>
         : null}
         {this.props.children}
@@ -176,9 +137,17 @@ class PageFrame extends React.Component {
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    toggleSubCollapsed: () => {
+    toggleMainSiderCollapsed: (collapsed) => {
       dispatch({
-        type: 'pageframe/toggleSubCollapsed',
+        type: 'pageframe/toggleMainSiderCollapsed',
+        payload: collapsed,
+      });
+    },
+    toggleSubSiderCollapsed: (collapsed) => {
+      console.log(collapsed);
+      dispatch({
+        type: 'pageframe/toggleSubSiderCollapsed',
+        payload: collapsed,
       });
     },
   };
@@ -187,8 +156,8 @@ function mapDispatchToProps(dispatch, ownProps) {
 function mapStateToProps(state, ownProps) {
   // console.log(state);
   return {
+    pagedata: state.pageframe,
     loading: state.loading,
-    pagedate: state.pageframe,
     locale: state.ssr.locale,
   };
 }

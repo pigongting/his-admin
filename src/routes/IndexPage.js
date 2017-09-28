@@ -5,15 +5,11 @@ import { Link } from 'dva/router';
 // antd 组件
 import { Layout, Button, DatePicker, Dropdown, Table, Pagination, Input, Select, Menu, Icon } from 'antd';
 
-// 内容国际化支持
-import { FormattedMessage, FormattedNumber } from 'react-intl';
-import pageWithIntl from '../locales/PageWithIntl';
-
 // 请求重试
 import { retry } from '../utils/requesterror';
 
 // 本页样式
-import styles from './IndexPage.css';
+import styles from './IndexPage.less';
 
 // antd 组件扩展
 const { Header, Footer, Sider, Content } = Layout;
@@ -70,7 +66,7 @@ class IndexPage extends React.Component {
 
     return (
       <Layout>
-        <Header className={styles.tableSpecHeader}>
+        <Header className={styles.tableHeader}>
           <div className="search">
             <InputGroup compact>
               <Select defaultValue="Zhejiang">
@@ -103,8 +99,8 @@ class IndexPage extends React.Component {
             </Dropdown>
           </div>
         </Header>
-        <Content className={styles.scrollContainer}>
-          <div className="fillter">
+        <Content style={{ overflowY: 'auto', padding: '0 10px 0 16px' }}>
+          <div className={styles.tableFillter}>
             <div className="fillter-title">筛选项</div>
             <div className="fillter-operate">
               <Button type="primary">开始筛选</Button>&emsp;
@@ -121,7 +117,7 @@ class IndexPage extends React.Component {
             </div>
           </div>
           <Table columns={this.props.pagedata.columns} dataSource={data} size="middle" pagination={false} />
-          <div className="fullPagination">
+          <div className={styles.tablePagination}>
             <Pagination showSizeChanger showQuickJumper defaultCurrent={3} total={500} showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`} />
           </div>
         </Content>
@@ -149,4 +145,4 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(pageWithIntl(IndexPage));
+export default connect(mapStateToProps, mapDispatchToProps)(IndexPage);

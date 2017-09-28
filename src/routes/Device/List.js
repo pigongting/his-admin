@@ -13,7 +13,7 @@ import pageWithIntl from '../../locales/PageWithIntl';
 import { retry } from '../../utils/requesterror';
 
 // 本页样式
-import styles from '../IndexPage.css';
+import styles from '../IndexPage.less';
 
 const { MonthPicker, RangePicker } = DatePicker;
 

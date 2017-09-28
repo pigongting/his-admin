@@ -3,8 +3,8 @@ import update from 'immutability-helper';
 import { removelocal, removelocalkeepmain } from '../utils/localpath';
 
 const initstate = {
-  collapsed: false,
-  subcollapsed: false,
+  mainSiderCollapsed: false,
+  subSiderCollapsed: false,
   pageTitle: '',
   mainmenu: [],
   submenu: [],
@@ -111,17 +111,17 @@ export default {
   state: initstate,
 
   reducers: {
-    toggleCollapsed(state, data) {
+    toggleMainSiderCollapsed(state, data) {
       return update(state, {
-        collapsed: {
-          $set: (data.payload === undefined) ? !(state.collapsed) : data.payload,
+        mainSiderCollapsed: {
+          $set: data.payload,
         },
       });
     },
-    toggleSubCollapsed(state, data) {
+    toggleSubSiderCollapsed(state, data) {
       return update(state, {
-        subcollapsed: {
-          $set: (data.payload === undefined) ? !(state.subcollapsed) : data.payload,
+        subSiderCollapsed: {
+          $set: data.payload,
         },
       });
     },
@@ -186,9 +186,9 @@ export default {
         dispatch({ type: 'getSubMunu', payload: removelocalkeepmain(pathname) });
 
         if (removelocal(pathname) === '/index') {
-          dispatch({ type: 'toggleCollapsed', payload: false });
+          dispatch({ type: 'toggleMainSiderCollapsed', payload: false });
         } else {
-          dispatch({ type: 'toggleCollapsed', payload: true });
+          dispatch({ type: 'toggleMainSiderCollapsed', payload: true });
         }
       });
     },

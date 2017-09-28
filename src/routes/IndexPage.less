@@ -1,0 +1,176 @@
+@import "../themes/default.less";
+
+/* 表格页-头部 */
+:global(.subSiderFold) .tableHeader {
+  padding-left: 200px;
+}
+
+:global(.subSiderNone) .tableHeader {
+  padding-left: 16px;
+}
+
+.tableHeader {
+  -webkit-transition: all 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+  -o-transition: all 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+  transition: all 0.15s cubic-bezier(0.645, 0.045, 0.355, 1);
+  
+  &:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+  
+  :global(.search) {
+    float: left;
+    height: 44px;
+    line-height: 44px;
+    margin: 10px 0 0 0;
+    background: #f5f5f5;
+    border-radius: 2px;
+    padding: 0 7px 0 9px;
+  }
+
+  :global(.ant-select) {
+    font-size: 14px;
+    vertical-align: top;
+    margin-top: 8px;
+  }
+
+  :global(.ant-select-selection__rendered) {
+    line-height: 28px;
+  }
+
+  :global(.ant-input) {
+    font-size: 14px;
+    border: none;
+    vertical-align: top;
+    margin-top: 7px;
+    background-color: transparent;
+  }
+
+  :global(.ant-input:focus) {
+    box-shadow: none;
+  }
+
+  :global(.ant-select-selection) {
+    border: none;
+    background-color: transparent;
+  }
+
+  :global(.ant-select-selection:focus) {
+    box-shadow: none;
+  }
+
+  :global(.operate) {
+    float: left;
+    color: @primary-color;
+    font-size: 15px;
+  }
+
+  :global(.pagination) {
+    float: right;
+    padding: 0 27px 0 0;
+  }
+
+  :global(.pagination .ant-pagination ) {
+    float: left;
+  }
+
+  :global(.pagination li) {
+    vertical-align: top;
+    margin-top: 17px;
+    height: 29px;
+  }
+
+  :global(.pagination .ant-pagination .ant-pagination-item) {
+    display: none;
+  }
+
+  :global(.pagination .ant-pagination .ant-pagination-prev) {
+    margin-right: -1px;
+    border-radius: @border-radius-base 0 0 @border-radius-base; 
+    min-width: 36px;
+    background-color: transparent;
+    background-image: linear-gradient(to bottom,#f5f5f5,#f1f1f1);
+  }
+
+  :global(.pagination .ant-pagination .ant-pagination-prev:hover) {
+    position: relative;
+    z-index: 1;
+  }
+
+  :global(.pagination .ant-pagination .ant-pagination-prev a) {
+    display: block;
+    height: 27px;
+    background: url(../assets/tablePrev.png) 50% 50% no-repeat;
+    opacity: .55;
+  }
+
+  :global(.pagination .ant-pagination .ant-pagination-disabled a) {
+    opacity: .333;
+  }
+
+  :global(.pagination .ant-pagination .ant-pagination-prev a:after) {
+    content: '';
+  }
+
+  :global(.pagination .ant-pagination .ant-pagination-next) {
+    border-radius: 0 @border-radius-base @border-radius-base 0; 
+    min-width: 36px;
+    background-color: transparent;
+    background-image: linear-gradient(to bottom,#f5f5f5,#f1f1f1);
+  }
+
+  :global(.pagination .ant-pagination .ant-pagination-next a) {
+    display: block;
+    height: 27px;
+    background: url(../assets/tableNext.png) 50% 50% no-repeat;
+    opacity: .55;
+  }
+
+  :global(.pagination .ant-pagination .ant-pagination-next a:after) {
+    content: '';
+  }
+
+  :global(.pagination .tableSet) {
+    vertical-align: top;
+    height: 29px;
+    margin-top: 17px;
+    min-width: 54px;
+    background-color: transparent;
+    background-image: linear-gradient(to bottom,#f5f5f5,#f1f1f1);
+  }
+
+  :global(.pagination .tableSetIcon) {
+    display: inline-block;
+    vertical-align: top;
+    width: 21px;
+    height: 21px;
+    background: url(../assets/tableSet.png) 50% 50% no-repeat;
+    opacity: 0.55;
+  }
+
+  :global(.pagination .anticon) {
+    vertical-align: top;
+    margin-top: 5px;
+  }
+}
+
+/* 表格页-筛选项 */
+.tableFillter {
+  padding: 16px 0;
+  position: relative;
+
+  :global(.fillter-title) {
+    padding: 0 0 10px 0;
+    font-size: 14px;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  :global(.fillter-operate) {
+    position: absolute;
+    right: 0;
+    bottom: 16px;
+  }
+}
