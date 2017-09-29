@@ -9,7 +9,7 @@ import { Layout, Button, DatePicker, Dropdown, Table, Pagination, Input, Select,
 import { retry } from '../utils/requesterror';
 
 // 本页样式
-import styles from './IndexPage.less';
+import styles from './Index.less';
 
 // antd 组件扩展
 const { Header, Footer, Sider, Content } = Layout;
@@ -22,7 +22,7 @@ function onChange(date, dateString) {
   console.log(date, dateString);
 }
 
-class IndexPage extends React.Component {
+class Index extends React.Component {
   constructor(props) {
     super(props);
 
@@ -40,7 +40,7 @@ class IndexPage extends React.Component {
     for (let i = 0; i < 100; i++) {
       data.push({
         key: i,
-        name: 'ZMY002',
+        name: `ZMY00${i}`,
         age: '猫猫奶茶',
         address: `自主申请 ${i}`,
       });
@@ -93,7 +93,60 @@ class IndexPage extends React.Component {
             </div>
             <div className="fillterOperate"><Button type="primary">开始筛选</Button>&emsp;<Button>清空</Button></div>
           </div>
-          <Table columns={this.props.pagedata.columns} dataSource={data} size="middle" pagination={false} />
+          <Table
+            columns={this.props.pagedata.columns}
+            dataSource={data}
+            size="middle"
+            pagination={false}
+            loading={{
+              delay: 3000,
+            }}
+            rowSelection={{
+              type: 'checkbox',
+              getCheckboxProps: (record) => {
+                return {
+                  disabled: record.name === 'ZMY002',
+                };
+              },
+              onChange: (selectedRowKeys, selectedRows) => {
+                console.log('-------------onChange--------------');
+                console.log(selectedRowKeys);
+                console.log(selectedRows);
+              },
+              onSelect: (record, selected, selectedRows) => {
+                console.log('-------------onSelect--------------');
+                console.log(record);
+                console.log(selected);
+                console.log(selectedRows);
+              },
+              onSelectAll: (selected, selectedRows, changeRows) => {
+                console.log('-------------onSelectAll--------------');
+                console.log(selected);
+                console.log(selectedRows);
+                console.log(changeRows);
+              },
+              onSelectInvert: (selectedRows) => {
+                console.log('-------------onSelectInvert--------------');
+                console.log(selectedRows);
+              },
+              selections: [{
+                key: '0',
+                text: 'pgt',
+                onSelect: (changeableRowKeys) => {
+                  console.log('-------------selections - onSelect--------------');
+                  console.log(changeableRowKeys);
+                },
+              }, {
+                key: '1',
+                text: '还算',
+                onSelect: (changeableRowKeys) => {
+                  console.log('-------------selections - onSelect--------------');
+                  console.log(changeableRowKeys);
+                },
+              }],
+              hideDefaultSelections: true,
+            }}
+          />
           <div className={styles.tablePagination}>
             <Pagination showSizeChanger showQuickJumper defaultCurrent={3} total={500} showTotal={(total, range) => `${range[0]}-${range[1]} of ${total} items`} />
           </div>
@@ -116,10 +169,10 @@ function mapStateToProps(state, ownProps) {
   // console.log('state>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>');
   console.log(state);
   return {
-    loading: state.loading.effects['index/fetch'],
-    pagedata: state.index,
+    loading: state.loading.effects['device/fetch'],
+    pagedata: state.device,
     locale: state.ssr.locale,
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(IndexPage);
+export default connect(mapStateToProps, mapDispatchToProps)(Index);

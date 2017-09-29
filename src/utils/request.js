@@ -34,32 +34,32 @@ function checkStatus(response, action, timestamp) {
  */
 function checkData(data, action, timestamp) {
   // 虚拟返回数据
-  if (data) {
-    return data;
-  }
-
-  // 真实返回数据
-  // if (data.api_code >= 200 && data.api_code < 300) {
+  // if (data) {
   //   return data;
   // }
+
+  // 真实返回数据
+  if (data.code >= 200 && data.code < 300) {
+    return data;
+  }
 
   // console.log(timestamp);
   // console.log(global[`${action.type}_fetchTimestamp`]);
   global[`${action.type}_fetchTimestamp`] = undefined;
 
   // 虚拟返回数据
-  throw new Error(JSON.stringify({
-    status: 'fetcherror',
-    message: 'mock',
-    erroraction: action,
-  }));
-
-  // 真实返回数据
   // throw new Error(JSON.stringify({
   //   status: 'fetcherror',
-  //   message: data.error,
-  //   api_code: data.api_code,
+  //   message: 'mock',
+  //   erroraction: action,
   // }));
+
+  // 真实返回数据
+  throw new Error(JSON.stringify({
+    status: 'fetcherror',
+    message: data.msg,
+    code: data.code,
+  }));
 }
 
 /**
@@ -127,6 +127,9 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
   // 请求设置
   const fetchset = {
     method: 'GET',
+    headers: {
+      'Content-Type': 'application/json;',
+    },
   };
 
   if (options.method && options.method !== 'GET') {
@@ -134,14 +137,26 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
   }
 
   if (options.method === 'POST') {
-    fetchset.body = JSON.stringify(options);
+    fetchset.body = JSON.stringify(options.body);
   }
+
+  console.log(fetchset);
 
   // 请求和超时赛跑
   const response = await Promise.race([
     timeoutHandle(timeout, action),
-    fetch(options.Url, fetchset),
+    fetch(options.Url, {
+      method: 'POST',
+      mode: 'no-cors',
+      redirect: 'follow',
+      body: 'index=1&size=10',
+      headers: new Headers({
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json',
+      }),
+    }),
   ]).then((res) => {
+    console.log(res.headers.get('Content-Type'));
     clearTimeout(global[`${action.type}_fetchTimeoutId`]);
     global[`${action.type}_fetchTimeoutId`] = undefined;
     return res;
@@ -169,18 +184,45 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
   checkStatus(response, action, timestamp);
 
   // 将请求返回值转为json
-  const data = await response.json();
+  const datajson = await response.json();
+
+  // 手动格式
+  const dataformat = {
+    code: 200,
+    msg: 'success',
+    data: datajson,
+  };
 
   // 验证请求结果
-  checkData(data, action, timestamp);
+  checkData(dataformat, action, timestamp);
 
   // 定义返回结果
-  const ret = { data, headers: {} };
+  const ret = {};
+
+  if (datajson.rows) {
+    // 列表
+    datajson.rows.map((item, index) => {
+      const ele = item;
+      ele.key = item.id;
+      return ele;
+    });
+
+    ret.data = datajson.rows;
+    ret.headers = {
+      index: datajson.index,
+      size: datajson.size,
+      total: datajson.total,
+    };
+  } else {
+    // 对象
+    ret.data = datajson;
+    ret.headers = {};
+  }
 
   // 从请求返回值的头信息中获取信息
-  if (response.headers.get('x-total-count')) {
-    ret.headers['x-total-count'] = response.headers.get('x-total-count');
-  }
+  // if (response.headers.get('x-total-count')) {
+  //   ret.headers['x-total-count'] = response.headers.get('x-total-count');
+  // }
 
   // return 返回结果
   // console.log(timestamp);

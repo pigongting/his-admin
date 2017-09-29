@@ -1,6 +1,5 @@
 import React from 'react';
 import PageFrame from './routes/PageFrame';
-import Content from './routes/Content';
 
 function registerModel(app, model) {
   if (app && !(app._models.filter(m => m.namespace === model.namespace).length === 1)) {
@@ -15,101 +14,31 @@ function Routes(locale, app) {
       component: PageFrame,
       getIndexRoute(nextState, cb) {
         if (process.env.NODE_ENV === 'development') {
-          import(/* webpackChunkName: "IndexPage" */ './routes/IndexPage')
+          import(/* webpackChunkName: "Index" */ './routes/Index')
           .then((data) => {
             registerModel(app, require('./models/index'));
             cb(null, { component: data });
           })
-          .catch(err => console.log('Failed to load IndexPage', err));
+          .catch(err => console.log('Failed to load Index', err));
         } else {
           registerModel(app, require('./models/index'));
-          cb(null, { component: require('./routes/IndexPage') });
+          cb(null, { component: require('./routes/Index') });
         }
       },
       childRoutes: [
-        {
-          path: `/${locale}/product`,
-          getComponent(nextState, cb) {
-            if (process.env.NODE_ENV === 'development') {
-              import(/* webpackChunkName: "IndexPage" */ './routes/IndexPage')
-              .then((data) => {
-                registerModel(app, require('./models/index'));
-                cb(null, data);
-              })
-              .catch(err => console.log('Failed to load IndexPage', err));
-            } else {
-              registerModel(app, require('./models/index'));
-              cb(null, require('./routes/IndexPage'));
-            }
-          },
-        },
         {
           path: `/${locale}/device`,
-          component: Content,
-          getIndexRoute(nextState, cb) {
-            if (process.env.NODE_ENV === 'development') {
-              import(/* webpackChunkName: "Device/List" */ './routes/Device/List')
-              .then((data) => {
-                registerModel(app, require('./models/device/list'));
-                cb(null, { component: data });
-              })
-              .catch(err => console.log('Failed to load Device/List', err));
-            } else {
-              registerModel(app, require('./models/device/list'));
-              cb(null, { component: require('./routes/Device/List') });
-            }
-          },
-          childRoutes: [
-            {
-              path: 'detail',
-              getComponent(nextState, cb) {
-                if (process.env.NODE_ENV === 'development') {
-                  import(/* webpackChunkName: "Device/Detail" */ './routes/Device/Detail')
-                  .then((data) => {
-                    registerModel(app, require('./models/device/detail'));
-                    cb(null, data);
-                  })
-                  .catch(err => console.log('Failed to load Device/Detail', err));
-                } else {
-                  registerModel(app, require('./models/device/detail'));
-                  cb(null, require('./routes/Device/Detail'));
-                }
-              },
-            },
-          ],
-        },
-      ],
-    },
-    {
-      path: `/${locale}/users`,
-      component: Content,
-      getIndexRoute(nextState, cb) {
-        if (process.env.NODE_ENV === 'development') {
-          import(/* webpackChunkName: "Users" */ './routes/Users')
-          .then((data) => {
-            registerModel(app, require('./models/users'));
-            cb(null, { component: data });
-          })
-          .catch(err => console.log('Failed to load Users', err));
-        } else {
-          registerModel(app, require('./models/users'));
-          cb(null, { component: require('./routes/Users') });
-        }
-      },
-      childRoutes: [
-        {
-          path: 'product',
           getComponent(nextState, cb) {
             if (process.env.NODE_ENV === 'development') {
-              import(/* webpackChunkName: "Product" */ './routes/Product')
+              import(/* webpackChunkName: "Device" */ './routes/Device')
               .then((data) => {
-                registerModel(app, require('./models/users/product'));
+                registerModel(app, require('./models/device'));
                 cb(null, data);
               })
-              .catch(err => console.log('Failed to load Product', err));
+              .catch(err => console.log('Failed to load Device', err));
             } else {
-              registerModel(app, require('./models/users/product'));
-              cb(null, require('./routes/Product'));
+              registerModel(app, require('./models/device'));
+              cb(null, require('./routes/Device'));
             }
           },
         },

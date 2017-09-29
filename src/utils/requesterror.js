@@ -60,8 +60,7 @@ export default function onError(e, dispatch) {
       action.namespace = namespace;
 
       // 保存错误请求
-      if (typeof window !== 'undefined')
-      {
+      if (typeof window !== 'undefined') {
         if (!global[errorActionHook]) {
           global[errorActionHook] = {};
         }
@@ -73,7 +72,7 @@ export default function onError(e, dispatch) {
     }
 
     // 接口错误提示错误原因
-    if (msg.api_code) {
+    if (msg.code) {
       console.log(msg.message);
     }
   }
