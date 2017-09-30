@@ -60,6 +60,15 @@ export default {
       console.log(data);
       console.log(headers);
 
+      // yield put({ type: 'updateTable', payload: data });
+      // yield put({ type: 'updatePages', payload: headers });
+    },
+    *fetch2(action, { call, put, select }) {
+      console.log(action);
+      const { data, headers } = yield call(usersService.fetch2, action, {}, {});
+      console.log(data);
+      console.log(headers);
+
       yield put({ type: 'updateTable', payload: data });
       yield put({ type: 'updatePages', payload: headers });
     },
@@ -74,6 +83,7 @@ export default {
       return history.listen(({ pathname, query }) => {
         if (removelocal(pathname) === '/index') {
           dispatch({ type: 'fetch', payload: query });
+          // dispatch({ type: 'fetch2', payload: query });
         } else {
           dispatch({ type: 'resetstate' });
         }

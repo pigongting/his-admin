@@ -94,7 +94,7 @@ function timeoutHandle(timeout, action) {
  * @param  {object} action      原生 dispatch 的那个完整的 action
  * @param  {object} config      mode 设置对之前的请求的处理方式 [wait 阻止现在的请求，等待之前的请求 | stop 停止之前的请求]
                                 timeout 请求超时时间
- * @param  {object} options     Url 请求地址
+ * @param  {object} options     url 请求地址
                                 method 请求方式 [GET | POST]
                                 ...
  * @return {object}             An object containing either "data" or "err"
@@ -127,9 +127,6 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
   // 请求设置
   const fetchset = {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json;',
-    },
   };
 
   if (options.method && options.method !== 'GET') {
@@ -138,23 +135,16 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
 
   if (options.method === 'POST') {
     fetchset.body = JSON.stringify(options.body);
+    fetchset.mode = 'cors';
+    fetchset.headers = {
+      'Content-Type': 'application/json',
+    };
   }
-
-  console.log(fetchset);
 
   // 请求和超时赛跑
   const response = await Promise.race([
     timeoutHandle(timeout, action),
-    fetch(options.Url, {
-      method: 'POST',
-      mode: 'no-cors',
-      redirect: 'follow',
-      body: 'index=1&size=10',
-      headers: new Headers({
-        'Content-Type': 'application/x-www-form-urlencoded',
-        Accept: 'application/json',
-      }),
-    }),
+    fetch(options.url, fetchset),
   ]).then((res) => {
     console.log(res.headers.get('Content-Type'));
     clearTimeout(global[`${action.type}_fetchTimeoutId`]);
@@ -186,36 +176,29 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
   // 将请求返回值转为json
   const datajson = await response.json();
 
-  // 手动格式
-  const dataformat = {
-    code: 200,
-    msg: 'success',
-    data: datajson,
-  };
-
   // 验证请求结果
-  checkData(dataformat, action, timestamp);
+  checkData(datajson, action, timestamp);
 
   // 定义返回结果
   const ret = {};
 
-  if (datajson.rows) {
+  if (datajson.data.rows) {
     // 列表
-    datajson.rows.map((item, index) => {
+    datajson.data.rows.map((item, index) => {
       const ele = item;
       ele.key = item.id;
       return ele;
     });
 
-    ret.data = datajson.rows;
+    ret.data = datajson.data.rows;
     ret.headers = {
-      index: datajson.index,
-      size: datajson.size,
-      total: datajson.total,
+      index: datajson.data.index,
+      size: datajson.data.size,
+      total: datajson.data.total,
     };
   } else {
     // 对象
-    ret.data = datajson;
+    ret.data = datajson.data;
     ret.headers = {};
   }
 
