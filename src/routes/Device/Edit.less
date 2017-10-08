@@ -1,0 +1,47 @@
+@import "../../themes/default.less";
+
+/* 表格页-头部 */
+:global(.subSiderFold) .tableHeader {
+  padding-left: 200px;
+}
+
+:global(.subSiderNone) .tableHeader {
+  padding-left: 16px;
+}
+
+.tableHeader {
+  overflow: hidden;
+  -webkit-transition: all .2s;
+  -o-transition: all .2s;
+  transition: all .2s;
+  
+  &:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+  
+  :global(.pageTitle) {
+    font-size: 18px;
+    color: @primary-color;
+    white-space: nowrap;
+    padding-left: 16px;
+  }
+}
+
+/* 编辑表单 */
+.EditForm {
+  :global(.ant-form) {
+    padding: 40px 30px 40px 24px;
+  }
+  :global(label) {
+    font-size: 16px;
+    font-weight: 500;
+  }
+  :global(.ant-form-item) {
+    font-size: 14px;
+  }
+  :global(.ant-input) {
+    font-size: 14px;
+  }
+}

@@ -1,0 +1,308 @@
+@import "../../themes/default.less";
+
+/* 表格页-头部 */
+:global(.subSiderFold) .tableHeader {
+  padding-left: 200px;
+}
+
+:global(.subSiderNone) .tableHeader {
+  padding-left: 16px;
+}
+
+.tableHeader {
+  overflow: hidden;
+  -webkit-transition: all .2s;
+  -o-transition: all .2s;
+  transition: all .2s;
+  
+  &:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+  
+  /* 搜索 */
+  :global(.search) {
+    float: left;
+    height: 43px;
+    margin: 8px 0 0 0;
+    padding: 0 9px;
+    line-height: 43px;
+    border-radius: 2px;
+    background: #f5f5f5;
+  }
+
+  :global(.ant-select) {
+    float: left;
+    margin-top: 8px;
+    font-size: 14px;
+    vertical-align: top;
+  }
+
+  :global(.ant-select-selection) {
+    border: none;
+    background-color: transparent;
+  }
+
+  :global(.ant-select-selection:focus) {
+    box-shadow: none;
+  }
+
+  :global(.ant-input) {
+    font-size: 14px;
+    margin-top: 7px;
+    border: none;
+    vertical-align: top;
+    line-height: inherit;
+  }
+
+  :global(.ant-input:focus) {
+    box-shadow: none;
+  }
+  
+  /* 操作 */
+  :global(.operate) {
+    float: left;
+    color: @primary-color;
+    font-size: 15px;
+  }
+  
+  /* 分页 */
+  :global(.pagination) {
+    float: right;
+    padding: 0 27px 0 0;
+  }
+
+  :global(.ant-pagination ) {
+    float: left;
+  }
+
+  :global(.ant-pagination li) {
+    vertical-align: top;
+    margin-top: 15px;
+    height: 29px;
+  }
+
+  :global(.ant-pagination-item) {
+    display: none;
+  }
+  
+  /* 分页-上一页 */
+  :global(.ant-pagination-prev) {
+    margin-right: -1px;
+    border-radius: @border-radius-base 0 0 @border-radius-base; 
+    min-width: 36px;
+    background-image: linear-gradient(to bottom,#f5f5f5,#f1f1f1);
+  }
+
+  :global(.ant-pagination-prev:hover) {
+    position: relative;
+    z-index: 1;
+  }
+
+  :global(.ant-pagination-prev a) {
+    display: block;
+    height: 29px;
+    background: url(../../assets/tablePrev.png) 50% 50% no-repeat;
+    opacity: .55;
+  }
+
+  :global(.ant-pagination-prev a:after) {
+    content: '';
+  }
+  
+  /* 分页-下一页 */
+  :global(.ant-pagination-next) {
+    border-radius: 0 @border-radius-base @border-radius-base 0; 
+    min-width: 36px;
+    background-color: transparent;
+    background-image: linear-gradient(to bottom,#f5f5f5,#f1f1f1);
+  }
+
+  :global(.ant-pagination-next a) {
+    display: block;
+    height: 29px;
+    background: url(../../assets/tableNext.png) 50% 50% no-repeat;
+    opacity: .55;
+  }
+
+  :global(.ant-pagination-next a:after) {
+    content: '';
+  }
+  
+  /* 分页-禁用 */
+  :global(.ant-pagination-disabled a) {
+    opacity: .333;
+  }
+  
+  /* 表格重载 */
+  :global(.tableReload) {
+    vertical-align: top;
+    margin-top: 15px;
+    background-image: linear-gradient(to bottom,#f5f5f5,#f1f1f1);
+  }
+
+  :global(.tableReload .tableReloadIcon) {
+    display: inline-block;
+    vertical-align: top;
+    width: 21px;
+    height: 21px;
+    background: url(../../assets/tableReload.png) 50% 50% no-repeat;
+    opacity: 0.55;
+  }
+  
+  /* 表格设置 */
+  :global(.tableSet) {
+    vertical-align: top;
+    margin-top: 15px;
+    background-image: linear-gradient(to bottom,#f5f5f5,#f1f1f1);
+  }
+
+  :global(.tableSet .anticon) {
+    vertical-align: top;
+    margin-top: 5px;
+  }
+
+  :global(.tableSet .tableSetIcon) {
+    display: inline-block;
+    vertical-align: top;
+    width: 21px;
+    height: 21px;
+    background: url(../../assets/tableSet.png) 50% 50% no-repeat;
+    opacity: 0.55;
+  }
+}
+
+/* 表格页-筛选项 */
+.tableFillter {
+  position: relative;
+  line-height: 45px;
+  padding: 8px 0;
+
+  :global(.fillterTitle) {
+    line-height: 30px;
+    font-size: 14px;
+    font-weight: bold;
+    color: rgba(0, 0, 0, 0.85);
+  }
+
+  :global(.fillterOperate) {
+    position: absolute;
+    right: 0;
+    bottom: 16px;
+  }
+}
+
+/* 批量操作 */
+.batchOperation {
+  position: relative;
+  z-index: 10;
+  margin: 0 0 -41px 62px;
+  height: 41px;
+  padding: 6px 8px;
+  background-color: #fff;
+
+  &:global(.default) {
+    height: 53px;
+    padding: 12px 8px;
+    margin-bottom: -53px;
+  }
+}
+
+/* 表格页-表格 */
+.tablePage {
+  :global(.ant-table) {
+    font-size: @font-size-lg;
+  }
+
+  :global(.ant-table-thead > tr > th) {
+    border-bottom: 2px solid #e6e9f0;
+  }
+
+  :global(.ant-table-thead > tr > th.ant-table-column-sort) {
+    background: transparent;
+    color: @primary-color;
+  }
+
+  :global(.ant-table-thead > tr > th:nth-child(1)) {
+    padding-left: 0;
+  }
+
+  :global(.ant-table-tbody > tr > td:nth-child(1)) {
+    padding-left: 0;
+  }
+
+  :global(.ant-table-thead > tr > th.ant-table-selection-column) {
+    padding-left: 8px;
+    padding-right: 0;
+  }
+
+  :global(.ant-table-thead > tr > th.operationColumn) {
+    text-align: center;
+  }
+
+  :global(.ant-table-tbody > tr > td.operationColumn) {
+    text-align: center;
+    cursor: pointer;
+  }
+
+  :global(.ant-table-tbody > tr.clicked) {
+    background-color: @primary-1;
+  }
+
+  :global(.ant-table-small) {
+    border: none;
+  }
+
+  :global(.ant-table-small .ant-table-header > table) {
+    padding: 0;
+  }
+
+  :global(.ant-table-small .ant-table-body > table) {
+    padding: 0;
+  }
+}
+
+/* 表格页-主分页 */
+.tablePagination {
+  padding: 16px 0;
+  text-align: center;
+}
+
+/* 配置表格项-模态框 */
+.columnModal {
+  text-align: center;
+  white-space: nowrap;
+
+  &:before {
+    content: '';
+    display: inline-block;
+    height: 100%;
+    vertical-align: middle;
+    width: 0;
+  }
+
+  :global(.ant-modal) {
+    display: inline-block;
+    vertical-align: middle;
+    top: 0;
+    text-align: left;
+  }
+}
+
+.columnModal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  :global(.ant-modal) {
+    top: -90px;
+  }
+
+  :global(.ant-checkbox-wrapper) {
+    line-height: 3;
+  }
+}
+
+
+

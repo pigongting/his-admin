@@ -1,14 +1,17 @@
 import React from 'react';
-import moment from 'moment';
-import cs from 'classnames';
 import { connect } from 'dva';
 import { Link } from 'dva/router';
+import moment from 'moment';
+import cs from 'classnames';
+
 // antd 组件
 import { notification, Layout, Button, DatePicker, Dropdown, Table, Pagination, Input, Select, Menu, Icon, Modal, Checkbox, Row, Col } from 'antd';
+
 // 请求重试
 import { retry } from '../utils/requesterror';
+
 // 本页样式
-import styles from './Index.less';
+import styles from './Mine.less';
 
 // antd 组件扩展
 const { Header, Footer, Sider, Content } = Layout;
@@ -17,7 +20,7 @@ const InputGroup = Input.Group;
 const ItemGroup = Menu.ItemGroup;
 const Option = Select.Option;
 
-class Index extends React.Component {
+class Mine extends React.Component {
   constructor(props) {
     super(props);
 
@@ -33,8 +36,12 @@ class Index extends React.Component {
   render() {
     return (
       <Layout className={styles.tablePage}>
-        <Header className={styles.tableHeader}>标题</Header>
-        <Content style={{ overflowY: 'auto', padding: '0 10px 0 16px' }}>内容</Content>
+        <Header className={styles.tableHeader}>
+          456
+        </Header>
+        <Content style={{ overflowY: 'auto', padding: '0 10px 0 16px' }}>
+          789
+        </Content>
       </Layout>
     );
   }
@@ -45,11 +52,12 @@ function mapDispatchToProps(dispatch, ownProps) {
 }
 
 function mapStateToProps(state, ownProps) {
+  // console.log(state);
   return {
-    loading: state.loading.effects['index/fetch'],
-    pagedata: state.index,
+    loading: state.loading.effects['mine/fetch'],
+    pagedata: state.mine,
     locale: state.ssr.locale,
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Index);
+export default connect(mapStateToProps, mapDispatchToProps)(Mine);

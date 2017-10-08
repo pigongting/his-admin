@@ -37,6 +37,20 @@ export function removelocalkeepmain(pathname) {
   return keeppath;
 }
 
+export function removelocalkeepsub(pathname) {
+  const pruepath = removelocal(pathname);
+  const keeppath = pruepath.replace(/(\/.*?\/.*?)\/.*/, '$1');
+
+  return keeppath;
+}
+
+export function removelocalkeepthree(pathname) {
+  const pruepath = removelocal(pathname);
+  const keeppath = pruepath.replace(/(\/.*?\/.*?\/.*?)\/.*/, '$1');
+
+  return keeppath;
+}
+
 export function historyreplace(history, pruepath, next) {
   if (!localesReg.test(pruepath)) {
     if (pruepath === '' || pruepath === '/') {

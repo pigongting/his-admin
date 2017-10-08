@@ -77,13 +77,13 @@ class PageFrame extends React.Component {
       <Layout style={{ height: '100%' }} className={cs(this.props.pagedata.mainSiderCollapsed ? 'mainSiderFold' : 'mainSiderOpen', this.props.pagedata.subSiderCollapsed ? 'subSiderFold' : 'subSiderOpen', this.props.pagedata.submenu ? 'subSiderHave' : 'subSiderNone')}>
         <Sider className={styles.mainSider} width={160} collapsedWidth={80} collapsible collapsed={this.props.pagedata.mainSiderCollapsed} onCollapse={this.props.toggleMainSiderCollapsed}>
           <Layout style={{ height: '100%' }}>
-            <Header><img className="logo" src="../assets/img/brand/logo.png" alt="logo" width="50" height="50" /></Header>
+            <Header><img className="logo" src="/assets/img/brand/logo.png" alt="logo" width="50" height="50" /></Header>
             <Content id="PS-mainmenu" style={{ position: 'relative', height: '100%' }}>
-              <Menu defaultSelectedKeys={['0']} defaultOpenKeys={['0']} mode="inline">
+              <Menu selectedKeys={this.props.pagedata.menuSelect.main} mode="inline">
                 {this.props.pagedata.mainmenu.map((item, key) => {
                   return (
-                    <Menu.Item key={key}>
-                      <Link to={`/${this.props.locale}${item.href}`} className={cs(item.submenu ? 'hasSubMenu' : 'notSubMenu')}>
+                    <Menu.Item key={item.id}>
+                      <Link to={`/${this.props.locale}${item.link}`} className={cs(item.submenu ? 'hasSubMenu' : 'notSubMenu')}>
                         <i className="anticon" style={{ backgroundImage: `url(${item.icon})` }} />
                         <span>{item.name}</span>
                       </Link>
@@ -100,13 +100,13 @@ class PageFrame extends React.Component {
             <Layout style={{ height: '100%' }}>
               <Header><div className="mainMenuTitle">{this.props.pagedata.pageTitle}</div></Header>
               <Content style={{ height: '100%', overflowY: 'auto' }}>
-                <Menu defaultSelectedKeys={['0']} defaultOpenKeys={['0']} mode="inline">
+                <Menu mode="inline" selectedKeys={this.props.pagedata.menuSelect.sub} openKeys={this.props.pagedata.menuSelect.open} onOpenChange={this.props.submenuChange}>
                   {this.props.pagedata.submenu.map((item, key) => {
                     if (item.submenu) {
                       return (
-                        <SubMenu key={key} title={<span>{item.name}</span>}>
-                          {item.submenu.map((subitem, subkey) => <Menu.Item key={(key * subkey) + 1}>
-                            <Link to={`/${this.props.locale}${item.href}`}>
+                        <SubMenu key={item.id} title={<span>{item.name}</span>}>
+                          {item.submenu.map((subitem, subkey) => <Menu.Item key={subitem.id}>
+                            <Link to={`/${this.props.locale}${item.link}`}>
                               <i className="anticon" />
                               <span>{subitem.name}</span>
                             </Link>
@@ -115,8 +115,8 @@ class PageFrame extends React.Component {
                       );
                     } else {
                       return (
-                        <Menu.Item key={key}>
-                          <Link to={`/${this.props.locale}${item.href}`}>
+                        <Menu.Item key={item.id}>
+                          <Link to={`/${this.props.locale}${item.link}`}>
                             <i className="anticon" />
                             <span>{item.name}</span>
                           </Link>
@@ -148,6 +148,13 @@ function mapDispatchToProps(dispatch, ownProps) {
       dispatch({
         type: 'pageframe/toggleSubSiderCollapsed',
         payload: collapsed,
+      });
+    },
+    submenuChange: (openKeys) => {
+      console.log(openKeys);
+      dispatch({
+        type: 'pageframe/submenuChange',
+        payload: openKeys,
       });
     },
   };

@@ -94,7 +94,7 @@ function timeoutHandle(timeout, action) {
  * @param  {object} action      原生 dispatch 的那个完整的 action
  * @param  {object} config      mode 设置对之前的请求的处理方式 [wait 阻止现在的请求，等待之前的请求 | stop 停止之前的请求]
                                 timeout 请求超时时间
- * @param  {object} options     url 请求地址
+ * @param  {object} options     Url 请求地址
                                 method 请求方式 [GET | POST]
                                 ...
  * @return {object}             An object containing either "data" or "err"
@@ -144,9 +144,8 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
   // 请求和超时赛跑
   const response = await Promise.race([
     timeoutHandle(timeout, action),
-    fetch(options.url, fetchset),
+    fetch(options.Url, fetchset),
   ]).then((res) => {
-    console.log(res.headers.get('Content-Type'));
     clearTimeout(global[`${action.type}_fetchTimeoutId`]);
     global[`${action.type}_fetchTimeoutId`] = undefined;
     return res;
@@ -191,7 +190,9 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
     });
 
     ret.data = datajson.data.rows;
+    ret.filters = datajson.data.filters;
     ret.headers = {
+      boolpage: false,
       index: datajson.data.index,
       size: datajson.data.size,
       total: datajson.data.total,

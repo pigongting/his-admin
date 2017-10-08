@@ -1,163 +1,68 @@
+const Mock = require('mockjs');
 const { config } = require('../data/common');
 
 const { apiPrefix } = config;
-const database = [
-  {
-    id: '1',
-    icon: 'laptop',
-    name: 'Dashboard',
-    route: '/dashboard',
+
+const database = Mock.mock({
+  code: 200,
+  msg: '',
+  data: {
+    index: 1,
+    size: 20,
+    total: 100,
+    'rows|20': [
+      {
+        id: '@id',
+        comp_id: 'ZMY002',
+        partner_no: '@last',
+        'comp_ctag_name|1-2': '自主申请',
+        channel_id: '12',
+        cat_name: '北京菜',
+        comp_phone: '0755-25141364',
+        comp_addr: '中国广东省深圳市福田区',
+        comp_order: 0,
+        partner_admin_num: 1,
+        domain: 'shop793903.e690.com',
+        comp_status_html: '有效',
+      },
+    ],
+    filters: {
+      channel_id: [
+        {
+          text: '自主申请',
+          value: '自主申请',
+        },
+        {
+          text: '自主申请自主申请',
+          value: '自主申请自主申请',
+        },
+      ],
+      cat_name: [
+        {
+          text: '自主申请',
+          value: '自主申请',
+        },
+        {
+          text: '自主申请自主申请',
+          value: '自主申请自主申请',
+        },
+      ],
+    },
   },
-  {
-    id: '2',
-    bpid: '1',
-    name: 'Users',
-    icon: 'user',
-    route: '/user',
-  },
-  {
-    id: '7',
-    bpid: '1',
-    name: 'Posts',
-    icon: 'shopping-cart',
-    route: '/post',
-  },
-  {
-    id: '21',
-    mpid: '-1',
-    bpid: '2',
-    name: 'User Detail',
-    route: '/user/:id',
-  },
-  {
-    id: '3',
-    bpid: '1',
-    name: 'Request',
-    icon: 'api',
-    route: '/request',
-  },
-  {
-    id: '4',
-    bpid: '1',
-    name: 'UI Element',
-    icon: 'camera-o',
-  },
-  {
-    id: '41',
-    bpid: '4',
-    mpid: '4',
-    name: 'IconFont',
-    icon: 'heart-o',
-    route: '/UIElement/iconfont',
-  },
-  {
-    id: '42',
-    bpid: '4',
-    mpid: '4',
-    name: 'DataTable',
-    icon: 'database',
-    route: '/UIElement/dataTable',
-  },
-  {
-    id: '43',
-    bpid: '4',
-    mpid: '4',
-    name: 'DropOption',
-    icon: 'bars',
-    route: '/UIElement/dropOption',
-  },
-  {
-    id: '44',
-    bpid: '4',
-    mpid: '4',
-    name: 'Search',
-    icon: 'search',
-    route: '/UIElement/search',
-  },
-  {
-    id: '45',
-    bpid: '4',
-    mpid: '4',
-    name: 'Editor',
-    icon: 'edit',
-    route: '/UIElement/editor',
-  },
-  {
-    id: '46',
-    bpid: '4',
-    mpid: '4',
-    name: 'layer (Function)',
-    icon: 'credit-card',
-    route: '/UIElement/layer',
-  },
-  {
-    id: '5',
-    bpid: '1',
-    name: 'Recharts',
-    icon: 'code-o',
-  },
-  {
-    id: '51',
-    bpid: '5',
-    mpid: '5',
-    name: 'LineChart',
-    icon: 'line-chart',
-    route: '/chart/lineChart',
-  },
-  {
-    id: '52',
-    bpid: '5',
-    mpid: '5',
-    name: 'BarChart',
-    icon: 'bar-chart',
-    route: '/chart/barChart',
-  },
-  {
-    id: '53',
-    bpid: '5',
-    mpid: '5',
-    name: 'AreaChart',
-    icon: 'area-chart',
-    route: '/chart/areaChart',
-  },
-  {
-    id: '6',
-    bpid: '1',
-    name: 'Test Navigation',
-    icon: 'setting',
-  },
-  {
-    id: '61',
-    bpid: '6',
-    mpid: '6',
-    name: 'Test Navigation1',
-    route: '/navigation/navigation1',
-  },
-  {
-    id: '62',
-    bpid: '6',
-    mpid: '6',
-    name: 'Test Navigation2',
-    route: '/navigation/navigation2',
-  },
-  {
-    id: '621',
-    bpid: '62',
-    mpid: '62',
-    name: 'Test Navigation21',
-    route: '/navigation/navigation2/navigation1',
-  },
-  {
-    id: '622',
-    bpid: '62',
-    mpid: '62',
-    name: 'Test Navigation22',
-    route: '/navigation/navigation2/navigation2',
-  },
-];
+});
 
 module.exports = {
-  [`GET ${apiPrefix}/menus`](req, res) {
+  [`POST ${apiPrefix}/menus`](req, res) {
+    database.data.index = req.body.page.index;
+    database.data.size = req.body.page.size;
+
     res.status(200).json(database);
+  },
+  [`POST ${apiPrefix}/menusDelete`](req, res) {
+    res.status(500).json({
+      code: 200,
+      msg: '',
+      data: true,
+    });
   },
 };

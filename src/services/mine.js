@@ -12,7 +12,7 @@ export function fetch(action, config, options) {
 export function batchDelete(action, config, options) {
   console.log(options);
   return request(action, config, {
-    Url: 'http://120.24.249.69:9001/account/login/',
+    Url: '/api/v1/menusDelete',
     method: 'POST',
     body: options,
   });

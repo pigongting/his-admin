@@ -27,20 +27,57 @@ function Routes(locale, app) {
       },
       childRoutes: [
         {
-          path: `/${locale}/device`,
+          path: `/${locale}/mine`,
           getComponent(nextState, cb) {
             if (process.env.NODE_ENV === 'development') {
-              import(/* webpackChunkName: "Device" */ './routes/Device')
+              import(/* webpackChunkName: "Mine" */ './routes/Mine')
               .then((data) => {
-                registerModel(app, require('./models/device'));
+                registerModel(app, require('./models/mine'));
                 cb(null, data);
               })
-              .catch(err => console.log('Failed to load Device', err));
+              .catch(err => console.log('Failed to load Mine', err));
             } else {
-              registerModel(app, require('./models/device'));
-              cb(null, require('./routes/Device'));
+              registerModel(app, require('./models/mine'));
+              cb(null, require('./routes/Mine'));
             }
           },
+        },
+        {
+          path: `/${locale}/device`,
+          childRoutes: [
+            {
+              path: 'list',
+              getComponent(nextState, cb) {
+                if (process.env.NODE_ENV === 'development') {
+                  import(/* webpackChunkName: "Device/List" */ './routes/Device/List')
+                  .then((data) => {
+                    registerModel(app, require('./models/device/list'));
+                    cb(null, data);
+                  })
+                  .catch(err => console.log('Failed to load Device/List', err));
+                } else {
+                  registerModel(app, require('./models/device/list'));
+                  cb(null, require('./routes/Device/List'));
+                }
+              },
+            },
+            {
+              path: 'edit',
+              getComponent(nextState, cb) {
+                if (process.env.NODE_ENV === 'development') {
+                  import(/* webpackChunkName: "Device/Edit" */ './routes/Device/Edit')
+                  .then((data) => {
+                    registerModel(app, require('./models/device/edit'));
+                    cb(null, data);
+                  })
+                  .catch(err => console.log('Failed to load Device/Edit', err));
+                } else {
+                  registerModel(app, require('./models/device/edit'));
+                  cb(null, require('./routes/Device/Edit'));
+                }
+              },
+            },
+          ],
         },
       ],
     },

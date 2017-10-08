@@ -34,6 +34,7 @@
   },
   "dependencies": {
     "antd": "^2.13.3",
+    "axios": "^0.16.2",
     "babel-runtime": "^6.9.2",
     "css-modules-require-hook": "4.1.0",
     "dva": "^1.2.1",
