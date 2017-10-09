@@ -53,8 +53,8 @@ const database = Mock.mock({
 
 module.exports = {
   [`POST ${apiPrefix}/menus`](req, res) {
-    database.data.index = req.body.page.index;
-    database.data.size = req.body.page.size;
+    database.data.index = req.body.index;
+    database.data.size = req.body.size;
 
     res.status(200).json(database);
   },

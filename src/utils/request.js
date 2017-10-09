@@ -20,6 +20,7 @@ function checkStatus(response, action, timestamp) {
   throw new Error(JSON.stringify({
     status: 'fetcherror',
     message: response.statusText,
+    errortype: 'requestState',
     erroraction: action,
   }));
 }
@@ -58,7 +59,8 @@ function checkData(data, action, timestamp) {
   throw new Error(JSON.stringify({
     status: 'fetcherror',
     message: data.msg,
-    code: data.code,
+    errortype: 'dataError',
+    erroraction: action,
   }));
 }
 
@@ -78,6 +80,7 @@ function timeoutHandle(timeout, action) {
       reject({
         status: 'fetcherror',
         message: '请求超时',
+        errortype: 'timeout',
         erroraction: action,
       });
     }, timeout);
@@ -99,8 +102,9 @@ function timeoutHandle(timeout, action) {
                                 ...
  * @return {object}             An object containing either "data" or "err"
  */
-export default async function request(action, { mode = 'wait', timeout = 10000 }, options) {
+export default async function request(action, { mode = 'wait', timeout = 10000 }, param) {
   // console.log(action);
+  const options = JSON.parse(JSON.stringify(param));
 
   // 请求时间戳
   const timestamp = new Date().getTime();
@@ -133,6 +137,39 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
     fetchset.method = options.method;
   }
 
+  if (options.body) {
+    if (options.body.page) {
+      for (const key in options.body.page) {
+        if (key) {
+          options.body[key] = options.body.page[key];
+        }
+      }
+      delete options.body.page;
+    }
+
+    if (options.body.tableFilters) {
+      if (!options.body.filters) {
+        options.body.filters = {};
+      }
+
+      for (const key in options.body.tableFilters) {
+        if (key) {
+          options.body.filters[key] = options.body.tableFilters[key];
+        }
+      }
+      delete options.body.tableFilters;
+    }
+
+    if (options.body.search) {
+      if (!options.body.filters) {
+        options.body.filters = {};
+      }
+
+      options.body.filters[options.body.search.key] = options.body.search.value;
+      delete options.body.search;
+    }
+  }
+
   if (options.method === 'POST') {
     fetchset.body = JSON.stringify(options.body);
     fetchset.mode = 'cors';
@@ -153,10 +190,19 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
     // console.log(timestamp);
     // console.log(global[`${action.type}_fetchTimestamp`]);
     global[`${action.type}_fetchTimestamp`] = undefined;
+
+    // 请求地址错误
+    if (err.message === 'Failed to fetch') {
+      throw new Error(JSON.stringify({
+        status: 'fetcherror',
+        message: err.message,
+        errortype: 'addressError',
+        erroraction: action,
+      }));
+    }
+
+    // 超时和请求错误
     throw err;
-    // err 可能的值
-    // Error: {"status":"error","message":"请求超时"}
-    // TypeError: Failed to fetch
   });
 
   // 不匹配的请求

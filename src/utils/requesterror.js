@@ -36,8 +36,6 @@ export default function onError(e, dispatch) {
     msg = e.message;
   }
 
-  console.log(msg);
-
   // fetch错误统一处理
   if (msg.status === 'fetcherror') {
     switch (msg.message) {
@@ -59,6 +57,9 @@ export default function onError(e, dispatch) {
       // 保存 namespace
       action.namespace = namespace;
 
+      // 保存 errortype
+      action.errortype = msg.errortype;
+
       // 保存错误请求
       if (typeof window !== 'undefined') {
         if (!global[errorActionHook]) {
@@ -69,11 +70,6 @@ export default function onError(e, dispatch) {
 
       // 触发显示 retry 按钮的动作
       dispatch({ type: `${namespace}/fetcherror`, erroraction: action });
-    }
-
-    // 接口错误提示错误原因
-    if (msg.code) {
-      console.log(msg.message);
     }
   }
 }

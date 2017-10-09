@@ -27,7 +27,7 @@ const initstate = {
     },
     search: {
       key: 'device_name',
-      value: ['like', '深圳市人民医院'],
+      value: ['like', ['深圳市人民医院']],
     },
   },
   res: {

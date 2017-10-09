@@ -10,6 +10,22 @@ function registerModel(app, model) {
 function Routes(locale, app) {
   return [
     {
+      path: `/${locale}/login`,
+      getIndexRoute(nextState, cb) {
+        if (process.env.NODE_ENV === 'development') {
+          import(/* webpackChunkName: "Login" */ './routes/Login')
+          .then((data) => {
+            registerModel(app, require('./models/login'));
+            cb(null, { component: data });
+          })
+          .catch(err => console.log('Failed to load Login', err));
+        } else {
+          registerModel(app, require('./models/login'));
+          cb(null, { component: require('./routes/Login') });
+        }
+      },
+    },
+    {
       path: `/${locale}/index`,
       component: PageFrame,
       getIndexRoute(nextState, cb) {

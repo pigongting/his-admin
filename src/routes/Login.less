@@ -1,0 +1,79 @@
+@import "../themes/default.less";
+
+/* 整页 */
+.loginPage {
+  height: 100%;
+  
+  /* 头部 */
+  .loginHeader {
+    
+    &:after {
+      content: '';
+      display: block;
+      clear: both;
+    }
+
+    .logo {
+      float: left;
+      padding: 0 0 0 20px;
+
+      img {
+        vertical-align: top;
+      }
+    }
+  }
+
+  /* 内容 */
+  .loginContent {
+    height: 100%;
+    padding: 0 10px 0 16px;
+    overflow-y: auto;
+
+    .formWarp {
+      position: relative;
+      height: 100%;
+      min-height: 312px;
+      padding: 0 0 312px 0;
+      text-align: center;
+      
+      &:after {
+        content: '';
+        display: block;
+        height: 100%;
+        width: 0;
+        display: inline-block;
+        vertical-align: middle;
+      }
+
+      .formBox {
+        text-align: left;
+        display: inline-block;
+        vertical-align: middle;
+        width: 300px;
+        padding: 44px 0 0 0;
+
+        :global(.ant-input) {
+          height: 41px;
+          font-size: 14px;
+        }
+
+        .submitButton {
+          height: 44px;
+          width: 100%;
+        }
+      }
+    
+      .copyright {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        font-size: 14px;
+        line-height: 20px;
+        padding: 20px 0 30px 0;
+        color: #8f9bb2;
+        text-align: center;
+      }
+    }
+  }
+}

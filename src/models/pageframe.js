@@ -39,60 +39,224 @@ const initstate = {
           parentid: 3,
           id: 31,
           link: '/device/list',
-          icon: '/assets/img/mainmenu/home.png',
           name: '设备列表',
         },
         {
           parentid: 3,
           id: 32,
-          icon: '/assets/img/mainmenu/home.png',
-          name: '设备属性',
-          submenu: [
-            {
-              parentid: 32,
-              id: 321,
-              link: '/device/prop/list',
-              icon: '/assets/img/mainmenu/home.png',
-              name: '属性列表',
-            },
-            {
-              parentid: 32,
-              id: 322,
-              link: '/device/prop/list',
-              icon: '/assets/img/mainmenu/home.png',
-              name: '属性列表',
-            },
-          ],
+          link: '/device/parts',
+          name: '配件列表',
+        },
+        {
+          parentid: 3,
+          id: 33,
+          link: '/device/partsprop',
+          name: '配件属性列表',
+        },
+        {
+          parentid: 3,
+          id: 34,
+          link: '/device/model',
+          name: '型号列表',
+        },
+        {
+          parentid: 3,
+          id: 35,
+          link: '/device/group',
+          name: '设备组列表',
+        },
+        {
+          parentid: 3,
+          id: 36,
+          link: '/device/program',
+          name: '程序版本列表',
+        },
+        {
+          parentid: 3,
+          id: 37,
+          link: '/device/programgroup',
+          name: '程序版本组列表',
+        },
+        {
+          parentid: 3,
+          id: 38,
+          link: '/device/state',
+          name: '设备状态',
+        },
+        {
+          parentid: 3,
+          id: 39,
+          link: '/device/log',
+          name: '设备日志',
         },
       ],
     },
     {
       parentid: 0,
       id: 4,
-      link: '/users/product',
       icon: '/assets/img/mainmenu/app.png',
       name: '应用',
+      submenu: [
+        {
+          parentid: 4,
+          id: 41,
+          name: '就诊卡',
+          submenu: [
+            {
+              parentid: 41,
+              id: 411,
+              link: '/app/visitingcard/list',
+              name: '就诊卡列表',
+            },
+            {
+              parentid: 41,
+              id: 412,
+              link: '/app/visitingcard/record',
+              name: '就诊卡交易记录',
+            },
+          ],
+        },
+        {
+          parentid: 4,
+          id: 42,
+          name: '挂号',
+          submenu: [
+            {
+              parentid: 42,
+              id: 421,
+              link: '/app/findnumber/list',
+              name: '挂号列表',
+            },
+            {
+              parentid: 42,
+              id: 422,
+              link: '/app/canclenumber/list',
+              name: '取消挂号记录',
+            },
+            {
+              parentid: 42,
+              id: 423,
+              link: '/app/getnumber/list',
+              name: '取号记录',
+            },
+          ],
+        },
+        {
+          parentid: 4,
+          id: 43,
+          link: '/app/clinicfee',
+          name: '门诊缴费记录',
+        },
+        {
+          parentid: 4,
+          id: 44,
+          link: '/app/hospitalfee',
+          name: '住院缴费记录',
+        },
+        {
+          parentid: 4,
+          id: 45,
+          link: '/app/hospitaldeposit',
+          name: '住院押金记录',
+        },
+        {
+          parentid: 4,
+          id: 46,
+          link: '/app/report',
+          name: '报告列表',
+        },
+        {
+          parentid: 4,
+          id: 47,
+          link: '/app/order',
+          name: '订单列表',
+        },
+      ],
     },
     {
       parentid: 0,
       id: 5,
-      link: '/users/product',
       icon: '/assets/img/mainmenu/member.png',
       name: '人员',
+      submenu: [
+        {
+          parentid: 5,
+          id: 51,
+          link: '/men/operation',
+          name: '运维人员列表',
+        },
+        {
+          parentid: 5,
+          id: 52,
+          link: '/men/admin',
+          name: '管理员列表',
+        },
+        {
+          parentid: 5,
+          id: 53,
+          link: '/men/user',
+          name: '用户列表',
+        },
+      ],
     },
     {
       parentid: 0,
       id: 6,
-      link: '/users/product',
       icon: '/assets/img/mainmenu/finance.png',
       name: '财务',
+      submenu: [
+        {
+          parentid: 6,
+          id: 61,
+          name: '收款账户',
+          submenu: [
+            {
+              parentid: 61,
+              id: 611,
+              link: '/finance/account/list',
+              name: '账户列表',
+            },
+            {
+              parentid: 62,
+              id: 612,
+              link: '/finance/account/diary',
+              name: '账户流水',
+            },
+          ],
+        },
+        {
+          parentid: 6,
+          id: 62,
+          link: '/finance/paymethod',
+          name: '支付方式',
+        },
+      ],
     },
     {
       parentid: 0,
       id: 7,
-      link: '/users/product',
       icon: '/assets/img/mainmenu/system.png',
       name: '系统',
+      submenu: [
+        {
+          parentid: 7,
+          id: 71,
+          link: '/system/baseinfo',
+          name: '医院基本信息',
+        },
+        {
+          parentid: 7,
+          id: 72,
+          link: '/system/powerlist',
+          name: '权限列表',
+        },
+        {
+          parentid: 7,
+          id: 73,
+          link: '/system/log',
+          name: '系统日志',
+        },
+      ],
     },
   ],
 };
@@ -250,6 +414,12 @@ export default {
       dispatch({ type: 'getMainMenu', payload: initstate.menudate });
 
       return history.listen(({ pathname, query }) => {
+        // 未登录跳转
+        // if (!localStorage.getItem('logintoken') && pathname !== '/zh/login') {
+        //   history.replace('/zh/login');
+        //   return;
+        // }
+
         dispatch({ type: 'getSubMenu', payload: removelocalkeepmain(pathname) });
         dispatch({ type: 'setSelectMenu', payload: pathname });
 
