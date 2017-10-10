@@ -99,6 +99,18 @@ const initstate = {
       submenu: [
         {
           parentid: 4,
+          id: 48,
+          link: '/app/dept',
+          name: '科室列表',
+        },
+        {
+          parentid: 4,
+          id: 49,
+          link: '/app/doctor',
+          name: '医生列表',
+        },
+        {
+          parentid: 4,
           id: 41,
           name: '就诊卡',
           submenu: [

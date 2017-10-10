@@ -4,7 +4,7 @@ const { config } = require('../data/common');
 const { apiPrefix } = config;
 
 const database = Mock.mock({
-  code: 200,
+  code: 0,
   msg: '',
   data: {
     index: 1,
@@ -26,29 +26,22 @@ const database = Mock.mock({
         comp_status_html: '有效',
       },
     ],
-    filters: {
-      channel_id: [
-        {
-          text: '自主申请',
-          value: '自主申请',
-        },
-        {
-          text: '自主申请自主申请',
-          value: '自主申请自主申请',
-        },
-      ],
-      cat_name: [
-        {
-          text: '自主申请',
-          value: '自主申请',
-        },
-        {
-          text: '自主申请自主申请',
-          value: '自主申请自主申请',
-        },
-      ],
-    },
   },
+});
+
+const datafillter = Mock.mock({
+  code: 0,
+  msg: '',
+  data: [
+    {
+      text: '自主申请',
+      value: '自主申请',
+    },
+    {
+      text: '自主申请自主申请',
+      value: '自主申请自主申请',
+    },
+  ],
 });
 
 module.exports = {
@@ -57,6 +50,9 @@ module.exports = {
     database.data.size = req.body.size;
 
     res.status(200).json(database);
+  },
+  [`POST ${apiPrefix}/menusfillter`](req, res) {
+    res.status(200).json(datafillter);
   },
   [`POST ${apiPrefix}/menusDelete`](req, res) {
     res.status(500).json({

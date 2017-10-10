@@ -5,6 +5,8 @@ import { connect } from 'dva';
 import { Link } from 'dva/router';
 // antd 组件
 import { notification, Layout, Form, Input, Button, Tooltip, Icon, Cascader } from 'antd';
+// 配置
+import { errorDesc, retryErrorType } from '../../config/config';
 // 请求重试
 import { retry } from '../utils/requesterror';
 // 本页样式
@@ -16,7 +18,7 @@ const { Header, Content } = Layout;
 class Login extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this);
+    // console.log(this);
   }
 
   componentDidMount() {
@@ -24,29 +26,32 @@ class Login extends React.Component {
     this.props.form.validateFields();
   }
 
-  componentDidUpdate() {
-    const { errorAction, errorType } = this.props.pagedata;
+  componentWillReceiveProps(nextProps) {
+    const { errorAction, errorType } = nextProps.pagedata;
 
+    // 错误提示
     if (errorAction) {
       const openkey = `open${Date.now()}`;
-      let notify = {};
-
+      const notify = {
+        key: openkey,
+        description: errorDesc[errorType],
+      };
+      // 可以重试的错误类型
+      if (retryErrorType.includes(errorType)) {
+        notify.duration = 0;
+        notify.btn = (<Button type="primary" size="small" onClick={() => this.props.startRetry(openkey)}>确定</Button>);
+      }
+      // 不同的请求不同的错误标题
       switch (errorAction) {
         case 'login/batchDelete':
-          console.log(errorType);
-          notify = {
-            message: '删除失败',
-            description: '是否重试',
-            duration: 0,
-            key: openkey,
-            btn: (<Button type="primary" size="small" onClick={() => this.props.startRetry(openkey)}>确定</Button>),
-          };
+          notify.message = '登录失败';
           break;
         default:
           break;
       }
-
+      // 显示错误提示
       notification.error(notify);
+      // 显示过后清除错误
       this.props.clearError(errorAction);
     }
   }
@@ -155,7 +160,7 @@ function mapStateToProps(state, ownProps) {
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create({
   mapPropsToFields(props) {
-    console.log(props);
+    // console.log(props);
     const req = props.pagedata.req;
     return {
       username: {

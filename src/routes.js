@@ -95,6 +95,43 @@ function Routes(locale, app) {
             },
           ],
         },
+        {
+          path: `/${locale}/app`,
+          childRoutes: [
+            {
+              path: 'dept',
+              getComponent(nextState, cb) {
+                if (process.env.NODE_ENV === 'development') {
+                  import(/* webpackChunkName: "App/Dept" */ './routes/App/Dept')
+                  .then((data) => {
+                    registerModel(app, require('./models/app/dept'));
+                    cb(null, data);
+                  })
+                  .catch(err => console.log('Failed to load App/Dept', err));
+                } else {
+                  registerModel(app, require('./models/app/dept'));
+                  cb(null, require('./routes/App/Dept'));
+                }
+              },
+            },
+            {
+              path: 'doctor',
+              getComponent(nextState, cb) {
+                if (process.env.NODE_ENV === 'development') {
+                  import(/* webpackChunkName: "App/Doctor" */ './routes/App/Doctor')
+                  .then((data) => {
+                    registerModel(app, require('./models/app/doctor'));
+                    cb(null, data);
+                  })
+                  .catch(err => console.log('Failed to load App/Doctor', err));
+                } else {
+                  registerModel(app, require('./models/app/doctor'));
+                  cb(null, require('./routes/App/Doctor'));
+                }
+              },
+            },
+          ],
+        },
       ],
     },
   ];

@@ -9,8 +9,6 @@ import { notification, Layout, Button, DatePicker, Dropdown, Table, Pagination, 
 import { errorDesc, retryErrorType } from '../../../config/config';
 // 请求重试
 import { retry } from '../../utils/requesterror';
-// 本页样式
-import styles from './List.less';
 
 // antd 组件扩展
 const { Header, Footer, Sider, Content } = Layout;
@@ -19,7 +17,12 @@ const InputGroup = Input.Group;
 const ItemGroup = Menu.ItemGroup;
 const Option = Select.Option;
 
-class DeviceList extends React.Component {
+// 页内配置
+const pageConfig = {
+  namespace: 'appdept',
+};
+
+class AppDept extends React.Component {
   constructor(props) {
     super(props);
   }
@@ -34,7 +37,7 @@ class DeviceList extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const { errorAction, errorType } = nextProps.pagedata;
-
+    console.log(errorAction);
     // 错误提示
     if (errorAction) {
       const openkey = `open${Date.now()}`;
@@ -49,10 +52,10 @@ class DeviceList extends React.Component {
       }
       // 不同的请求不同的错误标题
       switch (errorAction) {
-        case 'devicelist/fetch':
+        case `${pageConfig.namespace}/fetch`:
           notify.message = '表格数据请求失败';
           break;
-        case 'devicelist/batchDelete':
+        case `${pageConfig.namespace}/batchDelete`:
           notify.message = '删除失败';
           break;
         default:
@@ -85,108 +88,46 @@ class DeviceList extends React.Component {
     const columns = [];
     set.tableColumns.map((titleName) => {
       switch (titleName) {
-        case '商户编号':
+        case '医院科室ID':
           columns.push({
             title: titleName,
-            dataIndex: 'comp_id',
-            colSpan: 2,
+            dataIndex: 'hospitalDeptId',
           });
           break;
-        case '商户名称':
+        case '科室名称':
           columns.push({
             title: titleName,
-            dataIndex: 'partner_no',
-            colSpan: 0,
-            render: (text, row, index) => {
-              const obj = {
-                children: text,
-                props: {},
-              };
-
-              if (index === 4) {
-                obj.props.colSpan = 2;
-              }
-
-              return obj;
-            },
+            dataIndex: 'deptName',
           });
           break;
-        case '渠道来源':
+        case '科室简介':
           columns.push({
             title: titleName,
-            dataIndex: 'comp_ctag_name',
-            render: (text, row, index) => {
-              const obj = {
-                children: text,
-                props: {},
-              };
-
-              if (index === 2) {
-                obj.props.rowSpan = 2;
-              }
-
-              if (index === 3) {
-                obj.props.rowSpan = 0;
-              }
-
-              if (index === 4) {
-                obj.props.colSpan = 0;
-              }
-
-              return obj;
-            },
-            sorter: true,
-            sortOrder: req.orders.comp_ctag_name ? req.orders.comp_ctag_name[1] : false,
+            dataIndex: 'intro',
           });
           break;
-        case '类别':
+        case '医院ID':
           columns.push({
             title: titleName,
-            dataIndex: 'channel_id',
+            dataIndex: 'hospitalId',
           });
           break;
-        case '联系电话':
+        case '父科室':
           columns.push({
             title: titleName,
-            dataIndex: 'cat_name',
+            dataIndex: 'mainDeptId',
           });
           break;
-        case '联系人':
+        case '楼层':
           columns.push({
             title: titleName,
-            dataIndex: 'comp_phone',
+            dataIndex: 'deptFloor',
           });
           break;
-        case '地址':
+        case '科室地址':
           columns.push({
             title: titleName,
-            dataIndex: 'comp_addr',
-          });
-          break;
-        case '排序权重':
-          columns.push({
-            title: titleName,
-            dataIndex: 'comp_order',
-            sorter: true,
-            sortOrder: req.orders.comp_order ? req.orders.comp_order[1] : false,
-          });
-          break;
-        case '登录账号管理':
-          columns.push({
-            title: titleName,
-            dataIndex: 'partner_admin_num',
-          });
-          break;
-        case '二级域名管理':
-          columns.push({
-            title: titleName,
-            dataIndex: 'domain',
-          });
-          break;
-        case '状态':
-          columns.push({
-            title: titleName,
-            dataIndex: 'comp_status_html',
+            dataIndex: 'deptAddress',
           });
           break;
         default:
@@ -221,8 +162,8 @@ class DeviceList extends React.Component {
     });
 
     return (
-      <Layout className={styles.tablePage}>
-        <Header className={styles.tableHeader}>
+      <Layout className="tablePage">
+        <Header className="tableHeader">
           <div className="search">
             <InputGroup>
               <Select value={req.search.key} onSelect={this.props.searchSelect}>
@@ -260,7 +201,7 @@ class DeviceList extends React.Component {
               visible={set.columnModal.visible}
               onCancel={this.props.columnModalHide}
               footer={null}
-              wrapClassName={styles.columnModal}
+              wrapClassName="columnModal"
             >
               <Checkbox.Group value={set.tableColumns} onChange={this.props.setTableColumns}>
                 <Row>
@@ -275,18 +216,8 @@ class DeviceList extends React.Component {
           </div>
         </Header>
         <Content style={{ overflowY: 'auto', padding: '0 10px 0 16px' }}>
-          <div className={styles.tableFillter}>
+          <div className="tableFillter">
             <div className="fillterTitle">筛选项</div>
-            <div className="fillterItem">
-              <span>申请时间：</span>
-              <RangePicker
-                value={(req.filters.apply_time) ? [moment(req.filters.apply_time[1][0]), moment(req.filters.apply_time[1][1])] : null}
-                showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-                format="YYYY-MM-DD HH:mm"
-                placeholder={['开始时间', '结束时间']}
-                onChange={this.props.applyTimeChange}
-              />
-            </div>
             <div className="fillterItem">
               <span>申请时间：</span>
               <RangePicker
@@ -305,7 +236,7 @@ class DeviceList extends React.Component {
           </div>
           {
             (set.tableSelected.length > 0) ?
-              <div className={cs(styles.batchOperation, set.tableSize)}>
+              <div className={cs('batchOperation', set.tableSize)}>
                 <Button type="danger" onClick={this.props.batchDelete} icon="delete" autoFocus>删除</Button>
               </div>
             : null
@@ -337,7 +268,7 @@ class DeviceList extends React.Component {
             }}
             onRowClick={this.props.rowClick}
           />
-          <div className={styles.tablePagination}>
+          <div className="tablePagination">
             <Pagination
               showSizeChanger
               showQuickJumper
@@ -361,35 +292,136 @@ class DeviceList extends React.Component {
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
+    // 每个页面都有这 2 个，而且内容都一样
+    // 清除错误
+    clearError: (errorAction) => {
+      dispatch({
+        type: `${pageConfig.namespace}/clearerror`,
+        payload: errorAction,
+      });
+    },
+    // 重试请求
+    startRetry: (openkey) => {
+      notification.close(openkey);
+      retry(dispatch);
+    },
+    // 头部
+    // 选择搜索项
+    searchSelect: (value, option) => {
+      dispatch({
+        type: `${pageConfig.namespace}/searchSelect`,
+        payload: value,
+      });
+    },
+    // 设置搜索关键字
+    searchFillter: (e) => {
+      dispatch({
+        type: `${pageConfig.namespace}/searchFillter`,
+        payload: e.target.value,
+      });
+    },
+    // 切换分页
+    pageChange: (page, pageSize) => {
+      dispatch({
+        type: `${pageConfig.namespace}/fetch`,
+        payload: {
+          index: page,
+          size: pageSize,
+        },
+      });
+    },
+    // 重载当前页
+    reload: () => {
+      dispatch({
+        type: `${pageConfig.namespace}/fetch`,
+      });
+    },
+    // 表格设置
     setMenu: ({ item, key, keyPath }) => {
       switch (key) {
         case '0':
           dispatch({
-            type: 'devicelist/tableSize',
+            type: `${pageConfig.namespace}/tableSize`,
             payload: 'default',
           });
           break;
         case '1':
           dispatch({
-            type: 'devicelist/tableSize',
+            type: `${pageConfig.namespace}/tableSize`,
             payload: 'middle',
           });
           break;
         case '2':
           dispatch({
-            type: 'devicelist/tableSize',
+            type: `${pageConfig.namespace}/tableSize`,
             payload: 'small',
           });
           break;
         case '3':
           dispatch({
-            type: 'devicelist/columnModalVisible',
+            type: `${pageConfig.namespace}/columnModalVisible`,
           });
           break;
         default:
           break;
       }
     },
+    // 显示隐藏表格列设置模态框
+    columnModalHide: (e) => {
+      dispatch({
+        type: `${pageConfig.namespace}/columnModalVisible`,
+      });
+    },
+    // 设置显示的表格列
+    setTableColumns: (checkedValue) => {
+      dispatch({
+        type: `${pageConfig.namespace}/setTableColumns`,
+        payload: checkedValue,
+      });
+    },
+    // 表格
+    // 当前选中的行
+    rowSelectionHandler: (selectedRowKeys, selectedRows) => {
+      dispatch({
+        type: `${pageConfig.namespace}/rowSelected`,
+        payload: selectedRowKeys,
+      });
+    },
+    // 删除当前选中的行
+    batchDelete: () => {
+      dispatch({
+        type: `${pageConfig.namespace}/batchDelete`,
+      });
+    },
+    // 点击表格行
+    rowClick: (record, index, event) => {
+      dispatch({
+        type: `${pageConfig.namespace}/recordRowClick`,
+        payload: record.key,
+      });
+    },
+    // 判断行是否被点击过
+    rowClicked: (record, index, clickedArray) => {
+      return (clickedArray.includes(record.key)) ? 'clicked' : '';
+    },
+    // 表格自带筛选，排序
+    tableChange: (pagination, filters, sorter) => {
+      console.log(filters, sorter);
+      dispatch({
+        type: `${pageConfig.namespace}/tableChange`,
+        payload: {
+          filter: filters,
+          orders: sorter,
+        },
+      });
+      dispatch({
+        type: `${pageConfig.namespace}/fetch`,
+        payload: {
+          index: 1,
+        },
+      });
+    },
+    // 表格行操作
     operation: (item, key, keyPath, id) => {
       console.log(item);
       console.log(key);
@@ -399,7 +431,7 @@ function mapDispatchToProps(dispatch, ownProps) {
       switch (key) {
         case '0':
           dispatch({
-            type: 'devicelist/tableSize',
+            type: `${pageConfig.namespace}/tableSize`,
             payload: id,
           });
           break;
@@ -408,121 +440,42 @@ function mapDispatchToProps(dispatch, ownProps) {
       }
 
       dispatch({
-        type: 'devicelist/recordRowClick',
+        type: `${pageConfig.namespace}/recordRowClick`,
         payload: id,
       });
     },
-    pageChange: (page, pageSize) => {
-      dispatch({
-        type: 'devicelist/fetch',
-        payload: {
-          index: page,
-          size: pageSize,
-        },
-      });
-    },
-    applyTimeChange: (dates, dateStrings) => {
-      dispatch({
-        type: 'devicelist/applyTimeChange',
-        payload: dateStrings,
-      });
-    },
-    searchSelect: (value, option) => {
-      dispatch({
-        type: 'devicelist/searchSelect',
-        payload: value,
-      });
-    },
-    searchFillter: (e) => {
-      dispatch({
-        type: 'devicelist/searchFillter',
-        payload: e.target.value,
-      });
-    },
-    startFillter: (e) => {
-      dispatch({
-        type: 'devicelist/fetch',
-        payload: {
-          index: 1,
-        },
-      });
-    },
+    // 表单筛选
+    // 清除所有筛选条件
     clearFillter: (e) => {
       dispatch({
-        type: 'devicelist/clearFillter',
+        type: `${pageConfig.namespace}/clearFillter`,
       });
     },
-    tableChange: (pagination, filters, sorter) => {
-      console.log(filters, sorter);
+    // 开始表单筛选
+    startFillter: (e) => {
       dispatch({
-        type: 'devicelist/tableChange',
-        payload: {
-          filter: filters,
-          orders: sorter,
-        },
-      });
-      dispatch({
-        type: 'devicelist/fetch',
+        type: `${pageConfig.namespace}/fetch`,
         payload: {
           index: 1,
         },
       });
     },
-    rowSelectionHandler: (selectedRowKeys, selectedRows) => {
+    // 设置筛选时间段
+    applyTimeChange: (dates, dateStrings) => {
       dispatch({
-        type: 'devicelist/rowSelected',
-        payload: selectedRowKeys,
+        type: `${pageConfig.namespace}/applyTimeChange`,
+        payload: dateStrings,
       });
-    },
-    batchDelete: () => {
-      dispatch({
-        type: 'devicelist/batchDelete',
-      });
-    },
-    columnModalHide: (e) => {
-      dispatch({
-        type: 'devicelist/columnModalVisible',
-      });
-    },
-    setTableColumns: (checkedValue) => {
-      dispatch({
-        type: 'devicelist/setTableColumns',
-        payload: checkedValue,
-      });
-    },
-    reload: () => {
-      dispatch({
-        type: 'devicelist/fetch',
-      });
-    },
-    clearError: (errorType) => {
-      dispatch({
-        type: 'devicelist/clearerror',
-        payload: errorType,
-      });
-    },
-    startRetry: (openkey) => {
-      notification.close(openkey);
-      retry(dispatch);
-    },
-    rowClick: (record, index, event) => {
-      dispatch({
-        type: 'devicelist/recordRowClick',
-        payload: record.key,
-      });
-    },
-    rowClicked: (record, index, clickedArray) => {
-      return (clickedArray.includes(record.key)) ? 'clicked' : '';
     },
   };
 }
 
 function mapStateToProps(state, ownProps) {
   return {
-    loading: state.loading.effects['devicelist/fetch'],
-    pagedata: state.devicelist,
+    loading: state.loading.effects[`${pageConfig.namespace}/fetch`],
+    pagedata: state[pageConfig.namespace],
     locale: state.ssr.locale,
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(DeviceList);
+export default connect(mapStateToProps, mapDispatchToProps)(AppDept);

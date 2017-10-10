@@ -1,35 +1,34 @@
 import React from 'react';
 import update from 'immutability-helper';
 // 请求服务
-import * as usersService from '../../services/index';
+import * as usersService from '../../services/app/doctor';
 // 处理 国际化地址 的函数
 import { removelocal } from '../../utils/localpath';
 // 处理 onError 的函数
 import { retry } from '../../utils/requesterror';
 
+// 页内配置
+const pageConfig = {
+  namespace: 'appdoctor',
+};
+
+// 初始状态
 const initstate = {
   errorType: null,
   errorAction: null,
   req: {
     page: {
-      boolpage: false,
+      boolpage: true,
       index: 1,
       size: 20,
       total: 20,
     },
-    orders: {
-      comp_ctag_name: [0, 'ascend'],
-    },
-    filters: {
-      apply_time: ['=', ['2017-06-06', '2017-07-16']],
-    },
-    tableFilters: {
-      channel_id: ['=', ['自主申请']],
-      cat_name: ['=', ['自主申请自主申请']],
-    },
+    orders: {},
+    filters: {},
+    tableFilters: {},
     search: {
-      key: 'device_name',
-      value: ['like', ['深圳市人民医院']],
+      key: 'doctorName',
+      value: ['like', ['']],
     },
   },
   res: {
@@ -41,7 +40,7 @@ const initstate = {
   set: {
     tableSize: 'middle',
     tableSelected: [],
-    fullColumns: ['商户编号', '商户名称', '渠道来源', '类别', '联系电话', '联系人', '地址', '排序权重', '登录账号管理', '二级域名管理', '状态'],
+    fullColumns: ['医生名称', '医生头衔', '手机号码', '是否会诊', '是否专家 ', '特长', '职称', '状态'],
     tableColumns: [],
     columnModal: {
       visible: false,
@@ -52,11 +51,12 @@ const initstate = {
 
 export default {
 
-  namespace: 'devicelist',
+  namespace: pageConfig.namespace,
 
   state: initstate,
 
   reducers: {
+    // 每个页面都有这 3 个，而且内容都一样
     resetstate(state) {
       return update(state, {
         $set: initstate,
@@ -77,11 +77,69 @@ export default {
     },
     clearerror(state, action) {
       return update(state, {
+        errorAction: {
+          $set: (state.errorAction === action.payload) ? null : state.errorAction,
+        },
         errorType: {
-          $set: (state.errorType === action.payload) ? null : state.errorType,
+          $set: (state.errorAction === action.payload) ? null : state.errorType,
         },
       });
     },
+    // 表格设置
+    // 设置表格展示尺寸
+    tableSize(state, action) {
+      return update(state, {
+        set: {
+          tableSize: {
+            $set: action.payload,
+          },
+        },
+      });
+    },
+    // 显示隐藏表格列设置模态框
+    columnModalVisible(state, action) {
+      return update(state, {
+        set: {
+          columnModal: {
+            visible: {
+              $set: !(state.set.columnModal.visible),
+            },
+          },
+        },
+      });
+    },
+    // 设置显示的表格列
+    setTableColumns(state, action) {
+      return update(state, {
+        set: {
+          tableColumns: {
+            $set: (action.payload) ? action.payload : state.set.fullColumns,
+          },
+        },
+      });
+    },
+    // 表格
+    // 点击过的行变样式
+    recordRowClick(state, action) {
+      return update(state, {
+        set: {
+          rowClicked: {
+            $push: [action.payload],
+          },
+        },
+      });
+    },
+    // 当前选中的行
+    rowSelected(state, action) {
+      return update(state, {
+        set: {
+          tableSelected: {
+            $set: action.payload,
+          },
+        },
+      });
+    },
+    // 重置表格（一般在请求前）
     resetTable(state, action) {
       return update(state, {
         res: {
@@ -99,6 +157,7 @@ export default {
         },
       });
     },
+    // 更新表格数据
     updateTable(state, action) {
       return update(state, {
         res: {
@@ -108,6 +167,7 @@ export default {
         },
       });
     },
+    // 更新分页数据
     updatePages(state, action) {
       return update(state, {
         req: {
@@ -117,59 +177,8 @@ export default {
         },
       });
     },
-    updateFilters(state, action) {
-      return update(state, {
-        res: {
-          filters: {
-            channel_id: {
-              $set: action.payload,
-            },
-          },
-        },
-      });
-    },
-    tableSize(state, action) {
-      return update(state, {
-        set: {
-          tableSize: {
-            $set: action.payload,
-          },
-        },
-      });
-    },
-    searchSelect(state, action) {
-      return update(state, {
-        req: {
-          search: {
-            key: {
-              $set: action.payload,
-            },
-          },
-        },
-      });
-    },
-    searchFillter(state, action) {
-      return update(state, {
-        req: {
-          search: {
-            value: {
-              $set: ['like', action.payload],
-            },
-          },
-        },
-      });
-    },
-    applyTimeChange(state, action) {
-      return update(state, {
-        req: {
-          filters: {
-            apply_time: {
-              $set: ['=', action.payload],
-            },
-          },
-        },
-      });
-    },
+    // 筛选
+    // 清除所有筛选条件
     clearFillter(state, action) {
       return update(state, {
         req: {
@@ -188,6 +197,7 @@ export default {
         },
       });
     },
+    // 表格自带筛选，排序
     tableChange(state, action) {
       return update(state, {
         req: {
@@ -210,40 +220,40 @@ export default {
         },
       });
     },
-    rowSelected(state, action) {
+    // 搜索筛选
+    // 选择搜索项
+    searchSelect(state, action) {
       return update(state, {
-        set: {
-          tableSelected: {
-            $set: action.payload,
-          },
-        },
-      });
-    },
-    columnModalVisible(state, action) {
-      return update(state, {
-        set: {
-          columnModal: {
-            visible: {
-              $set: !(state.set.columnModal.visible),
+        req: {
+          search: {
+            key: {
+              $set: action.payload,
             },
           },
         },
       });
     },
-    setTableColumns(state, action) {
+    // 设置搜索关键字
+    searchFillter(state, action) {
       return update(state, {
-        set: {
-          tableColumns: {
-            $set: (action.payload) ? action.payload : state.set.fullColumns,
+        req: {
+          search: {
+            value: {
+              $set: ['like', [action.payload]],
+            },
           },
         },
       });
     },
-    recordRowClick(state, action) {
+    // 表单筛选
+    // 设置时间段筛选
+    applyTimeChange(state, action) {
       return update(state, {
-        set: {
-          rowClicked: {
-            $push: [action.payload],
+        req: {
+          filters: {
+            createDt: {
+              $set: ['between', action.payload],
+            },
           },
         },
       });
@@ -254,7 +264,7 @@ export default {
     *fetch(action, { call, put, select }) {
       yield put({ type: 'resetTable' });
 
-      const options = yield select(state => state.devicelist.req);
+      const options = yield select(state => state[pageConfig.namespace].req);
 
       if (action.payload) {
         if (action.payload.index) {
@@ -266,19 +276,14 @@ export default {
         }
       }
 
-      const { data, headers, filters } = yield call(usersService.fetch, action, {}, options);
+      const { data, headers } = yield call(usersService.fetch, action, {}, options);
 
       yield put({ type: 'updateTable', payload: data });
       yield put({ type: 'updatePages', payload: headers });
-      // yield put({ type: 'updateFilters', payload: filters });
-    },
-    *fetchfillter(action, { call, put, select }) {
-      const { data, headers } = yield call(usersService.fetchfillter, action, {}, {});
-      yield put({ type: 'updateFilters', payload: data });
     },
     *batchDelete(action, { call, put, select }) {
-      const tableSelected = yield select(state => state.devicelist.set.tableSelected);
-      const dataSource = yield select(state => state.devicelist.res.rows);
+      const tableSelected = yield select(state => state[pageConfig.namespace].set.tableSelected);
+      const dataSource = yield select(state => state[pageConfig.namespace].res.rows);
       const newSource = dataSource.filter((item) => {
         return !tableSelected.includes(item.key);
       });
@@ -293,13 +298,8 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname, query }) => {
-        if (removelocal(pathname) === '/device/list') {
-          dispatch({
-            type: 'fetch',
-            payload: {
-              index: 1,
-              size: 20,
-            },
+        if (removelocal(pathname) === '/app/doctor') {
+          dispatch({ type: 'fetch', payload: { index: 1, size: 20 },
           });
         } else {
           dispatch({ type: 'resetstate' });

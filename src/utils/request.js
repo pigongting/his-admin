@@ -40,7 +40,7 @@ function checkData(data, action, timestamp) {
   // }
 
   // 真实返回数据
-  if (data.code >= 200 && data.code < 300) {
+  if (data.code === 0) {
     return data;
   }
 
@@ -236,9 +236,8 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
     });
 
     ret.data = datajson.data.rows;
-    ret.filters = datajson.data.filters;
     ret.headers = {
-      boolpage: false,
+      boolpage: true,
       index: datajson.data.index,
       size: datajson.data.size,
       total: datajson.data.total,
