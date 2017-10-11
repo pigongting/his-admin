@@ -1,4 +1,13 @@
-export function retry(dispatch, frommodel) {
+import React from 'react';
+// antd 组件
+import { notification, Button } from 'antd';
+// 配置
+import { errorDesc, retryErrorType } from '../../config/config';
+
+function retry(openkey, dispatch, frommodel) {
+  // 删除错误提示
+  notification.close(openkey);
+
   setTimeout(() => {
     const pathname = window.location.pathname.replace(/[/]/g, '_');
     const errorActionHook = `fetchErrorActionHook${pathname}`;
@@ -20,7 +29,23 @@ export function retry(dispatch, frommodel) {
   }, 300);
 }
 
-export default function onError(e, dispatch) {
+function fetchErrorNotification(dispatch, action) {
+  const openkey = `open${Date.now()}`;
+  const notify = {
+    key: openkey,
+    description: errorDesc[action.errortype],
+    message: action.errormsg,
+  };
+  // 可以重试的错误类型
+  if (retryErrorType.includes(action.errortype)) {
+    notify.duration = 0;
+    notify.btn = (<Button type="primary" size="small" onClick={() => retry(openkey, dispatch)}>重试</Button>);
+  }
+  // 显示错误提示
+  notification.error(notify);
+}
+
+function onError(e, dispatch) {
   let pathname = '';
   let errorActionHook = '';
 
@@ -50,14 +75,7 @@ export default function onError(e, dispatch) {
     // 超时和请求错误允许重试
     if (msg.erroraction) {
       const action = msg.erroraction;
-
-      // 取出 namespace
-      const namespace = action.type.split('/')[0];
-
-      // 保存 namespace
-      action.namespace = namespace;
-
-      // 保存 errortype
+      action.namespace = action.type.split('/')[0];
       action.errortype = msg.errortype;
 
       // 保存错误请求
@@ -68,8 +86,10 @@ export default function onError(e, dispatch) {
         global[errorActionHook][action.type] = action;
       }
 
-      // 触发显示 retry 按钮的动作
-      dispatch({ type: `${namespace}/fetcherror`, erroraction: action });
+      // 显示错误提示
+      fetchErrorNotification(dispatch, action);
     }
   }
 }
+
+export default { onError };

@@ -4,18 +4,16 @@ import update from 'immutability-helper';
 import * as usersService from '../../services/app/doctor';
 // 处理 国际化地址 的函数
 import { removelocal } from '../../utils/localpath';
-// 处理 onError 的函数
-import { retry } from '../../utils/requesterror';
 
 // 页内配置
 const pageConfig = {
   namespace: 'appdoctor',
+  pagepath: '/app/doctor',
+  columns: ['医生名称', '医生头衔', '手机号码', '是否会诊', '是否专家 ', '特长', '职称', '状态'],
 };
 
 // 初始状态
 const initstate = {
-  errorType: null,
-  errorAction: null,
   req: {
     page: {
       boolpage: true,
@@ -23,13 +21,13 @@ const initstate = {
       size: 20,
       total: 20,
     },
-    orders: {},
-    filters: {},
-    tableFilters: {},
     search: {
       key: 'doctorName',
       value: ['like', ['']],
     },
+    filters: {},
+    tableFilters: {},
+    orders: {},
   },
   res: {
     rows: [],
@@ -39,13 +37,13 @@ const initstate = {
   },
   set: {
     tableSize: 'middle',
+    rowClicked: [],
     tableSelected: [],
-    fullColumns: ['医生名称', '医生头衔', '手机号码', '是否会诊', '是否专家 ', '特长', '职称', '状态'],
-    tableColumns: [],
+    fullColumns: pageConfig.columns,
+    tableColumns: pageConfig.columns,
     columnModal: {
       visible: false,
     },
-    rowClicked: [],
   },
 };
 
@@ -60,29 +58,6 @@ export default {
     resetstate(state) {
       return update(state, {
         $set: initstate,
-      });
-    },
-    fetcherror(state, action) {
-      console.log(state);
-      console.log(action);
-
-      return update(state, {
-        errorAction: {
-          $set: action.erroraction.type,
-        },
-        errorType: {
-          $set: action.erroraction.errortype,
-        },
-      });
-    },
-    clearerror(state, action) {
-      return update(state, {
-        errorAction: {
-          $set: (state.errorAction === action.payload) ? null : state.errorAction,
-        },
-        errorType: {
-          $set: (state.errorAction === action.payload) ? null : state.errorType,
-        },
       });
     },
     // 表格设置
@@ -178,25 +153,6 @@ export default {
       });
     },
     // 筛选
-    // 清除所有筛选条件
-    clearFillter(state, action) {
-      return update(state, {
-        req: {
-          filters: {
-            $set: {},
-          },
-          tableFilters: {
-            $set: {},
-          },
-          orders: {
-            $set: {},
-          },
-          search: {
-            $set: initstate.req.search,
-          },
-        },
-      });
-    },
     // 表格自带筛选，排序
     tableChange(state, action) {
       return update(state, {
@@ -220,39 +176,42 @@ export default {
         },
       });
     },
-    // 搜索筛选
-    // 选择搜索项
-    searchSelect(state, action) {
-      return update(state, {
-        req: {
-          search: {
-            key: {
-              $set: action.payload,
-            },
-          },
-        },
-      });
-    },
-    // 设置搜索关键字
-    searchFillter(state, action) {
-      return update(state, {
-        req: {
-          search: {
-            value: {
-              $set: ['like', [action.payload]],
-            },
-          },
-        },
-      });
-    },
-    // 表单筛选
-    // 设置时间段筛选
-    applyTimeChange(state, action) {
+    updateFormFillter(state, action) {
+      const filters = {};
+      let searchkey = '';
+      let searchvalue = '';
+
+      for (const key in action.payload) {
+        if (action.payload[key]) {
+          switch (key) {
+            case 'searchkey':
+              searchkey = action.payload[key];
+              break;
+            case 'searchvalue':
+              searchvalue = action.payload[key];
+              break;
+            default:
+              try {
+                filters[key] = ['between', [action.payload[key][0].format('YYYY-MM-DD HH:mm:ss'), action.payload[key][1].format('YYYY-MM-DD HH:mm:ss')]];
+              } catch (e) {
+                filters[key] = ['=', [action.payload[key]]];
+              }
+              break;
+          }
+        }
+      }
+
       return update(state, {
         req: {
           filters: {
-            createDt: {
-              $set: ['between', action.payload],
+            $set: filters,
+          },
+          search: {
+            key: {
+              $set: searchkey,
+            },
+            value: {
+              $set: ['like', [searchvalue]],
             },
           },
         },
@@ -263,20 +222,12 @@ export default {
   effects: {
     *fetch(action, { call, put, select }) {
       yield put({ type: 'resetTable' });
-
       const options = yield select(state => state[pageConfig.namespace].req);
 
-      if (action.payload) {
-        if (action.payload.index) {
-          options.page.index = action.payload.index;
-        }
+      options.page.index = (action.payload && action.payload.index) ? action.payload.index : options.page.index;
+      options.page.size = (action.payload && action.payload.size) ? action.payload.size : options.page.size;
 
-        if (action.payload.size) {
-          options.page.size = action.payload.size;
-        }
-      }
-
-      const { data, headers } = yield call(usersService.fetch, action, {}, options);
+      const { data, headers } = yield call(usersService.fetch, { errormsg: '表格数据请求失败', ...action }, {}, options);
 
       yield put({ type: 'updateTable', payload: data });
       yield put({ type: 'updatePages', payload: headers });
@@ -298,9 +249,8 @@ export default {
   subscriptions: {
     setup({ dispatch, history }) {
       return history.listen(({ pathname, query }) => {
-        if (removelocal(pathname) === '/app/doctor') {
-          dispatch({ type: 'fetch', payload: { index: 1, size: 20 },
-          });
+        if (removelocal(pathname) === pageConfig.pagepath) {
+          dispatch({ type: 'fetch', payload: { index: 1, size: 20 } });
         } else {
           dispatch({ type: 'resetstate' });
         }

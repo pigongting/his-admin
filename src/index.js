@@ -12,7 +12,7 @@ import Loading from 'dva-loading';
 import Perf from 'react-addons-perf';
 
 // 处理 onError 的函数
-import onError from './utils/requesterror';
+import { onError } from './utils/requesterror';
 
 // 模板文件
 import '../public/index.html';

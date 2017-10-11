@@ -4,7 +4,7 @@ import Loading from 'dva-loading';
 import { RouterContext } from 'dva/router';
 
 // 处理 onError 的函数
-import onError from '../src/utils/requesterror';
+import { onError } from '../src/utils/requesterror';
 
 // 处理 国际化地址 的函数
 import { removelocal } from '../src/utils/localpath';

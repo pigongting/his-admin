@@ -178,6 +178,8 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
     };
   }
 
+  console.log(options.body);
+
   // 请求和超时赛跑
   const response = await Promise.race([
     timeoutHandle(timeout, action),

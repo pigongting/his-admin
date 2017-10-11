@@ -1,14 +1,12 @@
 import React from 'react';
 import { connect } from 'dva';
-import { Link } from 'dva/router';
 import moment from 'moment';
-import cs from 'classnames';
 // antd 组件
-import { notification, Layout, Button, DatePicker, Dropdown, Table, Pagination, Input, Select, Menu, Icon, Modal, Checkbox, Row, Col } from 'antd';
-// 配置
-import { errorDesc, retryErrorType } from '../../../config/config';
-// 请求重试
-import { retry } from '../../utils/requesterror';
+import { notification, Layout, Form, Button, DatePicker, Dropdown, Table, Pagination, Input, Select, Menu, Icon, Modal, Checkbox, Row, Col } from 'antd';
+// 自定义组件
+import FormTableHeader from '../../components/FormTableHeader';
+import FormTableAndPage from '../../components/FormTableAndPage';
+import FormSubmitAndClear from '../../components/FormSubmitAndClear';
 
 // antd 组件扩展
 const { Header, Footer, Sider, Content } = Layout;
@@ -25,64 +23,12 @@ const pageConfig = {
 class AppDoctor extends React.Component {
   constructor(props) {
     super(props);
-  }
-
-  componentWillMount() {
-    const { req, res, set } = this.props.pagedata;
-
-    if (set.tableColumns.length < 1) {
-      this.props.setTableColumns();
-    }
-  }
-
-  componentWillReceiveProps(nextProps) {
-    const { errorAction, errorType } = nextProps.pagedata;
-    console.log(errorAction);
-    // 错误提示
-    if (errorAction) {
-      const openkey = `open${Date.now()}`;
-      const notify = {
-        key: openkey,
-        description: errorDesc[errorType],
-      };
-      // 可以重试的错误类型
-      if (retryErrorType.includes(errorType)) {
-        notify.duration = 0;
-        notify.btn = (<Button type="primary" size="small" onClick={() => this.props.startRetry(openkey)}>重试</Button>);
-      }
-      // 不同的请求不同的错误标题
-      switch (errorAction) {
-        case `${pageConfig.namespace}/fetch`:
-          notify.message = '表格数据请求失败';
-          break;
-        case `${pageConfig.namespace}/batchDelete`:
-          notify.message = '删除失败';
-          break;
-        default:
-          break;
-      }
-      // 显示错误提示
-      notification.error(notify);
-      // 显示过后清除错误
-      this.props.clearError(errorAction);
-    }
+    // console.log(this);
   }
 
   render() {
     const { req, res, set } = this.props.pagedata;
-
-    // 表格设置下拉列表
-    const menu = (
-      <Menu onClick={this.props.setMenu}>
-        <ItemGroup title="显示密度">
-          <Menu.Item key="0" className={(set.tableSize === 'default') ? 'checkmark' : ''}>标准</Menu.Item>
-          <Menu.Item key="1" className={(set.tableSize === 'middle') ? 'checkmark' : ''}>适中</Menu.Item>
-          <Menu.Item key="2" className={(set.tableSize === 'small') ? 'checkmark' : ''}>紧凑</Menu.Item>
-        </ItemGroup>
-        <Menu.Divider />
-        <Menu.Item key="3">配置表格列</Menu.Item>
-      </Menu>
-    );
+    const { getFieldDecorator } = this.props.form;
 
     // 表格列
     const columns = [];
@@ -92,6 +38,8 @@ class AppDoctor extends React.Component {
           columns.push({
             title: titleName,
             dataIndex: 'doctorName',
+            sorter: true,
+            sortOrder: req.orders.doctorName ? req.orders.doctorName[1] : false,
           });
           break;
         case '医生头衔':
@@ -171,163 +119,68 @@ class AppDoctor extends React.Component {
     });
 
     return (
-      <Layout className="tablePage">
-        <Header className="tableHeader">
-          <div className="search">
-            <InputGroup>
-              <Select value={req.search.key} onSelect={this.props.searchSelect}>
-                <Option value="doctorName">医生名称</Option>
-              </Select>
-              <Input
-                style={{ width: '240px' }}
-                placeholder="搜索医生..."
-                value={req.search.value ? req.search.value[1] : null}
-                onChange={this.props.searchFillter}
-                onPressEnter={this.props.startFillter}
-              />
-            </InputGroup>
-          </div>
-          <div className="operate">&emsp;&emsp;新增设备&emsp;&ensp;导出Excel</div>
-          <div className="pagination">
-            <Pagination
-              defaultCurrent={1}
-              defaultPageSize={20}
-              current={req.page.index}
-              pageSize={req.page.size}
-              total={req.page.total}
-              showTotal={(total, range) => {
-                return `${range[0]}-${range[1]} of ${total} items`;
-              }}
-              onChange={this.props.pageChange}
-            />
-            <Button className="tableReload" style={{ marginLeft: 8 }} onClick={this.props.reload}><i className="tableReloadIcon" /></Button>
-            <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
-              <Button className="tableSet" style={{ marginLeft: 8 }}><i className="tableSetIcon" /><Icon type="down" /></Button>
-            </Dropdown>
-            <Modal
-              title="配置表格列"
-              visible={set.columnModal.visible}
-              onCancel={this.props.columnModalHide}
-              footer={null}
-              wrapClassName="columnModal"
-            >
-              <Checkbox.Group value={set.tableColumns} onChange={this.props.setTableColumns}>
-                <Row>
-                  {set.fullColumns.map((item, index) => {
-                    return (
-                      <Col key={index} span={8}><Checkbox value={item} disabled={(index < 3)}>{item}</Checkbox></Col>
-                    );
-                  })}
-                </Row>
-              </Checkbox.Group>
-            </Modal>
-          </div>
-        </Header>
-        <Content style={{ overflowY: 'auto', padding: '0 10px 0 16px' }}>
-          <div className="tableFillter">
-            <div className="fillterTitle">筛选项</div>
-            <div className="fillterItem">
-              <span>申请时间：</span>
-              <RangePicker
-                value={(req.filters.createDt) ? [moment(req.filters.createDt[1][0]), moment(req.filters.createDt[1][1])] : null}
-                showTime={{ defaultValue: moment('00:00:00', 'HH:mm:ss') }}
-                format="YYYY-MM-DD HH:mm:ss"
-                placeholder={['开始时间', '结束时间']}
-                onChange={this.props.applyTimeChange}
-              />
+      <Form className="formTablePage" onSubmit={(e) => { this.props.submitForm(e, this.props); }}>
+        <Layout className="tablePage">
+          <Header className="tableHeader">
+            <div className="search">
+              <Form.Item>
+                {getFieldDecorator('searchkey', {
+                  rules: [{ required: true, message: 'Please input your E-mail!' }],
+                })(<Select size="default">
+                  <Option value="doctorName">医生名称</Option>
+                  <Option value="mobile">手机号码</Option>
+                </Select>)}
+              </Form.Item>
+              <Form.Item>
+                {getFieldDecorator('searchvalue', {
+                })(<Input size="default" placeholder="搜索医生..." onPressEnter={(e) => { this.props.submitForm(e, this.props); }} />)}
+              </Form.Item>
             </div>
-            <div className="fillterOperate">
-              <Button type="primary" onClick={this.props.startFillter}>开始筛选</Button>
-              &emsp;
-              <Button onClick={this.props.clearFillter}>清空</Button>
+            <div className="operate">&emsp;&emsp;新增设备&emsp;&ensp;导出Excel</div>
+            <FormTableHeader pageprops={this.props} />
+          </Header>
+          <Content className="tableContent">
+            <div className="tableFillter">
+              <div className="fillterTitle">筛选项</div>
+              <Form.Item label="申请时间">
+                {getFieldDecorator('createDt', {
+                })(<RangePicker
+                  size="default"
+                  placeholder={['开始时间', '结束时间']}
+                  format="YYYY-MM-DD HH:mm:ss"
+                />)}
+              </Form.Item>
+              <FormSubmitAndClear pageprops={this.props} />
             </div>
-          </div>
-          {
-            (set.tableSelected.length > 0) ?
-              <div className={cs('batchOperation', set.tableSize)}>
-                <Button type="danger" onClick={this.props.batchDelete} icon="delete" autoFocus>删除</Button>
-              </div>
-            : null
-          }
-          <Table
-            rowSelection={{
-              type: 'checkbox',
-              selectedRowKeys: set.tableSelected,
-              onChange: this.props.rowSelectionHandler,
-              selections: true,
-            }}
-            pagination={false}
-            size={set.tableSize}
-            dataSource={res.rows}
-            columns={columns}
-            rowClassName={(record, index) => { return this.props.rowClicked(record, index, set.rowClicked); }}
-            onChange={this.props.tableChange}
-            loading={{
-              size: 'default',
-              spinning: this.props.loading,
-              tip: 'loading',
-              wrapperClassName: 'aaaa',
-            }}
-            locale={{
-              filterTitle: '筛选',
-              filterConfirm: '确定',
-              filterReset: '重置',
-              emptyText: '暂无数据',
-            }}
-            onRowClick={this.props.rowClick}
-          />
-          <div className="tablePagination">
-            <Pagination
-              showSizeChanger
-              showQuickJumper
-              defaultCurrent={1}
-              defaultPageSize={20}
-              current={req.page.index}
-              pageSize={req.page.size}
-              total={req.page.total}
-              showTotal={(total, range) => {
-                return `${range[0]}-${range[1]} of ${total} items`;
-              }}
-              onChange={this.props.pageChange}
-              onShowSizeChange={this.props.pageChange}
-            />
-          </div>
-        </Content>
-      </Layout>
+            <FormTableAndPage pageprops={this.props} pagecolumns={columns} />
+          </Content>
+        </Layout>
+      </Form>
     );
   }
 }
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    // 每个页面都有这 2 个，而且内容都一样
-    // 清除错误
-    clearError: (errorAction) => {
+    // 表单筛选
+    // 提交筛选表单
+    submitForm: (e, props) => {
+      e.preventDefault();
       dispatch({
-        type: `${pageConfig.namespace}/clearerror`,
-        payload: errorAction,
+        type: `${pageConfig.namespace}/updateFormFillter`,
+        payload: props.form.getFieldsValue(),
+      });
+      dispatch({
+        type: `${pageConfig.namespace}/fetch`,
+        payload: { index: 1 },
       });
     },
-    // 重试请求
-    startRetry: (openkey) => {
-      notification.close(openkey);
-      retry(dispatch);
+    // 清除所有筛选条件后提交筛选表单
+    handleReset: (e, props) => {
+      props.form.resetFields(['searchvalue']);
+      props.submitForm(e, props);
     },
     // 头部
-    // 选择搜索项
-    searchSelect: (value, option) => {
-      dispatch({
-        type: `${pageConfig.namespace}/searchSelect`,
-        payload: value,
-      });
-    },
-    // 设置搜索关键字
-    searchFillter: (e) => {
-      dispatch({
-        type: `${pageConfig.namespace}/searchFillter`,
-        payload: e.target.value,
-      });
-    },
     // 切换分页
     pageChange: (page, pageSize) => {
       dispatch({
@@ -408,10 +261,6 @@ function mapDispatchToProps(dispatch, ownProps) {
         payload: record.key,
       });
     },
-    // 判断行是否被点击过
-    rowClicked: (record, index, clickedArray) => {
-      return (clickedArray.includes(record.key)) ? 'clicked' : '';
-    },
     // 表格自带筛选，排序
     tableChange: (pagination, filters, sorter) => {
       console.log(filters, sorter);
@@ -452,29 +301,6 @@ function mapDispatchToProps(dispatch, ownProps) {
         payload: id,
       });
     },
-    // 表单筛选
-    // 清除所有筛选条件
-    clearFillter: (e) => {
-      dispatch({
-        type: `${pageConfig.namespace}/clearFillter`,
-      });
-    },
-    // 开始表单筛选
-    startFillter: (e) => {
-      dispatch({
-        type: `${pageConfig.namespace}/fetch`,
-        payload: {
-          index: 1,
-        },
-      });
-    },
-    // 设置筛选时间段
-    applyTimeChange: (dates, dateStrings) => {
-      dispatch({
-        type: `${pageConfig.namespace}/applyTimeChange`,
-        payload: dateStrings,
-      });
-    },
   };
 }
 
@@ -486,4 +312,19 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(AppDoctor);
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create({
+  mapPropsToFields(props) {
+    const req = props.pagedata.req;
+    return {
+      searchkey: {
+        value: req.search.key,
+      },
+      searchvalue: {
+        value: req.search.value[1][0],
+      },
+      createDt: {
+        value: (req.filters.createDt) ? [moment(req.filters.createDt[1][0]), moment(req.filters.createDt[1][1])] : null,
+      },
+    };
+  },
+})(AppDoctor));
