@@ -36,14 +36,10 @@ const initstate = {
     },
   },
   set: {
-    tableSize: 'middle',
     rowClicked: [],
     tableSelected: [],
     fullColumns: pageConfig.columns,
     tableColumns: pageConfig.columns,
-    columnModal: {
-      visible: false,
-    },
   },
 };
 
@@ -61,28 +57,6 @@ export default {
       });
     },
     // 表格设置
-    // 设置表格展示尺寸
-    tableSize(state, action) {
-      return update(state, {
-        set: {
-          tableSize: {
-            $set: action.payload,
-          },
-        },
-      });
-    },
-    // 显示隐藏表格列设置模态框
-    columnModalVisible(state, action) {
-      return update(state, {
-        set: {
-          columnModal: {
-            visible: {
-              $set: !(state.set.columnModal.visible),
-            },
-          },
-        },
-      });
-    },
     // 设置显示的表格列
     setTableColumns(state, action) {
       return update(state, {

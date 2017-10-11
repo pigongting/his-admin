@@ -8,6 +8,8 @@ class FormSubmitAndClear extends React.Component {
   }
 
   render() {
+    const { handleReset, submitForm, form } = this.props;
+
     return (
       <div className="fillterOperate">
         <Form.Item>
@@ -15,7 +17,7 @@ class FormSubmitAndClear extends React.Component {
         </Form.Item>
         &emsp;
         <Form.Item>
-          <Button size="default" onClick={(e) => { this.props.pageprops.handleReset(e, this.props.pageprops); }}>清空</Button>
+          <Button size="default" onClick={() => { handleReset(form, submitForm); }}>清空</Button>
         </Form.Item>
       </div>
     );

@@ -2,12 +2,10 @@ import React from 'react';
 import { connect } from 'dva';
 import moment from 'moment';
 // antd 组件
-import { notification, Layout, Form, Button, DatePicker, Dropdown, Table, Pagination, Input, Select, Menu, Icon, Modal, Checkbox, Row, Col } from 'antd';
+import { Layout, Form, DatePicker, Dropdown, Input, Select, Menu } from 'antd';
 // 自定义组件
-import FormTableHeader from '../../components/FormTableHeader';
 import FormTableAndPage from '../../components/FormTableAndPage';
 import FormSubmitAndClear from '../../components/FormSubmitAndClear';
-
 // antd 组件扩展
 const { Header, Footer, Sider, Content } = Layout;
 const { MonthPicker, RangePicker } = DatePicker;
@@ -119,7 +117,7 @@ class AppDoctor extends React.Component {
     });
 
     return (
-      <Form className="formTablePage" onSubmit={(e) => { this.props.submitForm(e, this.props); }}>
+      <Form className="formTablePage" onSubmit={(e) => { this.props.submitForm(this.props.form, e); }}>
         <Layout className="tablePage">
           <Header className="tableHeader">
             <div className="search">
@@ -133,11 +131,10 @@ class AppDoctor extends React.Component {
               </Form.Item>
               <Form.Item>
                 {getFieldDecorator('searchvalue', {
-                })(<Input size="default" placeholder="搜索医生..." onPressEnter={(e) => { this.props.submitForm(e, this.props); }} />)}
+                })(<Input size="default" placeholder="搜索医生..." onPressEnter={(e) => { this.props.submitForm(this.props.form); }} />)}
               </Form.Item>
             </div>
             <div className="operate">&emsp;&emsp;新增设备&emsp;&ensp;导出Excel</div>
-            <FormTableHeader pageprops={this.props} />
           </Header>
           <Content className="tableContent">
             <div className="tableFillter">
@@ -150,9 +147,9 @@ class AppDoctor extends React.Component {
                   format="YYYY-MM-DD HH:mm:ss"
                 />)}
               </Form.Item>
-              <FormSubmitAndClear pageprops={this.props} />
+              <FormSubmitAndClear handleReset={this.props.handleReset} submitForm={this.props.submitForm} form={this.props.form} />
             </div>
-            <FormTableAndPage pageprops={this.props} pagecolumns={columns} />
+            <FormTableAndPage pageprops={this.props} namespace={pageConfig.namespace} pagecolumns={columns} />
           </Content>
         </Layout>
       </Form>
@@ -164,119 +161,23 @@ function mapDispatchToProps(dispatch, ownProps) {
   return {
     // 表单筛选
     // 提交筛选表单
-    submitForm: (e, props) => {
-      e.preventDefault();
+    submitForm: (form, e) => {
+      if (e) { e.preventDefault(); }
+      // 更新请求条件
       dispatch({
         type: `${pageConfig.namespace}/updateFormFillter`,
-        payload: props.form.getFieldsValue(),
+        payload: form.getFieldsValue(),
       });
+      // 发送请求
       dispatch({
         type: `${pageConfig.namespace}/fetch`,
         payload: { index: 1 },
       });
     },
     // 清除所有筛选条件后提交筛选表单
-    handleReset: (e, props) => {
-      props.form.resetFields(['searchvalue']);
-      props.submitForm(e, props);
-    },
-    // 头部
-    // 切换分页
-    pageChange: (page, pageSize) => {
-      dispatch({
-        type: `${pageConfig.namespace}/fetch`,
-        payload: {
-          index: page,
-          size: pageSize,
-        },
-      });
-    },
-    // 重载当前页
-    reload: () => {
-      dispatch({
-        type: `${pageConfig.namespace}/fetch`,
-      });
-    },
-    // 表格设置
-    setMenu: ({ item, key, keyPath }) => {
-      switch (key) {
-        case '0':
-          dispatch({
-            type: `${pageConfig.namespace}/tableSize`,
-            payload: 'default',
-          });
-          break;
-        case '1':
-          dispatch({
-            type: `${pageConfig.namespace}/tableSize`,
-            payload: 'middle',
-          });
-          break;
-        case '2':
-          dispatch({
-            type: `${pageConfig.namespace}/tableSize`,
-            payload: 'small',
-          });
-          break;
-        case '3':
-          dispatch({
-            type: `${pageConfig.namespace}/columnModalVisible`,
-          });
-          break;
-        default:
-          break;
-      }
-    },
-    // 显示隐藏表格列设置模态框
-    columnModalHide: (e) => {
-      dispatch({
-        type: `${pageConfig.namespace}/columnModalVisible`,
-      });
-    },
-    // 设置显示的表格列
-    setTableColumns: (checkedValue) => {
-      dispatch({
-        type: `${pageConfig.namespace}/setTableColumns`,
-        payload: checkedValue,
-      });
-    },
-    // 表格
-    // 当前选中的行
-    rowSelectionHandler: (selectedRowKeys, selectedRows) => {
-      dispatch({
-        type: `${pageConfig.namespace}/rowSelected`,
-        payload: selectedRowKeys,
-      });
-    },
-    // 删除当前选中的行
-    batchDelete: () => {
-      dispatch({
-        type: `${pageConfig.namespace}/batchDelete`,
-      });
-    },
-    // 点击表格行
-    rowClick: (record, index, event) => {
-      dispatch({
-        type: `${pageConfig.namespace}/recordRowClick`,
-        payload: record.key,
-      });
-    },
-    // 表格自带筛选，排序
-    tableChange: (pagination, filters, sorter) => {
-      console.log(filters, sorter);
-      dispatch({
-        type: `${pageConfig.namespace}/tableChange`,
-        payload: {
-          filter: filters,
-          orders: sorter,
-        },
-      });
-      dispatch({
-        type: `${pageConfig.namespace}/fetch`,
-        payload: {
-          index: 1,
-        },
-      });
+    handleReset: (form, submitForm) => {
+      form.resetFields(['searchvalue']);
+      submitForm(form);
     },
     // 表格行操作
     operation: (item, key, keyPath, id) => {
