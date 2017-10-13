@@ -1,8 +1,14 @@
 import React from 'react';
 // antd 组件
 import { notification, Button } from 'antd';
-// 配置
-import { errorDesc, retryErrorType } from '../../config/config';
+
+const retryErrorType = ['dataError', 'timeout'];
+const errorDesc = {
+  addressError: '请检查是否写错了请求地址，或者请求地址服务没开',
+  requestState: '请检查请求参数，服务器程序',
+  dataError: '请检查请求参数，服务器程序',
+  timeout: '请检查网络',
+};
 
 function retry(openkey, dispatch, frommodel) {
   // 删除错误提示

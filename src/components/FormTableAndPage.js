@@ -10,12 +10,27 @@ const ItemGroup = Menu.ItemGroup;
 class FormTableAndPage extends React.Component {
   constructor(props) {
     super(props);
-    console.log(this);
+    // console.log(this);
 
     this.state = {
       tableSize: 'middle',
       setColumnModalVisible: false,
+      clickedRows: [],
+      selectedRows: [],
     };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.rows !== this.props.rows) {
+      this.setState(update(this.state, {
+        selectedRows: {
+          $set: [],
+        },
+        clickedRows: {
+          $set: [],
+        },
+      }));
+    }
   }
 
   setTable({ item, key, keyPath }) {
@@ -53,6 +68,22 @@ class FormTableAndPage extends React.Component {
     }
   }
 
+  setClickedRow(record) {
+    this.setState(update(this.state, {
+      clickedRows: {
+        $push: [record.key],
+      },
+    }));
+  }
+
+  setSelectedRows(selectedRowKeys) {
+    this.setState(update(this.state, {
+      selectedRows: {
+        $set: selectedRowKeys,
+      },
+    }));
+  }
+
   hideSetColumnModal() {
     this.setState(update(this.state, {
       setColumnModalVisible: {
@@ -62,10 +93,8 @@ class FormTableAndPage extends React.Component {
   }
 
   render() {
-    const { tableSize, setColumnModalVisible } = this.state;
-    const { namespace } = this.props;
-    const { req, res, set } = this.props.pageprops.pagedata;
-    const { loading, pagecolumns } = this.props.pageprops;
+    const { tableSize, setColumnModalVisible, clickedRows, selectedRows } = this.state;
+    const { namespace, rows, columns, fullcolumns, showcolumns, current, pageSize, total, loading } = this.props;
 
     // 表格设置下拉列表
     const menu = (
@@ -86,55 +115,45 @@ class FormTableAndPage extends React.Component {
           <Pagination
             defaultCurrent={1}
             defaultPageSize={20}
-            current={req.page.index}
-            pageSize={req.page.size}
-            total={req.page.total}
-            showTotal={(total, range) => {
-              return `${range[0]}-${range[1]} of ${total} items`;
-            }}
-            onChange={(page, pageSize) => this.props.pageChange(page, pageSize, namespace)}
+            current={current}
+            pageSize={pageSize}
+            total={total}
+            showTotal={(totalParams, range) => { return `${range[0]}-${range[1]} of ${totalParams} items`; }}
+            onChange={(page, pageSizeParams) => this.props.pageChange(page, pageSizeParams, namespace)}
           />
           <Button className="tableReload" style={{ marginLeft: 8 }} onClick={() => this.props.reload(namespace)}><i className="tableReloadIcon" /></Button>
           <Dropdown overlay={menu} trigger={['click']} placement="bottomRight">
             <Button className="tableSet" style={{ marginLeft: 8 }}><i className="tableSetIcon" /><Icon type="down" /></Button>
           </Dropdown>
           <Modal title="配置表格列" wrapClassName="columnModal" visible={setColumnModalVisible} onCancel={() => this.hideSetColumnModal()} footer={null}>
-            <Checkbox.Group value={set.tableColumns} onChange={checkedValue => this.props.setShowColumns(checkedValue, namespace)}>
-              <Row>{set.fullColumns.map((item, index) => <Col key={index} span={8}><Checkbox value={item} disabled={(index < 3)}>{item}</Checkbox></Col>)}</Row>
+            <Checkbox.Group value={showcolumns} onChange={checkedValue => this.props.setShowColumns(checkedValue, namespace)}>
+              <Row>{fullcolumns.map((item, index) => <Col key={index} span={8}><Checkbox value={item} disabled={(index < 3)}>{item}</Checkbox></Col>)}</Row>
             </Checkbox.Group>
           </Modal>
         </div>
         {
-          (set.tableSelected.length > 0) ?
+          (selectedRows.length > 0) ?
             <div className={cs('batchOperation', tableSize)}>
-              <Button type="danger" onClick={() => this.props.batchDelete(namespace)} icon="delete" autoFocus>删除</Button>
+              <Button type="danger" onClick={() => this.props.batchDelete(selectedRows, namespace)} icon="delete" autoFocus>删除</Button>
             </div>
           : null
         }
         <Table
           rowSelection={{
             type: 'checkbox',
-            selectedRowKeys: set.tableSelected,
-            onChange: (selectedRowKeys, selectedRows) => this.props.rowSelectionHandler(selectedRowKeys, selectedRows, namespace),
             selections: true,
+            selectedRowKeys: selectedRows,
+            onChange: selectedRowKeys => this.setSelectedRows(selectedRowKeys),
           }}
           pagination={false}
           size={tableSize}
-          dataSource={res.rows}
-          columns={pagecolumns}
-          rowClassName={(record, index) => { return (set.rowClicked.includes(record.key)) ? 'clicked' : ''; }}
+          dataSource={rows}
+          columns={columns}
+          rowClassName={(record) => { return (clickedRows.includes(record.key)) ? 'clicked' : ''; }}
           onChange={(pagination, filters, sorter) => this.props.tableChange(pagination, filters, sorter, namespace)}
-          loading={{
-            size: 'default',
-            spinning: loading,
-          }}
-          locale={{
-            filterTitle: '筛选',
-            filterConfirm: '确定',
-            filterReset: '重置',
-            emptyText: '暂无数据',
-          }}
-          onRowClick={(record, index, event) => this.props.rowClick(record, index, event, namespace)}
+          loading={{ size: 'default', spinning: loading }}
+          locale={{ filterTitle: '筛选', filterConfirm: '确定', filterReset: '重置', emptyText: '暂无数据' }}
+          onRowClick={record => this.setClickedRow(record)}
         />
         <div className="tablePagination">
           <Pagination
@@ -142,14 +161,12 @@ class FormTableAndPage extends React.Component {
             showQuickJumper
             defaultCurrent={1}
             defaultPageSize={20}
-            current={req.page.index}
-            pageSize={req.page.size}
-            total={req.page.total}
-            showTotal={(total, range) => {
-              return `${range[0]}-${range[1]} of ${total} items`;
-            }}
-            onChange={(page, pageSize) => this.props.pageChange(page, pageSize, namespace)}
-            onShowSizeChange={(page, pageSize) => this.props.pageChange(page, pageSize, namespace)}
+            current={current}
+            pageSize={pageSize}
+            total={total}
+            showTotal={(totalParams, range) => { return `${range[0]}-${range[1]} of ${totalParams} items`; }}
+            onChange={(page, pageSizeParams) => this.props.pageChange(page, pageSizeParams, namespace)}
+            onShowSizeChange={(page, pageSizeParams) => this.props.pageChange(page, pageSizeParams, namespace)}
           />
         </div>
       </div>
@@ -162,7 +179,14 @@ function mapDispatchToProps(dispatch, ownProps) {
     // 重载当前页
     reload: (namespace) => {
       dispatch({
-        type: `${namespace}/fetch`,
+        type: `${namespace}/fetchTableData`,
+      });
+    },
+    // 切换分页
+    pageChange: (page, pageSize, namespace) => {
+      dispatch({
+        type: `${namespace}/fetchTableData`,
+        payload: { index: page, size: pageSize },
       });
     },
     // 设置显示的表格列
@@ -173,50 +197,30 @@ function mapDispatchToProps(dispatch, ownProps) {
       });
     },
     // 删除当前选中的行
-    batchDelete: (namespace) => {
+    batchDelete: (selectedRows, namespace) => {
       dispatch({
-        type: `${namespace}/batchDelete`,
-      });
-    },
-    // 切换分页
-    pageChange: (page, pageSize, namespace) => {
-      dispatch({
-        type: `${namespace}/fetch`,
-        payload: { index: page, size: pageSize },
-      });
-    },
-    // 当前选中的行
-    rowSelectionHandler: (selectedRowKeys, selectedRows, namespace) => {
-      dispatch({
-        type: `${namespace}/rowSelected`,
-        payload: selectedRowKeys,
+        type: `${namespace}/batchDeleteRow`,
+        payload: selectedRows,
       });
     },
     // 表格自带筛选，排序
     tableChange: (pagination, filters, sorter, namespace) => {
-      console.log(filters, sorter);
+      // 更新筛选排序条件
       dispatch({
-        type: `${namespace}/tableChange`,
-        payload: {
-          filter: filters,
-          orders: sorter,
-        },
+        type: `${namespace}/updateTableFillter`,
+        payload: { filter: filters, orders: sorter },
       });
+      // 发送请求
       dispatch({
-        type: `${namespace}/fetch`,
-        payload: {
-          index: 1,
-        },
-      });
-    },
-    // 点击表格行
-    rowClick: (record, index, event, namespace) => {
-      dispatch({
-        type: `${namespace}/recordRowClick`,
-        payload: record.key,
+        type: `${namespace}/fetchTableData`,
+        payload: { index: 1 },
       });
     },
   };
 }
 
-export default connect(mapDispatchToProps)(FormTableAndPage);
+function mapStateToProps(state, ownProps) {
+  return {};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(FormTableAndPage);

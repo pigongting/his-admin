@@ -161,11 +161,12 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
     }
 
     if (options.body.search) {
-      if (!options.body.filters) {
-        options.body.filters = {};
+      if (options.body.search.value[1][0]) {
+        if (!options.body.filters) {
+          options.body.filters = {};
+        }
+        options.body.filters[options.body.search.key] = options.body.search.value;
       }
-
-      options.body.filters[options.body.search.key] = options.body.search.value;
       delete options.body.search;
     }
   }

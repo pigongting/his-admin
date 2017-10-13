@@ -11,13 +11,6 @@ module.exports = {
   YQL: ['http://www.zuimeitianqi.com'],
   CORS: [],
   openPages: ['/login'],
-  retryErrorType: ['dataError', 'timeout'],
-  errorDesc: {
-    addressError: '请检查是否写错了请求地址，或者请求地址服务没开',
-    requestState: '请检查请求参数，服务器程序',
-    dataError: '请检查请求参数，服务器程序',
-    timeout: '请检查网络',
-  },
   apiPrefix: '/api/v1',
   api: {
     userLogin: `${APIV1}/user/login`,

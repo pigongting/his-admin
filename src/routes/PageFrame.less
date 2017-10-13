@@ -437,10 +437,6 @@
 /* 表单表格页------------------------------------------------------------------------------------------------ */
 
 :global {
-  form .ant-select, form .ant-cascader-picker {
-    width: auto !important;
-  }
-
   .formTablePage {
     width: 100%;
     
@@ -464,6 +460,7 @@
     .ant-form-item {
       display: inline-block;
       margin-bottom: 0px;
+      margin-right: 16px;
     }
 
     .ant-form-item-control-wrapper {
@@ -520,6 +517,7 @@
       }
 
       .ant-input {
+        width: 240px;
         font-size: 14px;
         margin-top: 7px;
         border: none;
@@ -544,7 +542,7 @@
   .tableFillter {
     position: relative;
     line-height: 45px;
-    padding: 8px 0;
+    padding: 8px 180px 8px 0;
 
     .fillterTitle {
       line-height: 30px;
@@ -557,11 +555,23 @@
       position: absolute;
       right: 0;
       bottom: 16px;
+
+      .ant-form-item {
+        margin-right: 0;
+      }
     }
 
     .ant-form-item-label {
       vertical-align: top;
       line-height: inherit;
+    }
+
+    .ant-select-selection__placeholder {
+      margin-top: -11px;
+    }
+
+    .ant-cascader-picker-label {
+      margin-top: -11px;
     }
   }
 
@@ -746,6 +756,10 @@
   .tablePagination {
     padding: 16px 0;
     text-align: center;
+
+    .ant-select {
+      width: auto;
+    }
   }
 
   /* 配置表格项-模态框 */

@@ -33,7 +33,7 @@
     "install-node": "6.9.2"
   },
   "dependencies": {
-    "antd": "^2.13.3",
+    "antd": "^2.13.6",
     "axios": "^0.16.2",
     "babel-runtime": "^6.9.2",
     "css-modules-require-hook": "4.1.0",
