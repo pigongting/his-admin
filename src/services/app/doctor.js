@@ -1,5 +1,9 @@
 import request from '../../utils/request';
 
+const { config: commonconfig } = require('../../../data/common');
+
+const { apiPrefix } = commonconfig;
+
 export function tableData(action, config, options) {
   return request(action, config, {
     Url: 'http://192.168.3.201:8080/WiseMedical/doctor/getDoctorList.do',
@@ -42,7 +46,8 @@ export function getRow(action, config, options) {
 
 export function deptFillter(action, config, options) {
   return request(action, config, {
-    Url: 'http://192.168.3.201:8080/WiseMedical/dept/getAllDeptList.do',
+    // Url: 'http://192.168.3.201:8080/WiseMedical/dept/getAllDeptList.do',
+    Url: `${apiPrefix}/dept/getAllDeptList`,
     method: 'POST',
     body: options,
   });
@@ -50,7 +55,8 @@ export function deptFillter(action, config, options) {
 
 export function hospitalFillter(action, config, options) {
   return request(action, config, {
-    Url: 'http://192.168.3.201:8080/WiseMedical/hospital/getAllHospitalList.do',
+    // Url: 'http://192.168.3.201:8080/WiseMedical/hospital/getAllHospitalList.do',
+    Url: `${apiPrefix}/hospital/getAllHospitalList`,
     method: 'POST',
     body: options,
   });

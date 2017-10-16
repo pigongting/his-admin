@@ -21,7 +21,7 @@ const initstate = getinitstate({
 
 initstate.req.doctorName.value = '王丹丹';
 initstate.req.pcaCode.value = ['130000', '130100', '130102'];
-initstate.res.dept = [{ value: '', label: '加载中...' }];
+initstate.res.hospitalDeptId = [{ value: '', label: '加载中...' }];
 
 export default {
 
@@ -35,7 +35,7 @@ export default {
     updateDeptFillter(state, action) {
       return update(state, {
         res: {
-          dept: {
+          hospitalDeptId: {
             $set: action.payload,
           },
         },
@@ -44,7 +44,7 @@ export default {
     updateHospitalFillter(state, action) {
       return update(state, {
         res: {
-          hospital: {
+          hospitalId: {
             $set: action.payload,
           },
         },
@@ -94,7 +94,7 @@ export default {
       if (targetOption) {
         targetOption.loading = false;
         targetOption.children = data;
-        const options = yield select(state => state[pageConfig.namespace].res.dept);
+        const options = yield select(state => state[pageConfig.namespace].res.hospitalDeptId);
         yield put({ type: 'updateDeptFillter', payload: [...options] });
       } else {
         yield put({ type: 'updateDeptFillter', payload: data });
