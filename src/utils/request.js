@@ -138,6 +138,14 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
   }
 
   if (options.body) {
+    if (options.body.filters) {
+      for (const key in options.body.filters) {
+        if (options.body.filters[key][0] === '=') {
+          options.body.filters[key][1] = options.body.filters[key][1].slice(-1);
+        }
+      }
+    }
+
     if (options.body.page) {
       for (const key in options.body.page) {
         if (key) {

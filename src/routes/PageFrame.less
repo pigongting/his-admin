@@ -435,7 +435,6 @@
 }
 
 /* 表单表格页------------------------------------------------------------------------------------------------ */
-
 :global {
   .formTablePage {
     width: 100%;
@@ -535,6 +534,14 @@
       float: left;
       color: @primary-color;
       font-size: 15px;
+
+      a {
+        display: inline-block;
+        vertical-align: top;
+        height: 59px;
+        line-height: 59px;
+        padding: 0 20px;
+      }
     }
   }
 
@@ -797,3 +804,97 @@
     }
   }
 }
+
+/* 表单页------------------------------------------------------------------------------------------------ */
+:global {
+  .formPage {
+    width: 100%;
+    
+    /* 页面整体 */    
+    .formPageLayout {
+      height: 100%;
+      
+      .formPageHeader {
+        position: relative;
+        overflow: hidden;
+        -webkit-transition: all .2s;
+        -o-transition: all .2s;
+        transition: all .2s;
+
+        .pageTitle {
+          font-size: 18px;
+          padding-left: 16px;
+          color: @primary-color;
+          white-space: nowrap;
+        }
+
+        .pageOperat {
+          position: absolute;
+          right: 0;
+          top: 0;
+          padding: 14px 27px 14px 16px;
+          height: 60px;
+
+          .ant-form-item {
+            display: inline-block;
+            vertical-align: top;
+            margin-bottom: 0;
+          }
+        }
+      }
+
+      .formPageContent {
+        overflow-y: scroll;
+        padding: 20px 23px 40px 40px;
+        
+        .formGroup {
+          font-weight: 500;
+          font-size: 18px;
+          padding: 20px 0 10px 0;
+          margin: 0 0 40px 0;
+          border-bottom: 1px solid #eee;
+        }
+
+        .ant-form-item-label label {
+          font-weight: 500;
+          font-size: 16px;
+        }
+        
+        .ant-input {
+          font-size: 14px;
+        }
+
+        .ant-cascader-picker-label {
+          font-size: 14px;
+        }
+
+        .ant-select-selection__placeholder {
+          font-size: 14px;
+        }
+
+        .ant-select-selection-selected-value {
+          font-size: 14px;
+        }
+
+        .ant-radio-wrapper {
+          font-size: 14px;
+        }
+
+        .ant-radio {
+          vertical-align: top;
+          margin-top: 9px;
+        }
+
+        .ant-form-item-with-help {
+          margin-bottom: 7px;
+        }
+      }
+    }
+  }
+
+
+
+
+
+}
+

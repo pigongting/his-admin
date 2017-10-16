@@ -7,6 +7,8 @@ import { Layout, Form, DatePicker, Dropdown, Input, Select, Menu, Cascader } fro
 // 自定义组件
 import FormTableAndPage from '../../components/FormTableAndPage';
 import FormSubmitAndClear from '../../components/FormSubmitAndClear';
+// 级联地址
+import { cascadAddr } from '../../../data/cascadAddr';
 // antd 组件扩展
 const { Header, Footer, Sider, Content } = Layout;
 const { RangePicker } = DatePicker;
@@ -16,30 +18,6 @@ const Option = Select.Option;
 const pageConfig = {
   namespace: 'appdoctor',
 };
-
-const residences = [{
-  value: '110000',
-  label: '北京',
-  children: [{
-    value: '110101',
-    label: '东城区',
-    children: [{
-      value: '110102',
-      label: '西单',
-    }],
-  }],
-}, {
-  value: '110011',
-  label: 'Jiangsu',
-  children: [{
-    value: '111100',
-    label: 'Nanjing',
-    children: [{
-      value: '112522',
-      label: 'Zhong Hua Men',
-    }],
-  }],
-}];
 
 class AppDoctor extends React.Component {
   constructor(props) {
@@ -175,7 +153,9 @@ class AppDoctor extends React.Component {
                 })(<Input size="default" placeholder="搜索医生..." onPressEnter={(e) => { this.props.submitForm(form); }} />)}
               </Form.Item>
             </div>
-            <div className="operate">&emsp;&emsp;新增设备&emsp;&ensp;导出Excel</div>
+            <div className="operate">
+              <a href="/app/doctoredit" rel="noopener noreferrer" target="_blank">新增设备</a>
+            </div>
           </Header>
           <Content className="tableContent">
             <div className="tableFillter">
@@ -189,7 +169,13 @@ class AppDoctor extends React.Component {
                 />)}
               </Form.Item>
               <Form.Item label="地区">
-                {getFieldDecorator('pcaCode', {})(<Cascader options={residences} size="default" placeholder="请选择" style={{ width: 220 }} />)}
+                {getFieldDecorator('pcaCode', {})(<Cascader
+                  size="default"
+                  placeholder="请选择"
+                  expandTrigger="hover"
+                  options={cascadAddr}
+                  style={{ width: 220 }}
+                />)}
               </Form.Item>
               <Form.Item label="科室">
                 {getFieldDecorator('hospitalDeptId', {})(<Cascader
@@ -198,6 +184,7 @@ class AppDoctor extends React.Component {
                   options={res.filters.dept}
                   loadData={selectedOptions => this.props.loadDeptData(selectedOptions)}
                   onPopupVisibleChange={(res.filters.dept[0].value === '') ? this.props.loadDeptData : () => {}}
+                  style={{ width: 220 }}
                   changeOnSelect
                 />)}
               </Form.Item>

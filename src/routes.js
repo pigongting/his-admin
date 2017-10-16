@@ -130,6 +130,22 @@ function Routes(locale, app) {
                 }
               },
             },
+            {
+              path: 'doctoredit',
+              getComponent(nextState, cb) {
+                if (process.env.NODE_ENV === 'development') {
+                  import(/* webpackChunkName: "App/DoctorEdit" */ './routes/App/DoctorEdit')
+                  .then((data) => {
+                    registerModel(app, require('./models/app/doctoredit'));
+                    cb(null, data);
+                  })
+                  .catch(err => console.log('Failed to load App/DoctorEdit', err));
+                } else {
+                  registerModel(app, require('./models/app/doctoredit'));
+                  cb(null, require('./routes/App/DoctorEdit'));
+                }
+              },
+            },
           ],
         },
       ],
