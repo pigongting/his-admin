@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'dva';
-import FormPage from '../../components/FormPage';
 import { handleDeptList } from '../../actions/app/Dept';
 import { handleHospitalList } from '../../actions/app/Hospital';
+import FormPage from '../../components/FormPage';
 
 const pagespace = 'appdoctoredit';
 
@@ -20,7 +20,6 @@ class AppDoctorEdit extends React.Component {
           edit: '编辑医生信息',
           view: '查看医生信息',
         }}
-        momentkey={['birthday']}
         itemdata={[
           {
             type: 'FormItemGroup',
@@ -75,8 +74,17 @@ class AppDoctorEdit extends React.Component {
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    handleDeptList: (form, selectedOptions) => handleDeptList(dispatch, pagespace, form, selectedOptions),
-    handleHospitalList: form => handleHospitalList(dispatch, pagespace, form),
+    handleDeptList: selectedOptions => handleDeptList(dispatch, pagespace, selectedOptions),
+    handleHospitalList: () => handleHospitalList(dispatch, pagespace),
+    handleCascadAddr: () => {
+      if (typeof window !== 'undefined') {
+        import(/* webpackChunkName: "cascadAddr" */ '../../../data/cascadAddr')
+        .then((data) => {
+          console.log(data);
+        })
+        .catch(err => console.log('Failed to load moment', err));
+      }
+    },
   };
 }
 

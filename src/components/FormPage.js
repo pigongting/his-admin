@@ -12,16 +12,18 @@ const { TextArea } = Input;
 class FormPage extends React.Component {
   constructor(props) {
     super(props);
+    this.props.pagedata.form = this.props.form;
   }
 
   componentDidMount() {
-    if (typeof window !== 'undefined') {
-      import(/* webpackChunkName: "cascadAddr" */ '../../data/cascadAddr')
-      .then((data) => {
-        console.log(data);
-      })
-      .catch(err => console.log('Failed to load moment', err));
-    }
+    const { itemdata } = this.props;
+
+    itemdata.map((item, index) => {
+      if (item.asynload) {
+        item.asynload(true);
+      }
+      return item;
+    });
   }
 
   render() {
@@ -71,11 +73,11 @@ class FormPage extends React.Component {
                 })(<Select
                   placeholder="请选择"
                   notFoundContent="加载中..."
-                  onFocus={(res[item.field]) ? () => {} : () => { item.asynload(form); }}
+                  onFocus={(res[item.field]) ? () => {} : item.asynload}
                   getPopupContainer={() => document.getElementById('formScrollContent')}
                 >
                   {res[item.field] && res[item.field].map((ele, i) =>
-                    <Select.Option key={i} value={ele[item.field]}>{ele[item.name]}</Select.Option>,
+                    <Select.Option key={i} value={`${ele[item.field]}`}>{ele[item.name]}</Select.Option>,
                   )}
                 </Select>)
               }
@@ -91,8 +93,8 @@ class FormPage extends React.Component {
                 getPopupContainer={() => document.getElementById('formScrollContent')}
                 placeholder="请选择"
                 options={res[item.field]}
-                loadData={selectedOptions => item.asynload(form, selectedOptions)}
-                onPopupVisibleChange={(res[item.field] === undefined) ? (selectedOptions) => { item.asynload(form, selectedOptions); } : () => {}}
+                loadData={item.asynload}
+                onPopupVisibleChange={(res[item.field] === undefined) ? item.asynload : () => {}}
                 changeOnSelect={item.changeOnSelect}
               />)}
             </Form.Item>);
@@ -187,6 +189,8 @@ function mapStateToProps(state, ownProps) {
 }
 
 function isValidDate(str) {
+  if (typeof str !== 'string') return false;
+
   const d = moment(str, 'YYYY-MM-DD');
   if (d == null || !d.isValid()) return false;
 
@@ -198,27 +202,31 @@ function isValidDate(str) {
 
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create({
   mapPropsToFields(props) {
-    console.log(props);
     const { pagedata, momentkey } = props;
-    const { req } = pagedata;
+    const { req, form } = pagedata;
+    // console.log(req);
+    // console.log(form);
+    const formdata = form && form.getFieldsValue();
     const newmap = {};
 
     for (const key in req) {
-      if (req[key].value) {
-        newmap[key] = req[key];
-        // if (momentkey.includes(key)) {
-        //   newmap[key].value = (isValidDate(req[key].value)) ? moment(req[key].value) : false;
-        // }
-        if (isValidDate(req[key].value)) {
-          newmap[key].value = moment(req[key].value);
+      if (Object.prototype.hasOwnProperty.call(req, key)) {
+        const reqkeyvalue = req[key].value;
+        const formkeyvalue = formdata && formdata[key];
+
+        if (reqkeyvalue !== undefined) {
+          newmap[key] = req[key];
+          if (isValidDate(reqkeyvalue) && !moment.isMoment(reqkeyvalue)) {
+            newmap[key].value = (isValidDate(reqkeyvalue)) ? moment(reqkeyvalue) : undefined;
+          }
+        } else if (formkeyvalue !== undefined) {
+          newmap[key] = { value: formkeyvalue };
         } else {
-          newmap[key].value = false;
+          newmap[key] = undefined;
         }
-      } else {
-        newmap[key] = false;
       }
     }
-
+    // console.log(newmap);
     return newmap;
   },
 })(FormPage));

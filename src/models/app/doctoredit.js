@@ -44,8 +44,6 @@ const fields = [
 
 const initstate = getinitstate({ field: fields });
 
-initstate.req.birthday.value = '123';
-
 export default {
 
   namespace: pagespace,

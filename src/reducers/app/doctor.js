@@ -1,12 +1,29 @@
 import update from 'immutability-helper';
 import * as fetch from '../../services/app/doctor';
+import { changeDataType } from '../../utils/handleData';
 
 // 获取行
 export function *fetchGetRow(action, { call, put, select }, namespace) {
   const { data } = yield call(fetch.getRow, { errormsg: '请求失败', ...action }, {}, {
     doctorId: action.payload,
   });
-  yield put({ type: 'updateFormReq', payload: data });
+
+  const newdata = changeDataType(data, [
+    {
+      field: 'hospitalId',
+      target: 'number2string',
+    },
+    {
+      field: 'hospitalDeptId',
+      target: 'string2arraynumber',
+    },
+    {
+      field: 'gender',
+      target: 'boolean2number',
+    },
+  ]);
+
+  yield put({ type: 'updateFormReq', payload: newdata });
 }
 
 // 插入行
