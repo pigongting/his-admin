@@ -1,16 +1,10 @@
 import React from 'react';
-import update from 'immutability-helper';
-import moment from 'moment';
 import { connect } from 'dva';
-// 自定义组件
 import FormPage from '../../components/FormPage';
-// 级联地址
-import { cascadAddr } from '../../../data/cascadAddr';
+import { handleDeptList } from '../../actions/app/Dept';
+import { handleHospitalList } from '../../actions/app/Hospital';
 
-// 页内配置
-const pageConfig = {
-  namespace: 'appdoctoredit',
-};
+const pagespace = 'appdoctoredit';
 
 class AppDoctorEdit extends React.Component {
   constructor(props) {
@@ -18,13 +12,15 @@ class AppDoctorEdit extends React.Component {
   }
 
   render() {
-    const { pagedata, loading, locale } = this.props;
-
     return (
       <FormPage
-        namespace={pageConfig.namespace}
-        pagedata={pagedata}
-        pagetitle="新增医生"
+        namespace={pagespace}
+        pagetitle={{
+          adds: '新增医生',
+          edit: '编辑医生信息',
+          view: '查看医生信息',
+        }}
+        momentkey={['birthday']}
         itemdata={[
           {
             type: 'FormItemGroup',
@@ -34,7 +30,7 @@ class AppDoctorEdit extends React.Component {
             type: 'Input',
             field: 'doctorName',
             label: '医生名称',
-            required: true,
+            required: false,
             requiredmsg: '请输入医生名称',
           },
           {
@@ -42,17 +38,17 @@ class AppDoctorEdit extends React.Component {
             field: 'hospitalId',
             name: 'hospitalName',
             label: '医院',
-            required: true,
+            required: false,
             requiredmsg: '请选择医院',
-            asynload: this.props.loadHospitalData,
+            asynload: this.props.handleHospitalList,
           },
           {
             type: 'Cascader',
             field: 'hospitalDeptId',
             label: '科室',
-            required: true,
+            required: false,
             requiredmsg: '请选择科室',
-            asynload: this.props.loadDeptData,
+            asynload: this.props.handleDeptList,
             changeOnSelect: true,
           },
           {
@@ -79,37 +75,9 @@ class AppDoctorEdit extends React.Component {
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    loadDeptData: (form, selectedOptions) => {
-      // 更新请求条件
-      dispatch({
-        type: `${pageConfig.namespace}/updateFormReq`,
-        payload: form.getFieldsValue(),
-      });
-
-      if (selectedOptions === true) {
-        dispatch({ type: `${pageConfig.namespace}/fetchDeptFillter` });
-      } else if (selectedOptions) {
-        dispatch({ type: `${pageConfig.namespace}/fetchDeptFillter`, payload: selectedOptions[selectedOptions.length - 1] });
-      }
-    },
-    loadHospitalData: (form) => {
-      // 更新请求条件
-      dispatch({
-        type: `${pageConfig.namespace}/updateFormReq`,
-        payload: form.getFieldsValue(),
-      });
-
-      dispatch({ type: `${pageConfig.namespace}/fetchHospitalFillter` });
-    },
+    handleDeptList: (form, selectedOptions) => handleDeptList(dispatch, pagespace, form, selectedOptions),
+    handleHospitalList: form => handleHospitalList(dispatch, pagespace, form),
   };
 }
 
-function mapStateToProps(state, ownProps) {
-  return {
-    pagedata: state[pageConfig.namespace],
-    loading: state.loading.effects[`${pageConfig.namespace}/fetchTableData`],
-    locale: state.ssr.locale,
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(AppDoctorEdit);
+export default connect(null, mapDispatchToProps)(AppDoctorEdit);

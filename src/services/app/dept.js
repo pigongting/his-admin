@@ -1,8 +1,9 @@
 import request from '../../utils/request';
+import { apiPrefix, apiNexfix } from '../config';
 
 export function tableData(action, config, options) {
   return request(action, config, {
-    Url: 'http://192.168.3.201:8080/WiseMedical/dept/getDeptList.do',
+    Url: `${apiPrefix}dept/getDeptList${apiNexfix}`,
     method: 'POST',
     body: options,
   });
@@ -10,7 +11,15 @@ export function tableData(action, config, options) {
 
 export function deleteRow(action, config, options) {
   return request(action, config, {
-    Url: 'http://192.168.3.201:8080/WiseMedical/dept/getDeptList.do',
+    Url: `${apiPrefix}dept/getDeptList${apiNexfix}`,
+    method: 'POST',
+    body: options,
+  });
+}
+
+export function deptFillter(action, config, options) {
+  return request(action, config, {
+    Url: `${apiPrefix}dept/getOneLevelDeptList${apiNexfix}`,
     method: 'POST',
     body: options,
   });

@@ -1,7 +1,5 @@
-const Mock = require('mockjs');
-const { config } = require('../data/common');
-
-const { apiPrefix } = config;
+import Mock from 'mockjs';
+import { apiPrefix, apiNexfix } from '../src/services/config';
 
 const hospitallist = [
   {
@@ -15,7 +13,7 @@ const hospitallist = [
 ];
 
 module.exports = {
-  [`POST ${apiPrefix}/hospital/getAllHospitalList`](req, res) {
+  [`POST ${apiPrefix}hospital/getAllHospitalList${apiNexfix}`](req, res) {
     res.status(200).json({
       code: 0,
       msg: '',

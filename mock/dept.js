@@ -1,7 +1,5 @@
-const Mock = require('mockjs');
-const { config } = require('../data/common');
-
-const { apiPrefix } = config;
+import Mock from 'mockjs';
+import { apiPrefix, apiNexfix } from '../src/services/config';
 
 const deptlist = [
   [
@@ -151,7 +149,7 @@ const deptlist = [
 ];
 
 module.exports = {
-  [`POST ${apiPrefix}/dept/getAllDeptList`](req, res) {
+  [`POST ${apiPrefix}dept/getOneLevelDeptList${apiNexfix}`](req, res) {
     res.status(200).json({
       code: 0,
       msg: '',
