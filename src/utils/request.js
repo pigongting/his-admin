@@ -1,3 +1,4 @@
+import moment from 'moment';
 import fetch from 'dva/fetch';
 
 /**
@@ -138,6 +139,25 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
   }
 
   if (options.body) {
+    if (options.body.fields) {
+      const fields = options.body.fields;
+      for (const key in fields) {
+        if (Object.prototype.hasOwnProperty.call(fields, key)) {
+          const item = fields[key].value;
+          if (item) {
+            if (Object.prototype.toString.call(item) === '[object Array]') {
+              options.body[key] = item[item.length - 1];
+            } else if (moment.isMoment(item)) {
+              options.body[key] = item.format('YYYY-MM-DD HH:mm:ss');
+            } else {
+              options.body[key] = item;
+            }
+          }
+        }
+      }
+      delete options.body.fields;
+    }
+
     if (options.body.filters) {
       for (const key in options.body.filters) {
         if (options.body.filters[key][0] === '=') {
@@ -238,7 +258,7 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
   // 定义返回结果
   const ret = {};
 
-  if (datajson.data.rows) {
+  if (datajson.data && datajson.data.rows) {
     // 列表
     datajson.data.rows.map((item, index) => {
       const ele = item;

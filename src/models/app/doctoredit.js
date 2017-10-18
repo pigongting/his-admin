@@ -1,7 +1,7 @@
 import { setup, getinitstate, resetstate, updateSetMode, updateFormReq } from '../../reducers/commonForm';
 import { fetchDeptFillter, updateDeptFillter } from '../../reducers/app/dept';
 import { fetchHospitalFillter, updateHospitalFillter } from '../../reducers/app/hospital';
-import { fetchGetRow, fetchInsertRow } from '../../reducers/app/doctor';
+import { fetchGetRow, fetchInsertRow, fetchUpdateRow } from '../../reducers/app/doctor';
 
 const pagespace = 'appdoctoredit';
 const pagepath = '/app/doctoredit';
@@ -61,6 +61,7 @@ export default {
   effects: {
     fetchGetRow: (action, { call, put, select }) => fetchGetRow(action, { call, put, select }, pagespace),
     fetchInsertRow: (action, { call, put, select }) => fetchInsertRow(action, { call, put, select }, pagespace),
+    fetchUpdateRow: (action, { call, put, select }) => fetchUpdateRow(action, { call, put, select }, pagespace),
     fetchDeptFillter: (action, { call, put, select }) => fetchDeptFillter(action, { call, put, select }, pagespace),
     fetchHospitalFillter: (action, { call, put, select }) => fetchHospitalFillter(action, { call, put, select }, pagespace),
   },

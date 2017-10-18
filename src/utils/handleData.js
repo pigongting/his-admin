@@ -1,4 +1,4 @@
-import update from 'immutability-helper';
+import moment from 'moment';
 
 export function changeDataType(data, changearr) {
   const newdata = data;
@@ -11,10 +11,14 @@ export function changeDataType(data, changearr) {
       case 'string2arraynumber':
         newdata[item.field] = (() => {
           const arr = [];
-          newdata[item.field].split('-').map((ele) => {
-            arr.push(parseInt(ele, 10));
-            return ele;
-          });
+          try {
+            newdata[item.replace].split('-').map((ele) => {
+              arr.push(parseInt(ele, 10));
+              return ele;
+            });
+          } catch (e) {
+            arr.push(newdata[parseInt(item.replace, 10)]);
+          }
           return arr;
         })();
         break;
@@ -23,6 +27,9 @@ export function changeDataType(data, changearr) {
         break;
       case 'number2boolean':
         newdata[item.field] = (newdata[item.field] === 1) || false;
+        break;
+      case 'time2moment':
+        newdata[item.field] = moment(newdata[item.field]);
         break;
       default:
         break;

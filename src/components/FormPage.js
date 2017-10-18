@@ -1,5 +1,4 @@
 import React from 'react';
-import moment from 'moment';
 import { connect } from 'dva';
 // antd 组件
 import { Form, Layout, Button, Input, Select, Cascader, Radio, DatePicker } from 'antd';
@@ -28,7 +27,7 @@ class FormPage extends React.Component {
 
   render() {
     const { form, namespace, pagedata, pagetitle, itemdata } = this.props;
-    const { res, set } = pagedata;
+    const { req, res, set } = pagedata;
     const { getFieldDecorator } = form;
 
     const formitem = () => {
@@ -42,24 +41,28 @@ class FormPage extends React.Component {
           case 'Input':
             formItemNode.push(<Form.Item {...formItemLayout} key={index} label={item.label} hasFeedback>
               {
-                getFieldDecorator(item.field, {
+                (set.mode === 'view')
+                ? <div className="viewText">{req.fields[item.field].value}</div>
+                : getFieldDecorator(item.field, {
                   rules: [
                     { required: item.required || false, message: item.requiredmsg },
                     { pattern: item.pattern || false, message: item.patternmsg },
                   ],
-                })(<Input />)
+                })(<Input disabled={item.disabled} />)
               }
             </Form.Item>);
             break;
           case 'TextArea':
-            formItemNode.push(<Form.Item {...formItemLayout} key={index} label={item.label} hasFeedback>
+            formItemNode.push(<Form.Item {...formItemLayout} key={index} label={item.label}>
               {
-                getFieldDecorator(item.field, {
+                (set.mode === 'view')
+                ? <div className="viewText">{req.fields[item.field].value}</div>
+                : getFieldDecorator(item.field, {
                   rules: [
                     { required: item.required || false, message: item.requiredmsg },
                     { pattern: item.pattern || false, message: item.patternmsg },
                   ],
-                })(<TextArea autosize={{ minRows: 2, maxRows: 6 }} />)
+                })(<TextArea disabled={item.disabled || set.mode === 'view'} autosize={{ minRows: 2, maxRows: 6 }} />)
               }
             </Form.Item>);
             break;
@@ -75,6 +78,7 @@ class FormPage extends React.Component {
                   notFoundContent="加载中..."
                   onFocus={(res[item.field]) ? () => {} : item.asynload}
                   getPopupContainer={() => document.getElementById('formScrollContent')}
+                  disabled={item.disabled || set.mode === 'view'}
                 >
                   {res[item.field] && res[item.field].map((ele, i) =>
                     <Select.Option key={i} value={`${ele[item.field]}`}>{ele[item.name]}</Select.Option>,
@@ -96,26 +100,29 @@ class FormPage extends React.Component {
                 loadData={item.asynload}
                 onPopupVisibleChange={(res[item.field] === undefined) ? item.asynload : () => {}}
                 changeOnSelect={item.changeOnSelect}
+                disabled={item.disabled || set.mode === 'view'}
               />)}
             </Form.Item>);
             break;
           case 'Radio':
             formItemNode.push(<Form.Item {...formItemLayout} key={index} label={item.label}>
               {
-                getFieldDecorator(item.field, {
-                })(<Radio.Group>
-                  {
-                    item.options.map((ele, i) => <Radio key={i} value={ele.value}>{ele.name}</Radio>)
-                  }
-                </Radio.Group>)
+                (set.mode === 'view')
+                ? <div className="viewText">{
+                  item.options.map((ele, i) => { if (ele.value === req.fields[item.field].value) { return ele.name; } else { return null; } })
+                }</div>
+                : getFieldDecorator(item.field, {})(<Radio.Group disabled={item.disabled}>{
+                  item.options.map((ele, i) => <Radio key={i} value={ele.value}>{ele.name}</Radio>)
+                }</Radio.Group>)
               }
             </Form.Item>);
             break;
           case 'DatePicker':
             formItemNode.push(<Form.Item {...formItemLayout} key={index} label={item.label}>
               {
-                getFieldDecorator(item.field, {
-                })(<DatePicker />)
+                (set.mode === 'view')
+                ? <div className="viewText">{req.fields[item.field].value && req.fields[item.field].value.format('YYYY-MM-DD')}</div>
+                : getFieldDecorator(item.field, {})(<DatePicker disabled={item.disabled} />)
               }
             </Form.Item>);
             break;
@@ -130,19 +137,19 @@ class FormPage extends React.Component {
     };
 
     return (
-      <Form className="formPage" onSubmit={(e) => { this.props.handleSubmit(form, e); }}>
+      <Form className="formPage" id={`${set.mode}Mode`} onSubmit={(e) => { this.props.handleSubmit(set.mode, form, e); }}>
         <Layout className="formPageLayout">
           <Header className="formPageHeader">
             <div className="pageTitle">{pagetitle[set.mode]}</div>
-            <div className="pageOperat">
+            {(set.mode !== 'view') ? <div className="pageOperat">
               <Form.Item>
                 <Button type="primary" htmlType="submit">提交</Button>
               </Form.Item>
               &emsp;
               <Form.Item>
-                <Button onClick={() => { this.props.handleReset(form, this.props.handleSubmit); }}>重置</Button>
+                <Button onClick={() => { this.props.handleReset(form); }}>重置</Button>
               </Form.Item>
-            </div>
+            </div> : null}
           </Header>
           <Content className="formPageContent" id="formScrollContent">{formitem()}</Content>
         </Layout>
@@ -154,7 +161,7 @@ class FormPage extends React.Component {
 function mapDispatchToProps(dispatch, ownProps) {
   const { namespace } = ownProps;
   return {
-    handleSubmit: (form, e) => {
+    handleSubmit: (mode, form, e) => {
       // 阻止表单提交
       if (e) { e.preventDefault(); }
       // 验证表单
@@ -165,16 +172,22 @@ function mapDispatchToProps(dispatch, ownProps) {
             type: `${namespace}/updateFormReq`,
             payload: form.getFieldsValue(),
           });
-          // 提交表单
-          // dispatch({
-          //   type: `${namespace}/fetchInsertRow`,
-          // });
+          if (mode === 'adds') {
+            // 插入
+            dispatch({
+              type: `${namespace}/fetchInsertRow`,
+            });
+          } else if (mode === 'edit') {
+            // 更新
+            dispatch({
+              type: `${namespace}/fetchUpdateRow`,
+            });
+          }
         }
       });
     },
-    handleReset: (form, handleSubmit) => {
+    handleReset: (form) => {
       form.resetFields();
-      handleSubmit(namespace, form);
     },
   };
 }
@@ -183,42 +196,27 @@ function mapStateToProps(state, ownProps) {
   const { namespace } = ownProps;
   return {
     pagedata: state[namespace],
-    loading: state.loading.effects[`${namespace}/fetchTableData`],
     locale: state.ssr.locale,
   };
 }
 
-function isValidDate(str) {
-  if (typeof str !== 'string') return false;
-
-  const d = moment(str, 'YYYY-MM-DD');
-  if (d == null || !d.isValid()) return false;
-
-  return str.indexOf(d.format('YYYY-M-D')) >= 0
-      || str.indexOf(d.format('YYYY-MM-DD')) >= 0
-      || str.indexOf(d.format('YY-M-D')) >= 0
-      || str.indexOf(d.format('YY-MM-DD')) >= 0;
-}
-
 export default connect(mapStateToProps, mapDispatchToProps)(Form.create({
   mapPropsToFields(props) {
-    const { pagedata, momentkey } = props;
+    const { pagedata } = props;
     const { req, form } = pagedata;
-    // console.log(req);
+    const { fields } = req;
+    // console.log(fields);
     // console.log(form);
     const formdata = form && form.getFieldsValue();
     const newmap = {};
 
-    for (const key in req) {
-      if (Object.prototype.hasOwnProperty.call(req, key)) {
-        const reqkeyvalue = req[key].value;
+    for (const key in fields) {
+      if (Object.prototype.hasOwnProperty.call(fields, key)) {
+        const fieldskeyvalue = fields[key].value;
         const formkeyvalue = formdata && formdata[key];
 
-        if (reqkeyvalue !== undefined) {
-          newmap[key] = req[key];
-          if (isValidDate(reqkeyvalue) && !moment.isMoment(reqkeyvalue)) {
-            newmap[key].value = (isValidDate(reqkeyvalue)) ? moment(reqkeyvalue) : undefined;
-          }
+        if (fieldskeyvalue !== undefined) {
+          newmap[key] = fields[key];
         } else if (formkeyvalue !== undefined) {
           newmap[key] = { value: formkeyvalue };
         } else {

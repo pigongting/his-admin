@@ -434,6 +434,13 @@
   }
 }
 
+/* 单选按钮 */
+:global {
+  .ant-radio-inner:after {
+    border-radius: 50% !important;
+  }
+}
+
 /* 表单表格页------------------------------------------------------------------------------------------------ */
 :global {
   .formTablePage {
@@ -891,11 +898,51 @@
         }
       }
     }
+
   }
+  
+  #viewMode {
+    .viewText {
+      font-size: 14px;
+      padding: 0 8px;
+    }
 
+    .ant-cascader-picker-disabled {
+      cursor: auto;
+      color: inherit;
+      background: inherit;
 
+      .ant-cascader-input {
+        cursor: auto;
+        border-color: transparent;
+      }
 
+      .ant-cascader-picker-label {
+        z-index: 1;
+      }
 
+      .ant-cascader-picker-arrow {
+        display: none;
+      }
+    }
 
+    .ant-select-disabled {
+      color: inherit;
+
+      .ant-select-selection {
+        background: inherit;
+        border-color: transparent;
+        cursor: auto;
+        -webkit-user-select: auto;
+        -moz-user-select: auto;
+        -ms-user-select: auto;
+        user-select: auto;
+      }
+
+      .ant-select-arrow {
+        display: none;
+      }
+    }
+  }
 }
 

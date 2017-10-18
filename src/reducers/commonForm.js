@@ -21,14 +21,14 @@ export function setup({ dispatch, history }, pagepath) {
 
 // 通用状态
 export function getinitstate({ field }) {
-  const newreq = {};
+  const newfields = {};
 
   field.map((item, index) => {
-    newreq[item] = { value: undefined };
+    newfields[item] = { value: undefined };
     return item;
   });
 
-  return { req: newreq, res: {}, set: {} };
+  return { req: { fields: newfields }, res: {}, set: {} };
 }
 
 // 恢复页面状态
@@ -43,17 +43,13 @@ export function updateSetMode(state, action) {
 
 // 更新请求参数
 export function updateFormReq(state, action) {
-  const newreq = { ...state.req };
+  const newfields = { ...state.req.fields };
 
   for (const key in action.payload) {
     if (action.payload[key]) {
-      try {
-        newreq[key] = { value: action.payload[key].format('YYYY-MM-DD HH:mm:ss') };
-      } catch (e) {
-        newreq[key] = { value: action.payload[key] };
-      }
+      newfields[key] = { value: action.payload[key] };
     }
   }
 
-  return update(state, { req: { $set: newreq } });
+  return update(state, { req: { fields: { $set: newfields } } });
 }

@@ -19,7 +19,7 @@ export function deleteRow(action, config, options) {
 
 export function deptFillter(action, config, options) {
   return request(action, config, {
-    Url: `${apiPrefix}dept/getOneLevelDeptList${apiNexfix}`,
+    Url: `${apiPrefix}dept/getAllDeptList${apiNexfix}`,
     method: 'POST',
     body: options,
   });
