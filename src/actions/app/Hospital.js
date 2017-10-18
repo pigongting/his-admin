@@ -1,4 +1,4 @@
 // 处理医院列表
-export function handleHospitalList(dispatch, namespace) {
-  dispatch({ type: `${namespace}/fetchHospitalFillter` });
+export function handleHospitalAllData(dispatch, namespace) {
+  dispatch({ type: `${namespace}/fetchHospitalAllData` });
 }

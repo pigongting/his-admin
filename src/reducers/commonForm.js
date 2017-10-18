@@ -12,7 +12,7 @@ export function setup({ dispatch, history }, pagepath) {
       } else {
         dispatch({ type: 'updateSetMode', payload: 'view' });
       }
-      dispatch({ type: 'fetchGetRow', payload: query.id });
+      dispatch({ type: 'fetchViewedRow', payload: query.id });
     } else {
       dispatch({ type: 'updateSetMode', payload: 'adds' });
     }
@@ -52,4 +52,9 @@ export function updateFormReq(state, action) {
   }
 
   return update(state, { req: { fields: { $set: newfields } } });
+}
+
+// 更新级联地址
+export function updateCascadAddr(state, action) {
+  return update(state, { res: { [action.field]: { $set: action.payload } } });
 }

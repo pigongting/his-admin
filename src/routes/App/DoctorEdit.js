@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'dva';
-import { handleDeptList } from '../../actions/app/Dept';
-import { handleHospitalList } from '../../actions/app/Hospital';
+import { handleDeptTreeData } from '../../actions/app/Dept';
+import { handleHospitalAllData } from '../../actions/app/Hospital';
+import { handleCascadAddr } from '../../actions/CascadAddr';
 import FormPage from '../../components/FormPage';
 
 const pagespace = 'appdoctoredit';
@@ -39,7 +40,7 @@ class AppDoctorEdit extends React.Component {
             label: '医院',
             required: false,
             requiredmsg: '请选择医院',
-            asynload: this.props.handleHospitalList,
+            asynload: this.props.handleHospitalAllData,
           },
           {
             type: 'Cascader',
@@ -47,7 +48,7 @@ class AppDoctorEdit extends React.Component {
             label: '科室',
             required: false,
             requiredmsg: '请选择科室',
-            asynload: this.props.handleDeptList,
+            asynload: this.props.handleDeptTreeData,
             changeOnSelect: true,
           },
           {
@@ -62,6 +63,12 @@ class AppDoctorEdit extends React.Component {
             label: '出生日期',
           },
           {
+            type: 'Cascader',
+            field: 'pcaCode',
+            label: '地区',
+            asynload: this.props.handleCascadAddr,
+          },
+          {
             type: 'TextArea',
             field: 'intro',
             label: '简介',
@@ -74,17 +81,9 @@ class AppDoctorEdit extends React.Component {
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    handleDeptList: selectedOptions => handleDeptList(dispatch, pagespace, selectedOptions),
-    handleHospitalList: () => handleHospitalList(dispatch, pagespace),
-    handleCascadAddr: () => {
-      if (typeof window !== 'undefined') {
-        import(/* webpackChunkName: "cascadAddr" */ '../../../data/cascadAddr')
-        .then((data) => {
-          console.log(data);
-        })
-        .catch(err => console.log('Failed to load moment', err));
-      }
-    },
+    handleDeptTreeData: selectedOptions => handleDeptTreeData(dispatch, pagespace, selectedOptions),
+    handleHospitalAllData: () => handleHospitalAllData(dispatch, pagespace),
+    handleCascadAddr: () => handleCascadAddr(dispatch, pagespace, 'pcaCode'),
   };
 }
 

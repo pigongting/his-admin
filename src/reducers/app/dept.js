@@ -1,7 +1,6 @@
 import update from 'immutability-helper';
-
-// 请求服务
 import * as fetch from '../../services/app/dept';
+
 // 获取筛选
 // export function *fetchDeptFillter(action, { call, put, select }, namespace) {
 //   const targetOption = action.payload;
@@ -24,28 +23,19 @@ import * as fetch from '../../services/app/dept';
 //     targetOption.loading = false;
 //     targetOption.children = data;
 //     const options = yield select(state => state[namespace].res.hospitalDeptId);
-//     yield put({ type: 'updateDeptFillter', payload: [...options] });
+//     yield put({ type: 'updateDeptTreeData', payload: [...options] });
 //   } else {
-//     yield put({ type: 'updateDeptFillter', payload: data });
+//     yield put({ type: 'updateDeptTreeData', payload: data });
 //   }
 // }
 
 // 获取筛选
-export function *fetchDeptFillter(action, { call, put, select }, namespace) {
-  const targetOption = action.payload;
-  // 开始转圈
-  if (targetOption) { targetOption.loading = true; }
-  // 请求数据
-  const { data } = yield call(fetch.deptFillter, { errormsg: '科室列表加载失败', ...action }, {}, {
-    hospitalDeptId: (targetOption && targetOption.hospitalDeptId) || 0,
-  });
-  // 更新状态
-  yield put({ type: 'updateDeptFillter', payload: data });
-  // 停止转圈
-  if (targetOption) { targetOption.loading = false; }
+export function *fetchDeptTreeData(action, { call, put, select }, namespace) {
+  const { data } = yield call(fetch.listTreeData, { errormsg: '科室列表加载失败', ...action }, {}, {});
+  yield put({ type: 'updateDeptTreeData', payload: data });
 }
 
 // 更新筛选
-export function updateDeptFillter(state, action) {
+export function updateDeptTreeData(state, action) {
   return update(state, { res: { hospitalDeptId: { $set: action.payload } } });
 }

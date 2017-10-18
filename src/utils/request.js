@@ -138,6 +138,8 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
     fetchset.method = options.method;
   }
 
+  console.log(options.body);
+
   if (options.body) {
     if (options.body.fields) {
       const fields = options.body.fields;

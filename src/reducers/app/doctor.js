@@ -4,8 +4,8 @@ import * as fetch from '../../services/app/doctor';
 import { changeDataType } from '../../utils/handleData';
 
 // 获取行
-export function *fetchGetRow(action, { call, put, select }, namespace) {
-  const { data } = yield call(fetch.getRow, { errormsg: '请求失败', ...action }, {}, {
+export function *fetchViewedRow(action, { call, put, select }, namespace) {
+  const { data } = yield call(fetch.viewedRow, { errormsg: '请求失败', ...action }, {}, {
     doctorId: action.payload,
   });
 
@@ -18,6 +18,10 @@ export function *fetchGetRow(action, { call, put, select }, namespace) {
       field: 'hospitalDeptId',
       replace: 'treeExStr',
       target: 'string2arraynumber',
+    },
+    {
+      field: 'pcaCode',
+      target: 'addrlevel',
     },
     {
       field: 'gender',

@@ -4,156 +4,166 @@ import { apiPrefix, apiNexfix } from '../src/services/config';
 const deptlist = [
   [
     {
-      hospitalDeptId: 1,
-      deptName: '内科',
+      value: 1,
+      label: '内科',
       leaf: true,
     },
     {
-      hospitalDeptId: 2,
-      deptName: '儿科',
+      value: 2,
+      label: '儿科',
       leaf: true,
     },
     {
-      hospitalDeptId: 3,
-      deptName: '妇产科',
+      value: 3,
+      label: '妇产科',
       leaf: true,
     },
     {
-      hospitalDeptId: 4,
-      deptName: '外科',
+      value: 4,
+      label: '外科',
       leaf: true,
     },
     {
-      hospitalDeptId: 5,
-      deptName: '皮肤性病科',
+      value: 5,
+      label: '皮肤性病科',
       leaf: true,
     },
     {
-      hospitalDeptId: 6,
-      deptName: '中医科',
+      value: 6,
+      label: '中医科',
       leaf: true,
     },
     {
-      hospitalDeptId: 7,
-      deptName: '口腔科',
+      value: 7,
+      label: '口腔科',
       leaf: true,
     },
     {
-      hospitalDeptId: 8,
-      deptName: '耳鼻喉头颈科',
+      value: 8,
+      label: '耳鼻喉头颈科',
       leaf: true,
     },
     {
-      hospitalDeptId: 9,
-      deptName: '眼科',
+      value: 9,
+      label: '眼科',
       leaf: true,
     },
     {
-      hospitalDeptId: 10,
-      deptName: '骨科',
+      value: 10,
+      label: '骨科',
       leaf: true,
     },
     {
-      hospitalDeptId: 11,
-      deptName: '肿瘤科',
+      value: 11,
+      label: '肿瘤科',
       leaf: true,
     },
     {
-      hospitalDeptId: 12,
-      deptName: '精神心理科',
+      value: 12,
+      label: '精神心理科',
       leaf: true,
     },
     {
-      hospitalDeptId: 13,
-      deptName: '其他科室',
+      value: 13,
+      label: '其他科室',
       leaf: true,
     },
   ],
   [
     {
-      hospitalDeptId: 1101,
-      deptName: '风湿科',
+      value: 1101,
+      label: '风湿科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1102,
-      deptName: '肝炎肠道科',
+      value: 1102,
+      label: '肝炎肠道科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1103,
-      deptName: '呼吸内科',
+      value: 1103,
+      label: '呼吸内科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1104,
-      deptName: '甲状腺疾病',
+      value: 1104,
+      label: '甲状腺疾病',
       leaf: false,
     },
     {
-      hospitalDeptId: 1105,
-      deptName: '老年科',
+      value: 1105,
+      label: '老年科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1106,
-      deptName: '内分泌科',
+      value: 1106,
+      label: '内分泌科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1107,
-      deptName: '神经内科',
+      value: 1107,
+      label: '神经内科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1108,
-      deptName: '肾内科',
+      value: 1108,
+      label: '肾内科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1109,
-      deptName: '特诊老年科',
+      value: 1109,
+      label: '特诊老年科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1110,
-      deptName: '特诊内科',
+      value: 1110,
+      label: '特诊内科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1111,
-      deptName: '消化内科',
+      value: 1111,
+      label: '消化内科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1112,
-      deptName: '心内科',
+      value: 1112,
+      label: '心内科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1113,
-      deptName: '眩晕科',
+      value: 1113,
+      label: '眩晕科',
       leaf: false,
     },
     {
-      hospitalDeptId: 1114,
-      deptName: '血透专病门诊',
+      value: 1114,
+      label: '血透专病门诊',
       leaf: false,
     },
     {
-      hospitalDeptId: 1115,
-      deptName: '血液内科',
+      value: 1115,
+      label: '血液内科',
       leaf: false,
     },
   ],
 ];
+
+const depttree = deptlist[0];
+depttree[0].children = deptlist[1];
 
 module.exports = {
   [`POST ${apiPrefix}dept/getOneLevelDeptList${apiNexfix}`](req, res) {
     res.status(200).json({
       code: 0,
       msg: '',
-      data: deptlist[req.body.hospitalDeptId],
+      data: deptlist[req.body.value],
+    });
+  },
+  [`POST ${apiPrefix}dept/getAllDeptList${apiNexfix}`](req, res) {
+    res.status(200).json({
+      code: 0,
+      msg: '',
+      data: depttree,
     });
   },
 };
