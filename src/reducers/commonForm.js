@@ -19,7 +19,7 @@ export function setup({ dispatch, history }, pagepath) {
   });
 }
 
-// 通用状态
+// 初始状态
 export function getinitstate({ field }) {
   const newfields = {};
 

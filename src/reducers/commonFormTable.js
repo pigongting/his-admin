@@ -1,7 +1,7 @@
 import update from 'immutability-helper';
 
-// 通用状态
-export function getinitstate({ columntags, searchkey }) {
+// 初始状态
+export function getinitstate({ columntags }) {
   return {
     req: {
       page: {
@@ -10,17 +10,12 @@ export function getinitstate({ columntags, searchkey }) {
         size: 20,
         total: 20,
       },
-      search: {
-        key: searchkey,
-        value: ['like', ['']],
-      },
-      filters: {},
+      formFilters: {},
       tableFilters: {},
       orders: {},
     },
     res: {
       rows: [],
-      filters: {},
     },
     set: {
       fullColumns: columntags,
@@ -80,80 +75,29 @@ export function setTableColumns(state, action) {
   });
 }
 
-// 筛选
-// 表格自带筛选，排序
+// 更新表格筛选请求参数
 export function updateTableFillter(state, action) {
+  console.log(action);
+
   return update(state, {
     req: {
-      tableFilters: {
-        $set: (() => {
-          const tableFilters = {};
-          for (const item in action.payload.filter) {
-            if (item && action.payload.filter[item].length > 0) {
-              tableFilters[item] = ['=', action.payload.filter[item]];
-            }
-          }
-          return tableFilters;
-        })(),
-      },
-      orders: {
-        $set: (() => {
-          const neworders = {};
-          if (action.payload.orders.columnKey) {
-            neworders[action.payload.orders.columnKey] = [0, action.payload.orders.order];
-          }
-          return neworders;
-        })(),
-      },
+      tableFilters: { $set: {} },
+      orders: { $set: { [action.tableSorter.field]: [0, action.tableSorter.order] } },
     },
   });
 }
 
-// 表单自定义筛选
+// 更新表单筛选请求参数
 export function updateFormFillter(state, action) {
-  const filters = {};
-  let searchkey = '';
-  let searchvalue = '';
+  const newFormFilters = { ...state.req.formFilters };
 
   for (const key in action.payload) {
     if (action.payload[key]) {
-      switch (key) {
-        case 'searchkey':
-          searchkey = action.payload[key];
-          break;
-        case 'searchvalue':
-          searchvalue = action.payload[key];
-          break;
-        default:
-          try {
-            filters[key] = ['between', [action.payload[key][0].format('YYYY-MM-DD HH:mm:ss'), action.payload[key][1].format('YYYY-MM-DD HH:mm:ss')]];
-          } catch (e) {
-            if (Object.prototype.toString.call(action.payload[key]) === '[object Array]') {
-              filters[key] = ['=', action.payload[key]];
-            } else {
-              filters[key] = ['=', [action.payload[key]]];
-            }
-          }
-          break;
-      }
+      newFormFilters[key] = { value: action.payload[key] };
     }
   }
 
-  return update(state, {
-    req: {
-      filters: {
-        $set: filters,
-      },
-      search: {
-        key: {
-          $set: searchkey,
-        },
-        value: {
-          $set: ['like', [searchvalue]],
-        },
-      },
-    },
-  });
+  return update(state, { req: { formFilters: { $set: newFormFilters } } });
 }
 
 export function *fetchTableData(action, { call, put, select }, namespace, fetchmothed) {
