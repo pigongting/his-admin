@@ -1,9 +1,10 @@
 import React from 'react';
 import update from 'immutability-helper';
 import * as fetch from '../../services/app/doctor';
-import { removelocal } from '../../utils/localpath';
-import { getinitstate, resetstate, resetTable, updateTable, updatePages, setTableColumns, updateTableFillter, updateFormFillter, fetchTableData, batchDeleteRow } from '../../reducers/commonFormTable';
+import { setup, getinitstate, resetstate, commonFormTableReducers } from '../../reducers/commonFormTable';
+import { fetchTableData, fetchDeleteRow } from '../../reducers/app/doctor';
 import { fetchDeptTreeData, updateDeptTreeData } from '../../reducers/app/dept';
+import { updateCascadAddr } from '../../reducers/cascadAddr';
 import { fetchHospitalAllData, updateHospitalAllData } from '../../reducers/app/hospital';
 
 const pagespace = 'appdoctor';
@@ -21,20 +22,8 @@ const columns = [
 
 const initstate = getinitstate({ columntags: columns });
 
-initstate.req.formFilters = {
-  hospitalId: {
-    value: '1',
-  },
-  searchkey: {
-    value: 'mobile',
-  },
-  searchvalue: {
-    value: '皮',
-  },
-};
-
 initstate.req.sql = {
-  hospitalId: '=',
+  createDt: 'between',
 };
 
 export default {
@@ -45,33 +34,19 @@ export default {
 
   reducers: {
     resetstate: state => resetstate(state, initstate),
-    resetTable,
-    updateTable,
-    updatePages,
-    setTableColumns,
-    updateTableFillter,
-    updateFormFillter,
+    ...commonFormTableReducers,
+    updateCascadAddr,
     updateDeptTreeData,
     updateHospitalAllData,
   },
 
   effects: {
-    fetchTableData: (action, { call, put, select }) => fetchTableData(action, { call, put, select }, pagespace, fetch.listPageData),
-    batchDeleteRow: (action, { call, put, select }) => batchDeleteRow(action, { call, put, select }, pagespace, fetch.deleteRow),
+    fetchTableData: (action, { call, put, select }) => fetchTableData(action, { call, put, select }, pagespace),
+    fetchDeleteRow: (action, { call, put, select }) => fetchDeleteRow(action, { call, put, select }, pagespace),
     fetchDeptTreeData: (action, { call, put, select }) => fetchDeptTreeData(action, { call, put, select }, pagespace),
     fetchHospitalAllData: (action, { call, put, select }) => fetchHospitalAllData(action, { call, put, select }, pagespace),
   },
 
-  subscriptions: {
-    setup({ dispatch, history }) {
-      return history.listen(({ pathname, query }) => {
-        if (removelocal(pathname) === pagepath) {
-          dispatch({ type: 'fetchTableData', payload: { index: 1, size: 2 } });
-        } else {
-          dispatch({ type: 'resetstate' });
-        }
-      });
-    },
-  },
+  subscriptions: { setup: ({ dispatch, history }) => setup({ dispatch, history }, pagepath) },
 
 };

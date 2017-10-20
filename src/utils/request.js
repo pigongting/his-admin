@@ -1,4 +1,3 @@
-import moment from 'moment';
 import fetch from 'dva/fetch';
 
 /**
@@ -138,9 +137,8 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
     fetchset.method = options.method;
   }
 
-  console.log(options.body);
-
   if (options.body) {
+    /* 表单页-字段 */
     if (options.body.fields) {
       const fields = options.body.fields;
       for (const key in fields) {
@@ -149,8 +147,6 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
           if (item) {
             if (Object.prototype.toString.call(item) === '[object Array]') {
               options.body[key] = item[item.length - 1];
-            } else if (moment.isMoment(item)) {
-              options.body[key] = item.format('YYYY-MM-DD HH:mm:ss');
             } else {
               options.body[key] = item;
             }
@@ -160,53 +156,65 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
       delete options.body.fields;
     }
 
-    if (options.body.filters) {
-      for (const key in options.body.filters) {
-        if (options.body.filters[key][0] === '=') {
-          options.body.filters[key][1] = options.body.filters[key][1].slice(-1);
-        }
-      }
-    }
-
+    /* 表格页-分页 */
     if (options.body.page) {
       for (const key in options.body.page) {
-        if (key) {
-          options.body[key] = options.body.page[key];
-        }
+        if (key) { options.body[key] = options.body.page[key]; }
       }
       delete options.body.page;
     }
 
+    /* 表格页-表格筛选 */
     if (options.body.tableFilters) {
-      if (!options.body.filters) {
-        options.body.filters = {};
-      }
+      if (!options.body.filters) { options.body.filters = {}; }
 
       for (const key in options.body.tableFilters) {
         if (key) {
-          options.body.filters[key] = options.body.tableFilters[key];
+          const item = options.body.tableFilters[key];
+          const sql = options.body.sql[key];
+          if (item) {
+            if (sql) {
+              options.body.filters[key] = [sql, [item]];
+            } else {
+              options.body.filters[key] = ['=', [item[item.length - 1]]];
+            }
+          }
         }
       }
+
       delete options.body.tableFilters;
     }
 
-    if (options.body.search) {
-      if (options.body.search.value[1][0]) {
-        if (!options.body.filters) {
-          options.body.filters = {};
+    /* 表格页-表单筛选 */
+    if (options.body.formFilters) {
+      if (!options.body.filters) { options.body.filters = {}; }
+      const formFilters = options.body.formFilters;
+      for (const key in formFilters) {
+        if (key) {
+          const sql = options.body.sql[key];
+          const item = formFilters[key].value;
+          if (item) {
+            if (!options.body.filters.searchkey.value && (key === 'searchkey' || key === 'searchvalue')) {
+              if (formFilters.searchkey && formFilters.searchkey.value && formFilters.searchvalue && formFilters.searchvalue.value) {
+                options.body.filters.searchkey.value = ['like', formFilters.searchvalue.value];
+              }
+            } else if (Object.prototype.toString.call(item) === '[object Array]') {
+              options.body.filters[key] = [(sql || '='), item];
+            } else {
+              options.body.filters[key] = [(sql || '='), [item]];
+            }
+          }
         }
-        options.body.filters[options.body.search.key] = options.body.search.value;
       }
-      delete options.body.search;
+
+      delete options.body.formFilters;
     }
   }
 
   if (options.method === 'POST') {
     fetchset.body = JSON.stringify(options.body);
     fetchset.mode = 'cors';
-    fetchset.headers = {
-      'Content-Type': 'application/json',
-    };
+    fetchset.headers = { 'Content-Type': 'application/json' };
   }
 
   console.log(options.body);

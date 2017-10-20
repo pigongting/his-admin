@@ -1,48 +1,13 @@
-import { setup, getinitstate, resetstate, updateSetMode, updateFormReq, updateCascadAddr } from '../../reducers/commonForm';
+import { setup, getinitstate, resetstate, commonFormReducers } from '../../reducers/commonForm';
 import { fetchDeptTreeData, updateDeptTreeData } from '../../reducers/app/dept';
 import { fetchHospitalAllData, updateHospitalAllData } from '../../reducers/app/hospital';
+import { updateCascadAddr } from '../../reducers/cascadAddr';
 import { fetchViewedRow, fetchInsertRow, fetchUpdateRow } from '../../reducers/app/doctor';
 
 const pagespace = 'appdoctoredit';
 const pagepath = '/app/doctoredit';
-const fields = [
-  'doctorId',
-  'hospitalId',
-  'hospitalDeptId',
-  'doctorName',
-  'gender',
-  'marriage',
-  'birthday',
-  'doctorCap',
-  'pcaCode',
-  'address',
-  'postCode',
-  'mobile',
-  'intro',
-  'isConsultation',
-  'isExpert',
-  'specialty',
-  'areaCode',
-  'education',
-  'title',
-  'duties',
-  'orgCode',
-  'idType',
-  'idNumber',
-  'certificateNo',
-  'idUrl',
-  'idState',
-  'signatureUrl',
-  'certificateUrl',
-  'imageUrl',
-  'height',
-  'weight',
-  'sort',
-  'status',
-  'remark',
-];
 
-const initstate = getinitstate({ field: fields });
+const initstate = getinitstate();
 
 export default {
 
@@ -52,8 +17,7 @@ export default {
 
   reducers: {
     resetstate: state => resetstate(state, initstate),
-    updateSetMode,
-    updateFormReq,
+    ...commonFormReducers,
     updateCascadAddr,
     updateDeptTreeData,
     updateHospitalAllData,

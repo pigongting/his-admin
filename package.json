@@ -36,6 +36,7 @@
     "antd": "^2.13.6",
     "axios": "^0.16.2",
     "babel-runtime": "^6.9.2",
+    "clone": "^2.1.1",
     "css-modules-require-hook": "4.1.0",
     "dva": "^1.2.1",
     "dva-loading": "^0.2.1",

@@ -35,6 +35,7 @@ export function viewedRow(action, config, options) {
 }
 /* 列出分页数据 */
 export function listPageData(action, config, options) {
+  console.log(options);
   return request(action, config, {
     Url: `${apiPrefix}doctor/getDoctorList${apiNexfix}`,
     method: 'POST',

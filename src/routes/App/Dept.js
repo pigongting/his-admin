@@ -4,9 +4,6 @@ import moment from 'moment';
 import { connect } from 'dva';
 // antd 组件
 import { Layout, Form, DatePicker, Dropdown, Input, Select, Menu } from 'antd';
-// 自定义组件
-import FormTableAndPage from '../../components/FormTableAndPage';
-import FormSubmitAndClear from '../../components/FormSubmitAndClear';
 // antd 组件扩展
 const { Header, Footer, Sider, Content } = Layout;
 const { RangePicker } = DatePicker;

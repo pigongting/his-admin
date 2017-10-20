@@ -14,6 +14,8 @@ class AppDoctor extends React.Component {
   }
 
   render() {
+    const { locale } = this.props;
+
     return (
       <FormTablePage
         namespace={pagespace}
@@ -45,7 +47,22 @@ class AppDoctor extends React.Component {
             asynload: this.props.handleDeptTreeData,
             changeOnSelect: true,
           },
+          {
+            type: 'RangePicker',
+            field: 'createDt',
+            label: '创建时间',
+          },
+          {
+            type: 'Cascader',
+            field: 'pcaCode',
+            label: '地区',
+            asynload: this.props.handleCascadAddr,
+          },
         ]}
+        rowSelection={{
+          type: 'checkbox',
+          selections: true,
+        }}
         columns={[
           {
             title: '医生名称',
@@ -64,11 +81,25 @@ class AppDoctor extends React.Component {
             title: '是否会诊',
             dataIndex: 'isConsultation',
             render: (text, record) => (<span>{(text) ? '是' : '否'}</span>),
+            filters: [{
+              text: '是',
+              value: true,
+            }, {
+              text: '否',
+              value: false,
+            }],
           },
           {
             title: '是否专家',
             dataIndex: 'isExpert',
             render: (text, record) => (<span>{(text) ? '是' : '否'}</span>),
+            filters: [{
+              text: '是',
+              value: true,
+            }, {
+              text: '否',
+              value: false,
+            }],
           },
           {
             title: '特长',
@@ -86,25 +117,19 @@ class AppDoctor extends React.Component {
           {
             title: '操作',
             key: 'operation',
-            width: 44,
-            className: 'operationColumn',
             render: (text, row, index) => {
               const operationMenu = (
-                <Menu onClick={({ item, key, keyPath }) => { this.props.operation(item, key, keyPath, row.id); }}>
-                  <Menu.Item key="0">下载文件</Menu.Item>
-                  <Menu.Item key="1">
-                    <a href="/device/edit" rel="noopener noreferrer" target="_blank">编辑</a>
-                  </Menu.Item>
-                  <Menu.Item key="2">复制外链</Menu.Item>
-                  <Menu.Item key="3">删除文件</Menu.Item>
+                <Menu onClick={({ item, key, keyPath }) => { this.props.handleOperation(item, key, keyPath, row.id); }}>
+                  <Menu.Item key="0"><a href={`/${locale}/app/doctoredit?id=${row.id}`} rel="noopener noreferrer" target="_blank">查看</a></Menu.Item>
+                  <Menu.Item key="1"><a href={`/${locale}/app/doctoredit?id=${row.id}&edit=1`} rel="noopener noreferrer" target="_blank">编辑</a></Menu.Item>
+                  <Menu.Item key="2">删除</Menu.Item>
                 </Menu>
               );
-
               return <Dropdown overlay={operationMenu} placement="bottomRight"><div>•••</div></Dropdown>;
             },
           },
         ]}
-        headerOperates={<div><a href="/app/doctoredit" rel="noopener noreferrer" target="_blank">新增医生</a></div>}
+        headerOperates={<div><a href={`/${locale}/app/doctoredit`} rel="noopener noreferrer" target="_blank">新增医生</a></div>}
       />
     );
   }
@@ -115,30 +140,22 @@ function mapDispatchToProps(dispatch, ownProps) {
     handleDeptTreeData: selectedOptions => handleDeptTreeData(dispatch, pagespace, selectedOptions),
     handleHospitalAllData: () => handleHospitalAllData(dispatch, pagespace),
     handleCascadAddr: () => handleCascadAddr(dispatch, pagespace, 'pcaCode'),
-    // 表格行操作
-    operation: (item, key, keyPath, id) => {
-      console.log(item);
-      console.log(key);
-      console.log(keyPath);
-      console.log(id);
-
+    handleOperation: (item, key, keyPath, id) => {
       switch (key) {
-        case '0':
-          dispatch({
-            type: `${pagespace}/tableSize`,
-            payload: id,
-          });
+        case '2':
+          dispatch({ type: `${pagespace}/fetchDeleteRow`, payload: [id] });
           break;
         default:
           break;
       }
 
-      dispatch({
-        type: `${pagespace}/recordRowClick`,
-        payload: id,
-      });
+      dispatch({ type: `${pagespace}/recordClickedRow`, payload: id });
     },
   };
 }
 
-export default connect(null, mapDispatchToProps)(AppDoctor);
+function mapStateToProps(state, ownProps) {
+  return { locale: state.ssr.locale };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(AppDoctor);

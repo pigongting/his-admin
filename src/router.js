@@ -8,7 +8,7 @@ function RouterConfig({ history, app }) {
   const pruepath = getpruepath(window.location.pathname);
 
   // 对没有国际化的链接进行跳转
-  historyreplace(history, pruepath);
+  historyreplace(history, pruepath, window.location.search);
 
   const localename = getlocalname(pruepath);
 

@@ -14,7 +14,9 @@ const getNowColumns = (columns, showColumns, req) => {
   columns.map((item, index) => {
     if (showColumns.includes(item.title) || item.key === 'operation') {
       const newitem = item;
-      if (newitem.sorter) { newitem.sortOrder = req.orders[newitem.dataIndex] ? req.orders[newitem.dataIndex][1] : false; }
+      if (newitem.sorter) { newitem.sortOrder = req.orders[newitem.dataIndex] || null; }
+      if (newitem.filters) { newitem.filteredValue = req.tableFilters[newitem.dataIndex] || null; }
+      if (newitem.key === 'operation') { newitem.width = newitem.width || 44; newitem.className = newitem.className || 'operationColumn'; }
       nowColumns.push(newitem);
     }
     return item;
@@ -35,7 +37,6 @@ class FormTablePage extends React.Component {
       tableSize: 'middle',
       setColumnModalVisible: false,
       selectedRows: [],
-      clickedRows: [],
     };
   }
 
@@ -62,74 +63,45 @@ class FormTablePage extends React.Component {
 
     // 外部数据变化时，行数据变化时，清除选中行和点击行
     if (nextres.rows !== res.rows) {
-      this.setState(update(this.state, { selectedRows: { $set: [] }, clickedRows: { $set: [] } }));
+      this.setState(update(this.state, { selectedRows: { $set: [] } }));
     }
   }
 
-  setTable({ item, key, keyPath }) {
+  /* 表格设置菜单 */
+  operateTableSetMenu({ item, key, keyPath }) {
     switch (key) {
       case '0':
-        this.setState(update(this.state, {
-          tableSize: {
-            $set: 'default',
-          },
-        }));
+        this.setState(update(this.state, { tableSize: { $set: 'default' } }));
         break;
       case '1':
-        this.setState(update(this.state, {
-          tableSize: {
-            $set: 'middle',
-          },
-        }));
+        this.setState(update(this.state, { tableSize: { $set: 'middle' } }));
         break;
       case '2':
-        this.setState(update(this.state, {
-          tableSize: {
-            $set: 'small',
-          },
-        }));
+        this.setState(update(this.state, { tableSize: { $set: 'small' } }));
         break;
       case '3':
-        this.setState(update(this.state, {
-          setColumnModalVisible: {
-            $set: !this.state.setColumnModalVisible,
-          },
-        }));
+        this.switchSetColumnModalVisible();
         break;
       default:
         break;
     }
   }
 
-  setClickedRow(record) {
-    this.setState(update(this.state, {
-      clickedRows: {
-        $push: [record.key],
-      },
-    }));
+  /* 选择行 */
+  operateSelectedRows(selectedRowKeys) {
+    this.setState(update(this.state, { selectedRows: { $set: selectedRowKeys } }));
   }
 
-  setSelectedRows(selectedRowKeys) {
-    this.setState(update(this.state, {
-      selectedRows: {
-        $set: selectedRowKeys,
-      },
-    }));
-  }
-
-  hideSetColumnModal() {
-    this.setState(update(this.state, {
-      setColumnModalVisible: {
-        $set: false,
-      },
-    }));
+  /* 切换设置列模态框可见性 */
+  switchSetColumnModalVisible() {
+    this.setState(update(this.state, { setColumnModalVisible: { $set: !this.state.setColumnModalVisible } }));
   }
 
   /* 生成表格设置菜单 */
   generateTabelSetMenu() {
     const { tableSize } = this.state;
     return (
-      <Menu onClick={params => this.setTable(params)}>
+      <Menu onClick={params => this.operateTableSetMenu(params)}>
         <Menu.ItemGroup title="显示密度">
           <Menu.Item key="0" className={(tableSize === 'default') ? 'checkmark' : ''}>标准</Menu.Item>
           <Menu.Item key="1" className={(tableSize === 'middle') ? 'checkmark' : ''}>适中</Menu.Item>
@@ -189,19 +161,39 @@ class FormTablePage extends React.Component {
               size="default"
             />)}
           </Form.Item>);
+        case 'RangePicker':
+          return (<Form.Item key={index} label={item.label}>
+            {getFieldDecorator(item.field, {
+              rules: [
+                { required: item.required || false, message: item.requiredmsg },
+              ],
+            })(<RangePicker size="default" disabled={item.disabled} />)}
+          </Form.Item>);
         default:
           return null;
       }
     });
   }
 
+  /* 生成批量操作 */
+  generateBatch(selectedRows, tableSize) {
+    if (selectedRows.length > 0) {
+      return (
+        <div className={cs('batchOperation', tableSize)}>
+          <Button type="danger" onClick={() => { this.props.handleBatchDelete(selectedRows); }} icon="delete" autoFocus>删除</Button>
+        </div>
+      );
+    }
+    return null;
+  }
+
   render() {
-    const { nowColumns, tableSize, setColumnModalVisible, clickedRows, selectedRows } = this.state;
-    const { form, pagedata, loading, searchOptions, searchPlaceholder, headerOperates } = this.props;
+    const { nowColumns, tableSize, setColumnModalVisible, selectedRows } = this.state;
+    const { form, pagedata, loading, searchOptions, searchPlaceholder, headerOperates, rowSelection } = this.props;
     const { req, res, set } = pagedata;
     const { page } = req;
     const { rows } = res;
-    const { fullColumns, showColumns } = set;
+    const { fullColumns, showColumns, clickedRows } = set;
     const { getFieldDecorator } = form;
 
     return (
@@ -229,10 +221,10 @@ class FormTablePage extends React.Component {
                 current={page.index}
                 pageSize={page.size}
                 total={page.total}
-                onChange={this.props.pageChange}
-                showTotal={(total, range) => { return `${range[0]}-${range[1]} of ${total} items`; }}
+                onChange={this.props.handlePageChange}
+                showTotal={(total, range) => { return `第 ${range[0]} - ${range[1]} 行，共 ${total} 行`; }}
               />
-              <Button className="tableReload" style={{ marginLeft: 8 }} onClick={this.props.reload}>
+              <Button className="tableReload" style={{ marginLeft: 8 }} onClick={this.props.handleReload}>
                 <i className="tableReloadIcon" />
               </Button>
               <Dropdown overlay={(() => this.generateTabelSetMenu())()} trigger={['click']} placement="bottomRight">
@@ -243,9 +235,9 @@ class FormTablePage extends React.Component {
                 wrapClassName="columnModal"
                 footer={null}
                 visible={setColumnModalVisible}
-                onCancel={params => this.hideSetColumnModal(params)}
+                onCancel={params => this.switchSetColumnModalVisible(params)}
               >
-                <Checkbox.Group value={showColumns} onChange={this.props.setShowColumns}>
+                <Checkbox.Group value={showColumns} onChange={this.props.handleShowColumns}>
                   <Row>
                     {fullColumns.map((item, index) => <Col key={index} span={8}>
                       <Checkbox value={item} disabled={(index < 3)}>{item}</Checkbox>
@@ -265,24 +257,18 @@ class FormTablePage extends React.Component {
                 </Form.Item>
                 &emsp;
                 <Form.Item>
-                  <Button size="default" onClick={() => { this.props.handleReset(form, this.props.handleSubmit); }}>清空</Button>
+                  <Button size="default" onClick={this.props.handleClear}>清空</Button>
                 </Form.Item>
               </div>
             </div>
-            {
-              (selectedRows.length > 0) ?
-                <div className={cs('batchOperation', tableSize)}>
-                  <Button type="danger" onClick={this.props.batchDelete} icon="delete" autoFocus>删除</Button>
-                </div>
-              : null
-            }
+            {(() => this.generateBatch(selectedRows, tableSize))()}
             <Table
-              rowSelection={{
-                type: 'checkbox',
-                selections: true,
+              rowSelection={(rowSelection) ? {
+                type: rowSelection.type,
+                selections: rowSelection.selections,
                 selectedRowKeys: selectedRows,
-                onChange: params => this.setSelectedRows(params),
-              }}
+                onChange: params => this.operateSelectedRows(params),
+              } : null}
               pagination={false}
               size={tableSize}
               dataSource={rows}
@@ -290,8 +276,8 @@ class FormTablePage extends React.Component {
               rowClassName={(record) => { return (clickedRows.includes(record.key)) ? 'clicked' : ''; }}
               loading={{ size: 'default', spinning: loading }}
               locale={{ filterTitle: '筛选', filterConfirm: '确定', filterReset: '重置', emptyText: '暂无数据' }}
-              onChange={this.props.tableChange}
-              onRowClick={params => this.setClickedRow(params)}
+              onChange={this.props.handleTableChange}
+              onRowClick={params => this.props.handleClickedRow(params)}
             />
             <div className="tablePagination">
               <Pagination
@@ -302,9 +288,9 @@ class FormTablePage extends React.Component {
                 current={page.index}
                 pageSize={page.size}
                 total={page.total}
-                onChange={this.props.pageChange}
-                onShowSizeChange={this.props.pageChange}
-                showTotal={(totalParams, range) => { return `${range[0]}-${range[1]} of ${totalParams} items`; }}
+                onChange={this.props.handlePageChange}
+                onShowSizeChange={this.props.handlePageChange}
+                showTotal={(total, range) => { return `第 ${range[0]} - ${range[1]} 行，共 ${total} 行`; }}
               />
             </div>
           </Content>
@@ -323,55 +309,39 @@ function mapDispatchToProps(dispatch, ownProps) {
       // 验证表单
       form.validateFields((err, values) => {
         if (!err) {
-          // 更新表单参数
-          dispatch({
-            type: `${namespace}/updateFormFillter`,
-            payload: form.getFieldsValue(),
-          });
+          dispatch({ type: `${namespace}/updateFormFillter`, payload: form.getFieldsValue() });
+          dispatch({ type: `${namespace}/fetchTableData`, payload: { index: 1 } });
         }
       });
     },
-    handleReset: (form) => {
-      form.resetFields();
+    handleClear: () => {
+      dispatch({ type: `${namespace}/clearAllFiltersAndOrders` });
+      dispatch({ type: `${namespace}/fetchTableData`, payload: { index: 1 } });
     },
     // 重载当前页
-    reload: () => {
+    handleReload: () => {
       dispatch({ type: `${namespace}/fetchTableData` });
     },
     // 切换分页
-    pageChange: (page, pageSize) => {
-      dispatch({
-        type: `${namespace}/fetchTableData`,
-        payload: { index: page, size: pageSize },
-      });
-    },
-    // 设置显示的表格列
-    setShowColumns: (checkedValue) => {
-      dispatch({
-        type: `${namespace}/setTableColumns`,
-        payload: checkedValue,
-      });
-    },
-    // 删除当前选中的行
-    batchDelete: (selectedRows) => {
-      dispatch({
-        type: `${namespace}/batchDeleteRow`,
-        payload: selectedRows,
-      });
+    handlePageChange: (page, pageSize) => {
+      dispatch({ type: `${namespace}/fetchTableData`, payload: { index: page, size: pageSize } });
     },
     // 表格自带筛选，排序
-    tableChange: (pagination, filters, sorter) => {
-      // 更新筛选排序条件
-      dispatch({
-        type: `${namespace}/updateTableFillter`,
-        tableFilters: filters,
-        tableSorter: sorter,
-      });
-      // 发送请求
-      // dispatch({
-      //   type: `${namespace}/fetchTableData`,
-      //   payload: { index: 1 },
-      // });
+    handleTableChange: (pagination, filters, sorter) => {
+      dispatch({ type: `${namespace}/updateTableFillter`, tableFilters: filters, tableSorter: sorter });
+      dispatch({ type: `${namespace}/fetchTableData`, payload: { index: 1 } });
+    },
+    // 设置显示的表格列
+    handleShowColumns: (checkedValue) => {
+      dispatch({ type: `${namespace}/setTableColumns`, payload: checkedValue });
+    },
+    /* 点击行 */
+    handleClickedRow(record) {
+      dispatch({ type: `${namespace}/recordClickedRow`, payload: record.key });
+    },
+    // 删除当前选中的行
+    handleBatchDelete: (selectedRows) => {
+      dispatch({ type: `${namespace}/fetchDeleteRow`, payload: selectedRows });
     },
   };
 }

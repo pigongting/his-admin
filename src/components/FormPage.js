@@ -42,7 +42,7 @@ class FormPage extends React.Component {
             formItemNode.push(<Form.Item {...formItemLayout} key={index} label={item.label} hasFeedback>
               {
                 (set.mode === 'view')
-                ? <div className="viewText">{req.fields[item.field].value}</div>
+                ? <div className="viewText">{req.fields[item.field] && req.fields[item.field].value}</div>
                 : getFieldDecorator(item.field, {
                   rules: [
                     { required: item.required || false, message: item.requiredmsg },
@@ -56,7 +56,7 @@ class FormPage extends React.Component {
             formItemNode.push(<Form.Item {...formItemLayout} key={index} label={item.label}>
               {
                 (set.mode === 'view')
-                ? <div className="viewText">{req.fields[item.field].value}</div>
+                ? <div className="viewText">{req.fields[item.field] && req.fields[item.field].value}</div>
                 : getFieldDecorator(item.field, {
                   rules: [
                     { required: item.required || false, message: item.requiredmsg },
@@ -109,7 +109,7 @@ class FormPage extends React.Component {
               {
                 (set.mode === 'view')
                 ? <div className="viewText">{
-                  item.options.map((ele, i) => { if (ele.value === req.fields[item.field].value) { return ele.name; } else { return null; } })
+                  item.options.map((ele, i) => { if (ele.value === req.fields[item.field] && req.fields[item.field].value) { return ele.name; } else { return null; } })
                 }</div>
                 : getFieldDecorator(item.field, {})(<Radio.Group disabled={item.disabled}>{
                   item.options.map((ele, i) => <Radio key={i} value={ele.value}>{ele.name}</Radio>)
@@ -121,7 +121,7 @@ class FormPage extends React.Component {
             formItemNode.push(<Form.Item {...formItemLayout} key={index} label={item.label}>
               {
                 (set.mode === 'view')
-                ? <div className="viewText">{req.fields[item.field].value && req.fields[item.field].value.format('YYYY-MM-DD')}</div>
+                ? <div className="viewText">{req.fields[item.field] && req.fields[item.field].value && req.fields[item.field] && req.fields[item.field].value.format('YYYY-MM-DD')}</div>
                 : getFieldDecorator(item.field, {})(<DatePicker disabled={item.disabled} />)
               }
             </Form.Item>);

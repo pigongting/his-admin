@@ -20,15 +20,8 @@ export function setup({ dispatch, history }, pagepath) {
 }
 
 // 初始状态
-export function getinitstate({ field }) {
-  const newfields = {};
-
-  field.map((item, index) => {
-    newfields[item] = { value: undefined };
-    return item;
-  });
-
-  return { req: { fields: newfields }, res: {}, set: {} };
+export function getinitstate() {
+  return { req: { fields: [] }, res: {}, set: {} };
 }
 
 // 恢复页面状态
@@ -37,12 +30,12 @@ export function resetstate(state, initstate) {
 }
 
 // 更新设置模式
-export function updateSetMode(state, action) {
+function updateSetModeFn(state, action) {
   return update(state, { set: { mode: { $set: action.payload } } });
 }
 
 // 更新请求参数
-export function updateFormReq(state, action) {
+function updateFormReqFn(state, action) {
   const newfields = { ...state.req.fields };
 
   for (const key in action.payload) {
@@ -54,7 +47,7 @@ export function updateFormReq(state, action) {
   return update(state, { req: { fields: { $set: newfields } } });
 }
 
-// 更新级联地址
-export function updateCascadAddr(state, action) {
-  return update(state, { res: { [action.field]: { $set: action.payload } } });
-}
+export const commonFormReducers = {
+  updateSetMode: updateSetModeFn,
+  updateFormReq: updateFormReqFn,
+};

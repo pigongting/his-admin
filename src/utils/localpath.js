@@ -51,12 +51,13 @@ export function removelocalkeepthree(pathname) {
   return keeppath;
 }
 
-export function historyreplace(history, pruepath, next) {
+export function historyreplace(history, pruepath, search) {
+  console.log(pruepath);
   if (!localesReg.test(pruepath)) {
     if (pruepath === '' || pruepath === '/') {
       history.replace('/zh/index');
     } else {
-      history.replace(`/zh${pruepath}`);
+      history.replace(`/zh${pruepath}${search}`);
     }
   }
 }
