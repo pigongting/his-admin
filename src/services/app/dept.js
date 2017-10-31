@@ -19,7 +19,7 @@ export function listPageData(action, config, options) {
 }
 /* 列出全部数据 */
 export function listAllData(action, config, options) {}
-/* 列出指定级别数据 */
+/* 列出全部级别数据 */
 export function listTreeData(action, config, options) {
   return request(action, config, {
     Url: `${apiPrefix}dept/getAllDeptList${apiNexfix}`,
@@ -27,5 +27,11 @@ export function listTreeData(action, config, options) {
     body: options,
   });
 }
-/* 列出全部级别数据 */
-export function listOneLevelData(action, config, options) {}
+/* 列出指定级别数据 */
+export function listOneLevelData(action, config, options) {
+  return request(action, config, {
+    Url: `${apiPrefix}dept/getDeptList${apiNexfix}`,
+    method: 'POST',
+    body: options,
+  });
+}

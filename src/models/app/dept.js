@@ -1,48 +1,44 @@
 import React from 'react';
 import update from 'immutability-helper';
-// 请求服务
-import * as fetch from '../../services/app/dept';
-// 处理 国际化地址 的函数
-import { removelocal } from '../../utils/localpath';
-// 统一的纯函数
-import { getinitstate, resetstate, resetTable, updateTable, updatePages, setTableColumns, updateTableFillter, updateFormFillter, fetchTableData, batchDeleteRow } from '../../reducers/commonFormTable';
+import * as fetch from '../../services/app/doctor';
+import { setup, getinitstate, resetstate, commonFormTableReducers } from '../../reducers/commonFormTable';
+import { fetchTableData, fetchDeleteRow } from '../../reducers/app/dept';
 
-// 页内配置
-const pageConfig = {
-  namespace: 'appdept',
-  pagepath: '/app/dept',
-  columntags: ['医院科室ID', '科室名称', '科室简介', '医院ID', '父科室 ', '楼层', '科室地址'],
+const pagespace = 'appdept';
+const pagepath = '/app/dept';
+const columns = [
+  '医生名称',
+  '医生头衔',
+  '手机号码',
+  '是否会诊',
+  '是否专家',
+  '特长',
+  '职称',
+  '状态',
+];
+
+const initstate = getinitstate({ columntags: columns });
+
+initstate.req.sql = {
+  createDt: 'between',
 };
-
-// 初始状态
-const initstate = getinitstate({
-  columntags: pageConfig.columntags,
-  searchkey: 'deptName',
-});
 
 export default {
 
-  namespace: pageConfig.namespace,
+  namespace: pagespace,
 
   state: initstate,
 
-  reducers: { resetstate: state => resetstate(state, initstate), resetTable, updateTable, updatePages, setTableColumns, updateTableFillter, updateFormFillter },
+  reducers: {
+    resetstate: state => resetstate(state, initstate),
+    ...commonFormTableReducers,
+  },
 
   effects: {
-    fetchTableData: (action, { call, put, select }) => fetchTableData(action, { call, put, select }, pageConfig.namespace, fetch.tableData),
-    batchDeleteRow: (action, { call, put, select }) => batchDeleteRow(action, { call, put, select }, pageConfig.namespace, fetch.deleteRow),
+    fetchTableData: (action, { call, put, select }) => fetchTableData(action, { call, put, select }, pagespace),
+    fetchDeleteRow: (action, { call, put, select }) => fetchDeleteRow(action, { call, put, select }, pagespace),
   },
 
-  subscriptions: {
-    setup({ dispatch, history }) {
-      return history.listen(({ pathname, query }) => {
-        if (removelocal(pathname) === pageConfig.pagepath) {
-          dispatch({ type: 'fetchTableData', payload: { index: 1, size: 20 } });
-        } else {
-          dispatch({ type: 'resetstate' });
-        }
-      });
-    },
-  },
+  subscriptions: { setup: ({ dispatch, history }) => setup({ dispatch, history }, pagepath) },
 
 };

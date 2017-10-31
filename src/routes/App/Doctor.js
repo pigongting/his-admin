@@ -7,6 +7,7 @@ import { handleCascadAddr } from '../../actions/CascadAddr';
 import FormTablePage from '../../components/FormTablePage';
 
 const pagespace = 'appdoctor';
+const searchPlaceholder = '搜索医生...';
 
 class AppDoctor extends React.Component {
   constructor(props) {
@@ -19,7 +20,7 @@ class AppDoctor extends React.Component {
     return (
       <FormTablePage
         namespace={pagespace}
-        searchPlaceholder="搜索医生..."
+        searchPlaceholder={searchPlaceholder}
         searchOptions={[
           {
             title: '医生名称',
