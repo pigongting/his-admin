@@ -189,7 +189,7 @@ class FormTablePage extends React.Component {
 
   render() {
     const { nowColumns, tableSize, setColumnModalVisible, selectedRows } = this.state;
-    const { form, pagedata, loading, searchOptions, searchPlaceholder, headerOperates, rowSelection } = this.props;
+    const { form, pagedata, loading, searchOptions, searchPlaceholder, headerOperates, formItems, rowSelection } = this.props;
     const { req, res, set } = pagedata;
     const { page } = req;
     const { rows } = res;
@@ -248,19 +248,21 @@ class FormTablePage extends React.Component {
             </div>
           </Header>
           <Content className="tableContent" id="formScrollContent">
-            <div className="tableFillter">
-              <div className="fillterTitle">筛选项</div>
-              {(() => this.generateFormItem())()}
-              <div className="fillterOperate">
-                <Form.Item>
-                  <Button type="primary" htmlType="submit" size="default">开始筛选</Button>
-                </Form.Item>
-                &emsp;
-                <Form.Item>
-                  <Button size="default" onClick={this.props.handleClear}>清空</Button>
-                </Form.Item>
+            {(formItems && formItems.length > 0) ?
+              <div className="tableFillter">
+                <div className="fillterTitle">筛选项</div>
+                {(() => this.generateFormItem())()}
+                <div className="fillterOperate">
+                  <Form.Item>
+                    <Button type="primary" htmlType="submit" size="default">开始筛选</Button>
+                  </Form.Item>
+                  &emsp;
+                  <Form.Item>
+                    <Button size="default" onClick={this.props.handleClear}>清空</Button>
+                  </Form.Item>
+                </div>
               </div>
-            </div>
+            : <div className="tableNoFillter" />}
             {(() => this.generateBatch(selectedRows, tableSize))()}
             <Table
               rowSelection={(rowSelection) ? {

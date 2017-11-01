@@ -7,6 +7,7 @@ import { handleCascadAddr } from '../../actions/CascadAddr';
 import FormTablePage from '../../components/FormTablePage';
 
 const pagespace = 'appdoctor';
+const detailname = 'doctoredit';
 const searchPlaceholder = '搜索医生...';
 
 class AppDoctor extends React.Component {
@@ -121,8 +122,8 @@ class AppDoctor extends React.Component {
             render: (text, row, index) => {
               const operationMenu = (
                 <Menu onClick={({ item, key, keyPath }) => { this.props.handleOperation(item, key, keyPath, row.id); }}>
-                  <Menu.Item key="0"><a href={`/${locale}/app/doctoredit?id=${row.id}`} rel="noopener noreferrer" target="_blank">查看</a></Menu.Item>
-                  <Menu.Item key="1"><a href={`/${locale}/app/doctoredit?id=${row.id}&edit=1`} rel="noopener noreferrer" target="_blank">编辑</a></Menu.Item>
+                  <Menu.Item key="0"><a href={`/${locale}/app/${detailname}?id=${row.id}`} rel="noopener noreferrer" target="_blank">查看</a></Menu.Item>
+                  <Menu.Item key="1"><a href={`/${locale}/app/${detailname}?id=${row.id}&edit=1`} rel="noopener noreferrer" target="_blank">编辑</a></Menu.Item>
                   <Menu.Item key="2">删除</Menu.Item>
                 </Menu>
               );
@@ -130,7 +131,7 @@ class AppDoctor extends React.Component {
             },
           },
         ]}
-        headerOperates={<div><a href={`/${locale}/app/doctoredit`} rel="noopener noreferrer" target="_blank">新增医生</a></div>}
+        headerOperates={<div><a href={`/${locale}/app/${detailname}`} rel="noopener noreferrer" target="_blank">新增医生</a></div>}
       />
     );
   }

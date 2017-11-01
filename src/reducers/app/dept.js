@@ -3,84 +3,107 @@ import { notification } from 'antd';
 import * as fetch from '../../services/app/dept';
 import { changeDataType } from '../../utils/handleData';
 
+/* 插入 */
+export function *fetchInsertRow(action, { call, put, select }, namespace) {
+  const options = yield select(state => state[namespace].req);
+  const { data } = yield call(fetch.insertRow, { errormsg: '插入失败', ...action }, {}, options);
+
+  // 成功提示
+  notification.success({
+    message: '插入成功',
+    description: '插入医生信息成功',
+  });
+}
+
 /* 删除 */
 export function *fetchDeleteRow(action, { call, put, select }, namespace) {
   // 从表格中删除选中行
+  const page = yield select(state => state[namespace].req.page);
   const dataSource = yield select(state => state[namespace].res.rows);
   const newSource = dataSource.filter((item) => {
     return !action.payload.includes(item.key);
   });
   yield put({ type: 'updateTable', payload: newSource });
+  yield put({
+    type: 'updatePages',
+    payload: {
+      index: page.index,
+      size: page.size,
+      total: page.total - action.payload.length,
+    },
+  });
 
   // 发送删除请求
-  for (let i = 0; i < action.payload.length; i++) {
-    const { data } = yield call(fetch.deleteRow, { errormsg: '删除失败', ...action }, {}, { doctorId: action.payload[i] });
+  const { data } = yield call(fetch.deleteRow, { errormsg: '删除失败', ...action }, {}, { id: action.payload });
 
-    // 成功提示
-    notification.success({
-      message: '删除成功',
-      description: '删除医生信息成功',
-    });
-  }
+  // 成功提示
+  notification.success({
+    message: '删除成功',
+    description: '删除医生信息成功',
+  });
 }
 
-// 获取筛选
-// export function *fetchDeptFillter(action, { call, put, select }, namespace) {
-//   const targetOption = action.payload;
-//   // 转圈
-//   if (targetOption) { targetOption.loading = true; }
-//   // 请求数据
-//   const { data } = yield call(fetch.deptFillter, { errormsg: '科室列表加载失败', ...action }, {}, {
-//     hospitalDeptId: (targetOption && targetOption.hospitalDeptId) || 0,
-//   });
-//   // 处理数据
-//   data.map((item, index) => {
-//     const newitem = item;
-//     newitem.value = item.hospitalDeptId;
-//     newitem.label = item.deptName;
-//     newitem.isLeaf = !item.leaf;
-//     return newitem;
-//   });
-//   // 改变状态
-//   if (targetOption) {
-//     targetOption.loading = false;
-//     targetOption.children = data;
-//     const options = yield select(state => state[namespace].res.hospitalDeptId);
-//     yield put({ type: 'updateDeptTreeData', payload: [...options] });
-//   } else {
-//     yield put({ type: 'updateDeptTreeData', payload: data });
-//   }
-// }
+/* 更新 */
+export function *fetchUpdateRow(action, { call, put, select }, namespace) {
+  const options = yield select(state => state[namespace].req);
+  const { data } = yield call(fetch.updateRow, { errormsg: '更新失败', ...action }, {}, options);
 
-// 列出全部级别数据
-export function *fetchDeptTreeData(action, { call, put, select }, namespace) {
-  const { data } = yield call(fetch.listTreeData, { errormsg: '科室列表加载失败', ...action }, {}, {});
-  yield put({ type: 'updateDeptTreeData', payload: data });
+  // 成功提示
+  notification.success({
+    message: '更新成功',
+    description: '更新医生信息成功',
+  });
 }
 
-// 更新科室树形数据
-export function updateDeptTreeData(state, action) {
-  return update(state, { res: { hospitalDeptId: { $set: action.payload } } });
+/* 查看 */
+export function *fetchViewedRow(action, { call, put, select }, namespace) {
+  const { data } = yield call(fetch.viewedRow, { errormsg: '请求失败', ...action }, {}, {
+    hospitalDeptId: action.payload,
+  });
+
+  const newdata = changeDataType(data, [
+    {
+      field: 'hospitalId',
+      target: 'number2string',
+    },
+    {
+      field: 'hospitalDeptId',
+      replace: 'treeExStr',
+      target: 'string2arraynumber',
+    },
+  ]);
+
+  yield put({ type: 'updateFormReq', payload: newdata });
 }
 
 /* 列出分页数据 */
 export function *fetchTableData(action, { call, put, select }, namespace) {
-  console.log(namespace);
   yield put({ type: 'resetTable' });
   const options = yield select(state => state[namespace].req);
 
   options.page.index = (action.payload && action.payload.index) ? action.payload.index : options.page.index;
   options.page.size = (action.payload && action.payload.size) ? action.payload.size : options.page.size;
+  if (!options.filters) { options.filters = {}; }
+  if (!options.filters.mainDeptId) { options.filters.mainDeptId = ['=', [null]]; }
 
   try {
-    const aa = yield call(fetch.listOneLevelData, { errormsg: '表格数据请求失败', ...action }, {}, {
-      hospitalDeptId: 0,
-    });
-    console.log(aa);
+    const { data, headers } = yield call(fetch.listPageData, { errormsg: '表格数据请求失败', ...action }, {}, options);
+    yield put({ type: 'updateTable', payload: data });
+    yield put({ type: 'updatePages', payload: headers });
   } catch (e) {
     console.log(e);
   }
+}
 
-  // yield put({ type: 'updateTable', payload: data });
-  // yield put({ type: 'updatePages', payload: headers });
+// 列出全部级别数据
+export function *fetchDeptTreeData(action, { call, put, select }, namespace) {
+  const { data } = yield call(fetch.listTreeData, { errormsg: '科室列表加载失败', ...action }, {}, {});
+  const reskey = (namespace === 'appdept' || namespace === 'appdeptdetail') ? 'mainDeptId' : 'hospitalDeptId';
+
+  yield put({ type: 'updateDeptTreeData', payload: data, resname: reskey });
+}
+
+// 更新科室树形数据
+export function updateDeptTreeData(state, action) {
+  return update(state, { res: { [action.resname]: { $set: action.payload } } });
 }

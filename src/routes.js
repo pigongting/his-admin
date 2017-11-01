@@ -115,6 +115,22 @@ function Routes(locale, app) {
               },
             },
             {
+              path: 'deptdetail',
+              getComponent(nextState, cb) {
+                if (process.env.NODE_ENV === 'development') {
+                  import(/* webpackChunkName: "App/DeptDetail" */ './routes/App/DeptDetail')
+                  .then((data) => {
+                    registerModel(app, require('./models/app/deptdetail'));
+                    cb(null, data);
+                  })
+                  .catch(err => console.log('Failed to load App/DeptDetail', err));
+                } else {
+                  registerModel(app, require('./models/app/deptdetail'));
+                  cb(null, require('./routes/App/DeptDetail'));
+                }
+              },
+            },
+            {
               path: 'doctor',
               getComponent(nextState, cb) {
                 if (process.env.NODE_ENV === 'development') {

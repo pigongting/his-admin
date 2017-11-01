@@ -1,4 +1,6 @@
 import fetch from 'dva/fetch';
+import moment from 'moment';
+import clone from 'clone';
 
 /**
  * 验证请求状态
@@ -104,7 +106,7 @@ function timeoutHandle(timeout, action) {
  */
 export default async function request(action, { mode = 'wait', timeout = 10000 }, param) {
   // console.log(action);
-  const options = JSON.parse(JSON.stringify(param));
+  const options = clone(param);
 
   // 请求时间戳
   const timestamp = new Date().getTime();
@@ -146,7 +148,13 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
           const item = fields[key].value;
           if (item) {
             if (Object.prototype.toString.call(item) === '[object Array]') {
-              options.body[key] = item[item.length - 1];
+              const newitem = item.map((ele) => {
+                if (moment.isMoment(ele)) { return ele.format('YYYY-MM-DD HH:mm:ss'); } else { return ele; }
+              });
+
+              options.body[key] = newitem[newitem.length - 1];
+            } else if (moment.isMoment(item)) {
+              options.body[key] = item.format('YYYY-MM-DD HH:mm:ss');
             } else {
               options.body[key] = item;
             }
@@ -194,14 +202,22 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
           const sql = options.body.sql[key];
           const item = formFilters[key].value;
           if (item) {
-            if (!options.body.filters.searchkey.value && (key === 'searchkey' || key === 'searchvalue')) {
-              if (formFilters.searchkey && formFilters.searchkey.value && formFilters.searchvalue && formFilters.searchvalue.value) {
-                options.body.filters.searchkey.value = ['like', formFilters.searchvalue.value];
+            if (key === 'searchkey' || key === 'searchvalue') {
+              if (key === 'searchkey' && formFilters.searchvalue && formFilters.searchvalue.value) {
+                options.body.filters[item] = ['like', formFilters.searchvalue.value];
               }
             } else if (Object.prototype.toString.call(item) === '[object Array]') {
-              options.body.filters[key] = [(sql || '='), item];
+              const newitem = item.map((ele) => {
+                if (moment.isMoment(ele)) { return ele.format('YYYY-MM-DD HH:mm:ss'); } else { return ele; }
+              });
+
+              if (sql) {
+                options.body.filters[key] = [sql, newitem];
+              } else {
+                options.body.filters[key] = ['=', [newitem[newitem.length - 1]]];
+              }
             } else {
-              options.body.filters[key] = [(sql || '='), [item]];
+              options.body.filters[key] = [(sql || '='), [moment.isMoment(item) ? item.format('YYYY-MM-DD HH:mm:ss') : item]];
             }
           }
         }

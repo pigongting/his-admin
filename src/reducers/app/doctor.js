@@ -25,15 +25,13 @@ export function *fetchDeleteRow(action, { call, put, select }, namespace) {
   yield put({ type: 'updateTable', payload: newSource });
 
   // 发送删除请求
-  for (let i = 0; i < action.payload.length; i++) {
-    const { data } = yield call(fetch.deleteRow, { errormsg: '删除失败', ...action }, {}, { doctorId: action.payload[i] });
+  const { data } = yield call(fetch.deleteRow, { errormsg: '删除失败', ...action }, {}, { id: action.payload });
 
-    // 成功提示
-    notification.success({
-      message: '删除成功',
-      description: '删除医生信息成功',
-    });
-  }
+  // 成功提示
+  notification.success({
+    message: '删除成功',
+    description: '删除医生信息成功',
+  });
 }
 
 /* 更新 */

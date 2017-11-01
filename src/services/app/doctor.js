@@ -12,7 +12,7 @@ export function insertRow(action, config, options) {
 /* 删除 */
 export function deleteRow(action, config, options) {
   return request(action, config, {
-    Url: `${apiPrefix}doctor/deleteDoctor${apiNexfix}`,
+    Url: `${apiPrefix}doctor/deleteArray${apiNexfix}`,
     method: 'POST',
     body: options,
   });

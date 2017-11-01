@@ -1,9 +1,11 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Menu, Dropdown } from 'antd';
+import { handleDeptTreeData } from '../../actions/app/Dept';
 import FormTablePage from '../../components/FormTablePage';
 
 const pagespace = 'appdept';
+const detailname = 'deptdetail';
 const searchPlaceholder = '搜索科室...';
 
 class AppDept extends React.Component {
@@ -23,66 +25,55 @@ class AppDept extends React.Component {
             title: '科室名称',
             value: 'deptName',
           },
+        ]}
+        formItems={[
           {
-            title: '手机号码',
-            value: 'mobile',
+            type: 'Cascader',
+            field: 'mainDeptId',
+            label: '父科室',
+            width: 220,
+            asynload: this.props.handleDeptTreeData,
+            changeOnSelect: true,
+          },
+          {
+            type: 'RangePicker',
+            field: 'createDt',
+            label: '创建时间',
           },
         ]}
-        formItems={[]}
         rowSelection={{
           type: 'checkbox',
           selections: true,
         }}
         columns={[
           {
-            title: '医生名称',
-            dataIndex: 'doctorName',
+            title: '医院科室ID',
+            dataIndex: 'hospitalDeptId',
             sorter: true,
           },
           {
-            title: '医生头衔',
-            dataIndex: 'doctorCap',
+            title: '科室名称',
+            dataIndex: 'deptName',
           },
           {
-            title: '手机号码',
-            dataIndex: 'mobile',
+            title: '简介',
+            dataIndex: 'intro',
           },
           {
-            title: '是否会诊',
-            dataIndex: 'isConsultation',
-            render: (text, record) => (<span>{(text) ? '是' : '否'}</span>),
-            filters: [{
-              text: '是',
-              value: true,
-            }, {
-              text: '否',
-              value: false,
-            }],
+            title: '医院ID',
+            dataIndex: 'hospitalId',
           },
           {
-            title: '是否专家',
-            dataIndex: 'isExpert',
-            render: (text, record) => (<span>{(text) ? '是' : '否'}</span>),
-            filters: [{
-              text: '是',
-              value: true,
-            }, {
-              text: '否',
-              value: false,
-            }],
+            title: '父科室ID',
+            dataIndex: 'mainDeptId',
           },
           {
-            title: '特长',
-            dataIndex: 'specialty',
-            render: (text, record) => (<span>{text || '未填写'}</span>),
+            title: '科室楼',
+            dataIndex: 'deptFloor',
           },
           {
-            title: '职称',
-            dataIndex: 'title',
-          },
-          {
-            title: '状态',
-            dataIndex: 'status',
+            title: '科室地址',
+            dataIndex: 'deptAddress',
           },
           {
             title: '操作',
@@ -90,8 +81,8 @@ class AppDept extends React.Component {
             render: (text, row, index) => {
               const operationMenu = (
                 <Menu onClick={({ item, key, keyPath }) => { this.props.handleOperation(item, key, keyPath, row.id); }}>
-                  <Menu.Item key="0"><a href={`/${locale}/app/doctoredit?id=${row.id}`} rel="noopener noreferrer" target="_blank">查看</a></Menu.Item>
-                  <Menu.Item key="1"><a href={`/${locale}/app/doctoredit?id=${row.id}&edit=1`} rel="noopener noreferrer" target="_blank">编辑</a></Menu.Item>
+                  <Menu.Item key="0"><a href={`/${locale}/app/${detailname}?id=${row.id}`} rel="noopener noreferrer" target="_blank">查看</a></Menu.Item>
+                  <Menu.Item key="1"><a href={`/${locale}/app/${detailname}?id=${row.id}&edit=1`} rel="noopener noreferrer" target="_blank">编辑</a></Menu.Item>
                   <Menu.Item key="2">删除</Menu.Item>
                 </Menu>
               );
@@ -99,7 +90,7 @@ class AppDept extends React.Component {
             },
           },
         ]}
-        headerOperates={<div><a href={`/${locale}/app/doctoredit`} rel="noopener noreferrer" target="_blank">新增医生</a></div>}
+        headerOperates={<div><a href={`/${locale}/app/${detailname}`} rel="noopener noreferrer" target="_blank">新增科室</a></div>}
       />
     );
   }
@@ -107,6 +98,7 @@ class AppDept extends React.Component {
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
+    handleDeptTreeData: selectedOptions => handleDeptTreeData(dispatch, pagespace, selectedOptions),
     handleOperation: (item, key, keyPath, id) => {
       switch (key) {
         case '2':

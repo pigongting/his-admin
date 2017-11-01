@@ -6,7 +6,7 @@ export function setup({ dispatch, history }, pagepath) {
   return history.listen(({ pathname, query }) => {
     if (removelocal(pathname) !== pagepath) {
       dispatch({ type: 'resetstate' });
-    } else if (query.id === '1') {
+    } else if (query.id) {
       if (query.edit === '1') {
         dispatch({ type: 'updateSetMode', payload: 'edit' });
       } else {
