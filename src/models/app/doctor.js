@@ -24,6 +24,7 @@ const initstate = getinitstate({ columntags: columns });
 
 initstate.req.sql = {
   createDt: 'between',
+  hospitalDeptId: 'tree',
 };
 
 export default {

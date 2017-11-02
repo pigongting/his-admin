@@ -67,9 +67,10 @@ export function *fetchViewedRow(action, { call, put, select }, namespace) {
       target: 'number2string',
     },
     {
-      field: 'hospitalDeptId',
+      field: 'mainDeptId',
       replace: 'treeExStr',
       target: 'string2arraynumber',
+      removelast: true,
     },
   ]);
 
@@ -86,13 +87,9 @@ export function *fetchTableData(action, { call, put, select }, namespace) {
   if (!options.filters) { options.filters = {}; }
   if (!options.filters.mainDeptId) { options.filters.mainDeptId = ['=', [null]]; }
 
-  try {
-    const { data, headers } = yield call(fetch.listPageData, { errormsg: '表格数据请求失败', ...action }, {}, options);
-    yield put({ type: 'updateTable', payload: data });
-    yield put({ type: 'updatePages', payload: headers });
-  } catch (e) {
-    console.log(e);
-  }
+  const { data, headers } = yield call(fetch.listPageData, { errormsg: '表格数据请求失败', ...action }, {}, options);
+  yield put({ type: 'updateTable', payload: data });
+  yield put({ type: 'updatePages', payload: headers });
 }
 
 // 列出全部级别数据

@@ -6,7 +6,7 @@ export function changeDataType(data, changearr) {
   changearr.map((item, index) => {
     switch (item.target) {
       case 'number2string':
-        newdata[item.field] = newdata[item.field].toString();
+        newdata[item.field] = newdata[item.field] ? newdata[item.field].toString() : newdata[item.field];
         break;
       case 'string2arraynumber':
         newdata[item.field] = (() => {
@@ -16,8 +16,16 @@ export function changeDataType(data, changearr) {
               arr.push(parseInt(ele, 10));
               return ele;
             });
+
+            if (item.removelast === true) {
+              arr.pop();
+            }
           } catch (e) {
-            arr.push(newdata[parseInt(item.replace, 10)]);
+            if (newdata[item.replace]) {
+              arr.push(parseInt(newdata[item.replace], 10));
+            } else {
+              arr.push(newdata[item.field]);
+            }
           }
           return arr;
         })();

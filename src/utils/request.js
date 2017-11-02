@@ -181,10 +181,10 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
           const item = options.body.tableFilters[key];
           const sql = options.body.sql[key];
           if (item) {
-            if (sql) {
+            if (sql && sql !== 'tree') {
               options.body.filters[key] = [sql, [item]];
             } else {
-              options.body.filters[key] = ['=', [item[item.length - 1]]];
+              options.body.filters[key] = [(sql || '='), [item[item.length - 1]]];
             }
           }
         }
@@ -211,10 +211,10 @@ export default async function request(action, { mode = 'wait', timeout = 10000 }
                 if (moment.isMoment(ele)) { return ele.format('YYYY-MM-DD HH:mm:ss'); } else { return ele; }
               });
 
-              if (sql) {
+              if (sql && sql !== 'tree') {
                 options.body.filters[key] = [sql, newitem];
               } else {
-                options.body.filters[key] = ['=', [newitem[newitem.length - 1]]];
+                options.body.filters[key] = [(sql || '='), [newitem[newitem.length - 1]]];
               }
             } else {
               options.body.filters[key] = [(sql || '='), [moment.isMoment(item) ? item.format('YYYY-MM-DD HH:mm:ss') : item]];
