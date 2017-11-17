@@ -88,7 +88,7 @@ function updateFormFillterFn(state, action) {
   const newFormFilters = { ...state.req.formFilters };
 
   for (const key in action.payload) {
-    if (action.payload[key]) {
+    if (key) {
       newFormFilters[key] = { value: action.payload[key] };
     }
   }

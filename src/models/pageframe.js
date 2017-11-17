@@ -258,6 +258,12 @@ const initstate = {
         },
         {
           parentid: 7,
+          id: 74,
+          link: '/system/map',
+          name: '医院导航',
+        },
+        {
+          parentid: 7,
           id: 72,
           link: '/system/powerlist',
           name: '权限列表',

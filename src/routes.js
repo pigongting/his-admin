@@ -164,6 +164,43 @@ function Routes(locale, app) {
             },
           ],
         },
+        {
+          path: `/${locale}/system`,
+          childRoutes: [
+            {
+              path: 'map',
+              getComponent(nextState, cb) {
+                if (process.env.NODE_ENV === 'development') {
+                  import(/* webpackChunkName: "System/Map" */ './routes/System/Map')
+                  .then((data) => {
+                    registerModel(app, require('./models/system/map'));
+                    cb(null, data);
+                  })
+                  .catch(err => console.log('Failed to load System/Map', err));
+                } else {
+                  registerModel(app, require('./models/system/map'));
+                  cb(null, require('./routes/System/Map'));
+                }
+              },
+            },
+            {
+              path: 'mapdetail',
+              getComponent(nextState, cb) {
+                if (process.env.NODE_ENV === 'development') {
+                  import(/* webpackChunkName: "System/MapDetail" */ './routes/System/MapDetail')
+                  .then((data) => {
+                    registerModel(app, require('./models/system/mapdetail'));
+                    cb(null, data);
+                  })
+                  .catch(err => console.log('Failed to load System/MapDetail', err));
+                } else {
+                  registerModel(app, require('./models/system/mapdetail'));
+                  cb(null, require('./routes/System/MapDetail'));
+                }
+              },
+            },
+          ],
+        },
       ],
     },
   ];
