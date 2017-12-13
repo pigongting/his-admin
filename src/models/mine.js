@@ -2,8 +2,6 @@ import React from 'react';
 import update from 'immutability-helper';
 // antd 组件
 import { notification, Button } from 'antd';
-// 请求 服务
-import * as usersService from '../services/mine';
 // 处理 国际化地址 的函数
 import { removelocal } from '../utils/localpath';
 // 处理 onError 的函数

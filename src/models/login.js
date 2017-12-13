@@ -1,7 +1,5 @@
 import React from 'react';
 import update from 'immutability-helper';
-// 请求服务
-import * as usersService from '../services/index';
 // 处理 国际化地址 的函数
 import { removelocal } from '../utils/localpath';
 
@@ -55,14 +53,7 @@ export default {
     },
   },
 
-  effects: {
-    *batchDelete(action, { call, put, select }) {
-      const { data } = yield call(usersService.batchDelete, action, {}, {
-        username: 'justin.tan',
-        password: 'Justin76.tan',
-      });
-    },
-  },
+  effects: {},
 
   subscriptions: {
     setup({ dispatch, history }) {

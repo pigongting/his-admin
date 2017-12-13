@@ -14,7 +14,8 @@
     "afterEach": true,
     "beforeAll": true,
     "afterAll": true,
-    "describe": true
+    "describe": true,
+    "iface": true
   },
   "rules": {
     "arrow-body-style": [0],

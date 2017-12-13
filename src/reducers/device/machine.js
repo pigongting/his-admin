@@ -1,14 +1,14 @@
 import update from 'immutability-helper';
 import { notification } from 'antd';
-import { changeDataType } from '../../utils/handleData';
 import request from '../../utils/request';
+import { changeDataType } from '../../utils/handleData';
 
 /* 插入 */
 export function *fetchInsertRow(action, { call, put, select }, namespace) {
   const options = yield select(state => state[namespace].req);
 
   const { data } = yield call(
-    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.insertHospitalMap }),
+    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.insertDept }),
     { errormsg: '插入失败', ...action }, {}, options,
   );
 
@@ -39,7 +39,7 @@ export function *fetchDeleteRow(action, { call, put, select }, namespace) {
 
   // 发送删除请求
   const { data } = yield call(
-    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.deleteHospitalMapArray }),
+    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.deleteDeptArray }),
     { errormsg: '删除失败', ...action }, {}, { id: action.payload },
   );
 
@@ -55,7 +55,7 @@ export function *fetchUpdateRow(action, { call, put, select }, namespace) {
   const options = yield select(state => state[namespace].req);
 
   const { data } = yield call(
-    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.updateHospitalMap }),
+    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.updateDept }),
     { errormsg: '更新失败', ...action }, {}, options,
   );
 
@@ -69,11 +69,24 @@ export function *fetchUpdateRow(action, { call, put, select }, namespace) {
 /* 查看 */
 export function *fetchViewedRow(action, { call, put, select }, namespace) {
   const { data } = yield call(
-    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.getHospitalMapById }),
-    { errormsg: '请求失败', ...action }, {}, { hospitalMapId: action.payload },
+    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.getDeptById }),
+    { errormsg: '请求失败', ...action }, {}, { hospitalDeptId: action.payload },
   );
 
-  yield put({ type: 'updateFormReq', payload: data });
+  const newdata = changeDataType(data, [
+    {
+      field: 'hospitalId',
+      target: 'number2string',
+    },
+    {
+      field: 'mainDeptId',
+      replace: 'treeExStr',
+      target: 'string2arraynumber',
+      removelast: true,
+    },
+  ]);
+
+  yield put({ type: 'updateFormReq', payload: newdata });
 }
 
 /* 列出分页数据 */
@@ -83,9 +96,11 @@ export function *fetchTableData(action, { call, put, select }, namespace) {
 
   options.page.index = (action.payload && action.payload.index) ? action.payload.index : options.page.index;
   options.page.size = (action.payload && action.payload.size) ? action.payload.size : options.page.size;
+  if (!options.filters) { options.filters = {}; }
+  if (!options.filters.mainDeptId) { options.filters.mainDeptId = ['=', [null]]; }
 
   const { data, headers } = yield call(
-    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.getHospitalMapList }),
+    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.getAllMachine }),
     { errormsg: '表格数据请求失败', ...action }, {}, options,
   );
 

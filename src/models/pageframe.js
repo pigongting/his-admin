@@ -38,7 +38,7 @@ const initstate = {
         {
           parentid: 3,
           id: 31,
-          link: '/device/list',
+          link: '/device/machine',
           name: '设备列表',
         },
         {
@@ -252,15 +252,15 @@ const initstate = {
       submenu: [
         {
           parentid: 7,
-          id: 71,
-          link: '/system/baseinfo',
-          name: '医院基本信息',
-        },
-        {
-          parentid: 7,
           id: 74,
           link: '/system/map',
           name: '医院导航',
+        },
+        {
+          parentid: 7,
+          id: 71,
+          link: '/system/baseinfo',
+          name: '医院基本信息',
         },
         {
           parentid: 7,

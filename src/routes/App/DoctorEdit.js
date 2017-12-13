@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
-import { handleDeptTreeData } from '../../actions/app/Dept';
-import { handleHospitalAllData } from '../../actions/app/Hospital';
-import { handleCascadAddr } from '../../actions/CascadAddr';
+import { importCascadAddr } from '../../reducers/cascadAddr';
 import FormPage from '../../components/FormPage';
 
 const pagespace = 'appdoctoredit';
@@ -88,9 +86,9 @@ class AppDoctorEdit extends React.Component {
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    handleDeptTreeData: selectedOptions => handleDeptTreeData(dispatch, pagespace, selectedOptions),
-    handleHospitalAllData: () => handleHospitalAllData(dispatch, pagespace),
-    handleCascadAddr: () => handleCascadAddr(dispatch, pagespace, 'pcaCode'),
+    handleDeptTreeData: () => dispatch({ type: `${pagespace}/fetchDeptTreeData` }),
+    handleHospitalAllData: () => dispatch({ type: `${pagespace}/fetchHospitalAllData` }),
+    handleCascadAddr: () => importCascadAddr(dispatch, pagespace, 'pcaCode'),
   };
 }
 

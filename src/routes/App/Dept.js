@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Menu, Dropdown } from 'antd';
-import { handleDeptTreeData } from '../../actions/app/Dept';
 import FormTablePage from '../../components/FormTablePage';
 
 const pagespace = 'appdept';
@@ -98,7 +97,7 @@ class AppDept extends React.Component {
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    handleDeptTreeData: selectedOptions => handleDeptTreeData(dispatch, pagespace, selectedOptions),
+    handleDeptTreeData: () => dispatch({ type: `${pagespace}/fetchDeptTreeData` }),
     handleOperation: (item, key, keyPath, id) => {
       switch (key) {
         case '2':

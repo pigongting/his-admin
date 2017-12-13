@@ -7,8 +7,6 @@ import { Link } from 'dva/router';
 import { notification, Layout, Form, Input, Button, Tooltip, Icon, Cascader } from 'antd';
 // 请求重试
 import { retry } from '../../utils/requesterror';
-// 本页样式
-import styles from './Edit.less';
 
 // antd 组件扩展
 const { Header, Content } = Layout;

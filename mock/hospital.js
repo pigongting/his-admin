@@ -1,5 +1,5 @@
 import Mock from 'mockjs';
-import { apiPrefix, apiNexfix } from '../src/services/config';
+import { apiPrefix, apiNexfix } from './config';
 
 const hospitallist = [
   {

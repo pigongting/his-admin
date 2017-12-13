@@ -1,12 +1,16 @@
 import update from 'immutability-helper';
 import { notification } from 'antd';
-import * as fetch from '../../services/app/doctor';
 import { changeDataType } from '../../utils/handleData';
+import request from '../../utils/request';
 
 /* 插入 */
 export function *fetchInsertRow(action, { call, put, select }, namespace) {
   const options = yield select(state => state[namespace].req);
-  const { data } = yield call(fetch.insertRow, { errormsg: '插入失败', ...action }, {}, options);
+
+  const { data } = yield call(
+    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.insertDoctor }),
+    { errormsg: '插入失败', ...action }, {}, options,
+  );
 
   // 成功提示
   notification.success({
@@ -25,7 +29,10 @@ export function *fetchDeleteRow(action, { call, put, select }, namespace) {
   yield put({ type: 'updateTable', payload: newSource });
 
   // 发送删除请求
-  const { data } = yield call(fetch.deleteRow, { errormsg: '删除失败', ...action }, {}, { id: action.payload });
+  const { data } = yield call(
+    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.deleteDoctorArray }),
+    { errormsg: '删除失败', ...action }, {}, { id: action.payload },
+  );
 
   // 成功提示
   notification.success({
@@ -37,7 +44,11 @@ export function *fetchDeleteRow(action, { call, put, select }, namespace) {
 /* 更新 */
 export function *fetchUpdateRow(action, { call, put, select }, namespace) {
   const options = yield select(state => state[namespace].req);
-  const { data } = yield call(fetch.updateRow, { errormsg: '更新失败', ...action }, {}, options);
+
+  const { data } = yield call(
+    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.updateDoctor }),
+    { errormsg: '更新失败', ...action }, {}, options,
+  );
 
   // 成功提示
   notification.success({
@@ -48,9 +59,10 @@ export function *fetchUpdateRow(action, { call, put, select }, namespace) {
 
 /* 查看 */
 export function *fetchViewedRow(action, { call, put, select }, namespace) {
-  const { data } = yield call(fetch.viewedRow, { errormsg: '请求失败', ...action }, {}, {
-    doctorId: action.payload,
-  });
+  const { data } = yield call(
+    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.getDoctorById }),
+    { errormsg: '请求失败', ...action }, {}, { doctorId: action.payload },
+  );
 
   const newdata = changeDataType(data, [
     {
@@ -87,7 +99,11 @@ export function *fetchTableData(action, { call, put, select }, namespace) {
   options.page.index = (action.payload && action.payload.index) ? action.payload.index : options.page.index;
   options.page.size = (action.payload && action.payload.size) ? action.payload.size : options.page.size;
 
-  const { data, headers } = yield call(fetch.listPageData, { errormsg: '表格数据请求失败', ...action }, {}, options);
+  const { data, headers } = yield call(
+    (atp, config, opp) => request(atp, config, { method: 'POST', body: opp, Url: iface.getDoctorList }),
+    { errormsg: '表格数据请求失败', ...action }, {}, options,
+  );
+
   yield put({ type: 'updateTable', payload: data });
   yield put({ type: 'updatePages', payload: headers });
 }

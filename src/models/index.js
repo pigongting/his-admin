@@ -1,7 +1,5 @@
 import React from 'react';
 import update from 'immutability-helper';
-// 请求 服务
-import * as usersService from '../services/index';
 // 处理 国际化地址 的函数
 import { removelocal } from '../utils/localpath';
 // 处理 onError 的函数

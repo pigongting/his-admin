@@ -1,8 +1,5 @@
 import React from 'react';
 import { connect } from 'dva';
-import { handleDeptTreeData } from '../../actions/app/Dept';
-import { handleHospitalAllData } from '../../actions/app/Hospital';
-import { handleCascadAddr } from '../../actions/CascadAddr';
 import FormPage from '../../components/FormPage';
 
 const pagespace = 'appdeptdetail';
@@ -78,8 +75,8 @@ class AppDeptDetail extends React.Component {
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
-    handleDeptTreeData: selectedOptions => handleDeptTreeData(dispatch, pagespace, selectedOptions),
-    handleHospitalAllData: () => handleHospitalAllData(dispatch, pagespace),
+    handleDeptTreeData: () => dispatch({ type: `${pagespace}/fetchDeptTreeData` }),
+    handleHospitalAllData: () => dispatch({ type: `${pagespace}/fetchHospitalAllData` }),
   };
 }
 

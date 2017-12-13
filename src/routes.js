@@ -62,7 +62,7 @@ function Routes(locale, app) {
           path: `/${locale}/device`,
           childRoutes: [
             {
-              path: 'list',
+              path: 'machine',
               getComponent(nextState, cb) {
                 if (process.env.NODE_ENV === 'development') {
                   import(/* webpackChunkName: "Device/List" */ './routes/Device/List')

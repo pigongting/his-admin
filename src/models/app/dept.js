@@ -1,6 +1,5 @@
 import React from 'react';
 import update from 'immutability-helper';
-import * as fetch from '../../services/app/doctor';
 import { setup, getinitstate, resetstate, commonFormTableReducers } from '../../reducers/commonFormTable';
 import { fetchTableData, fetchDeleteRow, fetchDeptTreeData, updateDeptTreeData } from '../../reducers/app/dept';
 
