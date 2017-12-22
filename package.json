@@ -1,7 +1,7 @@
 {
   "private": true,
   "scripts": {
-    "start": "cp public/index.dev.html public/index.html && set PORT=5850 && roadhog server",
+    "start": "cp public/index.dev.html public/index.html && set PORT=5857 && roadhog server",
     "build": "cp public/index.ssr.html public/index.html && roadhog build",
     "server": "set NODE_ENV=production&& node --inspect-brk server/index.js",
     "build:server": "npm run build && npm run server",
